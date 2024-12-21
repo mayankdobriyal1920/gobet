@@ -60,8 +60,9 @@ export const actionToVerifyLoginUserOtpApiCall = (body) => {
     return new Promise(function(resolve, reject) {
         let found = null;
         let userData = {};
+        console.log('phone,otp',phone,otp)
         userDummyDataArray?.forEach((users,key)=>{
-            if(users.phone === phone && otp === users?.otp){
+            if(users.phone === phone && users?.otp === Number(otp)){
                 found = key;
             }
         })

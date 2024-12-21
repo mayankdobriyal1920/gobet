@@ -3,7 +3,6 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import session from 'express-session';
-import dotenv from 'dotenv';
 import commonRouter from './routers/commonRouter.js';
 
 // Initialize Express app
@@ -12,7 +11,7 @@ const PORT = 4000;
 
 // Configure CORS options
 const corsOptions = {
-    origin: '*',  // Allow all origins (adjust for security in production)
+    origin: 'http://localhost:3000',  // Allow all origins (adjust for security in production)
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['X-Requested-With', 'Content-Type'],
     credentials: true,  // Allow cookies to be sent with the request

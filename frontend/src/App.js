@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, setupIonicReact } from '@ionic/react';
+import {IonApp, IonLoading, setupIonicReact} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
@@ -21,11 +21,12 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './theme/additional.css';
 import './theme/common-style.css';
 import {useDispatch, useSelector} from "react-redux";
 import {actionToGetUserSessionData} from "./redux/CommonAction";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
+import MainAppEntryComponent from "./pages/MainAppEntryComponent";
 
 setupIonicReact();
 
@@ -41,7 +42,7 @@ const PublicRoutes = () => {
 const AppEnterMainPage = () => {
   return (
       <IonReactRouter>
-        <Route path="/dashboard" exact={true} component={DashboardPage} />
+        <Route path="/dashboard" exact={true} component={MainAppEntryComponent} />
         <Redirect  exact from="/"  to="/dashboard" />
         <Route render={() => <Redirect to="/dashboard" />} />
       </IonReactRouter>
@@ -50,19 +51,25 @@ const AppEnterMainPage = () => {
 
 const App = () => {
     const dispatch = useDispatch();
-    const {userInfo,loading} = useSelector((state) => state.userAuthDetail);
+    const userSession = useSelector((state) => state.userSession);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
 
     useEffect(() => {
         dispatch(actionToGetUserSessionData());
     }, []);
 
+    useEffect(() => {
+        console.log('userInfo',userInfo)
+    }, [userInfo]);
+
     return (
         <IonApp>
-            {(loading) ?
+            {(!userSession?.loading) ?
                 <React.Fragment>
                  {userInfo?.id ? <AppEnterMainPage/> : <PublicRoutes/>}
                 </React.Fragment>:''
             }
+            <IonLoading isOpen={userSession?.loading}/>
         </IonApp>
     )
 }

@@ -1,0 +1,503 @@
+/*@font-face {*/
+/*    font-family: 'Esqadero FF CY 4F-Regular';*/
+/*    font-style: normal;*/
+/*    src: url('../fonts/esqadero-ff-cy-4f-regular.ttf') format('truetype');*/
+/*}*/
+textarea:focus,input:focus,select:focus,button:focus{
+    outline: none!important;
+}
+textarea{
+    resize: none;
+}
+
+/*html,body{*/
+/*    font-family: "Esqadero FF CY 4F-Regular", sans-serif !important;*/
+/*}*/
+.display_flex{
+    --display: flex;
+    display: flex;
+}
+body{
+    --background: var(--theme-background-color)!important;
+}
+ion-content{
+    --background: unset!important;
+}
+
+.main_welcome_header_logo_section {
+    display: flex;
+}
+
+.main_welcome_header_logo_section img.logo {
+    margin: auto;
+    width: 150px;
+}
+
+.welcome_main_container_inner {
+    margin-top: 20%;
+}
+.login_main_container_outer {
+    height: 100%;
+}
+.login_main_container_inner {
+    margin: auto;
+}
+.signup_main_container_outer {
+    height: 100%;
+}
+.signup_main_container_inner {
+    margin: auto;
+}
+.main_button_container_section {
+    text-align: center;
+    color: var(--theme-text-color);
+}
+
+.main_button_container_section p {
+    font-size: var(--theme-text-small-size);
+}
+
+.main_button_container_section button {
+    border-radius: 2px;
+    width: 280px;
+    height: 45px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: var(--theme-text-sub-heading-size);
+}
+.glossy-button {
+    background-color: var(--theme-primary-button-color);
+    color: var(--theme-text-color);
+    cursor: pointer;
+}
+
+.main_form_container_section .form_input_section.input {
+    width: 100%;
+    padding-left: 10px;
+}
+
+.main_form_container_section .form_input_section {
+    border-radius: 2px;
+    padding-left: 10px;
+    background: var(--theme-background-secondry-color);
+    border: 1px solid #afafaf;
+    color: var(--theme-text-color);
+    height: 45px;
+    font-size: var(--theme-text-main-size);
+    width: 100%;
+    margin-top: 10px;
+}
+.all_rights_reserve_footer_text {
+    position: absolute;
+    bottom: 5px;
+    text-align: center;
+    font-size: var(--theme-text-very-small-size);
+    color: var(--theme-text-color-second);
+    margin: 8px;
+    width: 100%;
+    left: 0px;
+    line-height: 16px;
+}
+.welcome_slogan_container {
+    color: #000000;
+    font-size: var(--theme-text-sub-heading-size);
+    text-align: center;
+    line-height: 30px;
+    margin-top: 30px;
+}
+.welcome_slogan_container p{
+    color: var(--theme-text-color);
+    font-size: var(--theme-text-sub-heading-size);
+}
+.main_form_container_section {
+    text-align: center;
+    margin: 0px 10px 0px 10px;
+}
+
+.main_form_container_section .signup_button_main_form {
+    font-size: var(--theme-text-main-size);
+    background-color: var(--theme-primary-button-color);
+    width: 100%;
+    height: 50px;
+    color: var(--theme-button-text-color);
+    margin-top: 10px;
+}
+.theme_button{
+    color: var(--theme-button-text-color);
+    font-size: var(--theme-text-main-size);
+    background-color: var(--theme-primary-button-color);
+}
+.theme_bg{
+    --background: var(--theme-background-color)!important;
+}
+.main_form_container_section p {
+    color: var(--theme-text-color);
+    font-size: var(--theme-text-main-size);
+}
+
+.main_form_container_section a {
+    color: var(--theme-logo-color);
+    font-weight: 600;
+    font-size: var(--theme-text-small-size);
+}
+.logo_section_welcome_top {
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.logo_section_welcome_top img {
+    margin: auto;
+}
+.welcome_page_swiper_slider .swiper-pagination {
+    position: static;
+    margin-top: 24px;
+}
+.theme_modal_bg_color{
+    --background: var(--theme-modal-color)!important;
+}
+.theme_secondary_color{
+    --background: var(--theme-background-secondry-color)!important;
+}
+.swiper-horizontal.welcome_page_swiper_slider > .swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet-active {
+    background: var(--theme-logo-color) !important;
+    border: 0;
+}
+.swiper-horizontal.welcome_page_swiper_slider > .swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet-active {
+    background: var(--theme-logo-color) !important;
+}
+.main_button_container_section a {
+    color: var(--theme-logo-color);
+    font-weight: bold;
+}
+.welcome_page_swiper_slider img {
+    margin: auto;
+}
+.heading{
+    font-size: var(--theme-text-heading-size);
+    color: var(--theme-text-color);
+}
+.sub_heading{
+    font-size: var(--theme-text-sub-heading-size);
+    color: var(--theme-text-color);
+}
+.main_text{
+    font-size: var(--theme-text-main-size);
+    color: var(--theme-text-color);
+}
+.sub_text{
+    font-size: var(--theme-text-very-small-size);
+    color: var(--theme-text-color);
+}
+.otp_verify_modal_header {
+    text-align: center;
+    margin-top: 22px;
+    font-weight: bold;
+}
+
+.otp_verify_modal_header .otp_verify_modal_main_heading {
+    line-height: 35px;
+}
+ion-modal.sheet_ion_modal .ion-page{
+    --background: unset!important;
+    background: var(--theme-modal-color);
+}
+ion-modal.sheet_ion_modal .ion-page .otp_container_inner {
+    margin: 25px;
+}
+ion-modal.sheet_ion_modal .ion-page .otp_container_inner .otp_container_inputs {
+    margin: auto;
+    width: 100%;
+}
+.main_welcome_header_logo_section.first img {
+    height: 240px;
+}
+
+ion-modal.sheet_ion_modal .ion-page .otp_container_inner .otp_container_inputs input {
+    width: 78px !important;
+    height: 58px;
+    color: var(--theme-text-color);
+    font-size: var(--theme-text-sub-heading-size);
+    font-weight: bold;
+    border: var(--theme-background-secondry-color);
+    background: var(--theme-background-secondry-color);
+}
+
+
+ion-modal.sheet_ion_modal .ion-page .otp_container_inner button.theme_button.otp_verification_button {
+    width: 100%;
+    margin-top: 29px;
+    height: 47px;
+    font-size: var(--theme-text-sub-heading-size);
+    font-weight: bold;
+}
+.otp_verify_resend_section.main_text {
+    margin-top: 22px;
+    text-align: center;
+}
+.theme_logo_color{
+    color: var(--theme-logo-color);
+}
+.otp_verify_resend_section.main_text a {
+    font-weight: bold;
+}
+ion-content.top_padding{
+    --padding-top: 60px!important;
+}
+.add_new_gym_content .heading {
+    font-weight: bold;
+    line-height: 50px;
+}
+.add_new_gym_content .main_text {
+    line-height: 25px;
+}
+
+.add_new_gym_content .header_main_section {
+    text-align: center;
+    padding-top: 100px;
+}
+
+.main_form_container_section .form_input_section.textarea {
+    padding-top: 10px;
+    height: 136px;
+}
+.main_form_container_section.add_gym {
+    padding-top: 20px;
+}
+.gym_owner_main_dashboard_header ion-toolbar ion-title{
+    padding-left: 0px;
+    padding-top: 4px;
+}
+.gym_owner_main_dashboard_header ion-toolbar ion-title.ios{
+    padding-left: 60px;
+    padding-top: 6px;
+}
+.gym_owner_main_dashboard_header ion-toolbar ion-menu-button{
+    color:#ffffff;
+}
+.gym_owner_dashboard_main_menu ion-toolbar ion-title.ios{
+    padding-left: 20px;
+    padding-top: 4px;
+}
+.gym_owner_main_dashboard_content .filter_dashboard_menu{
+    width: 106px;
+    height: 36px;
+    border-radius: 10px;
+    padding: 11px;
+    color: var(--theme-text-color);
+    font-size: var(--theme-text-very-small-size);
+    background-color: #2f3034;
+    border: 1px solid rgb(255 255 255 / 8%);
+    backdrop-filter: blur(30px);
+}
+.dashboard_widgets_container {
+    border-radius: 15px;
+    padding: 8px 0px 8px 10px;
+    margin-left: 3px;
+    background-color: #2f3034;
+    border: 1px solid rgb(255 255 255 / 8%);
+    backdrop-filter: blur(30px);
+    color: var(--theme-text-color);
+    opacity: 0.9;
+}
+.dashboard_widgets_container.margin-left-column {
+    margin-left: 3px;
+}
+.dashboard_widgets_container.margin-right-column {
+    margin-right: 3px;
+}
+
+.dashboard_widgets_container .text_detail {
+    line-height: 28px;
+    justify-content: left;
+    align-items: center;
+    display: flex;
+    padding-left: 5px;
+}
+.sub_heading_logo_color{
+    font-size: var(--theme-text-sub-heading-size);
+    color: var(--theme-logo-color);
+    font-weight: bold;
+}
+
+.dashboard_widgets_container_chart_section {
+    margin-top: 13px;
+}
+
+.bottom_footer_add_button_section {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    left: 0;
+}
+
+.bottom_footer_add_button_section_inner {
+    margin: auto;
+    padding: 5px 10px;
+    background: #4b4b4b54;
+    border-radius: 16px;
+    opacity: 0.7;
+}
+.gym_owner_dashboard_main_menu .dashboard_test_with_svg{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.alert-button-confirm{
+    background: var(--theme-logo-color);
+    color: var(--theme-text-color);
+    font-size: var(--theme-text-small-size);
+}
+.alert-button-cancel{
+    font-size: var(--theme-text-small-size);
+}
+.sub_small_button {
+    padding: 6px 17px;
+    border-radius: 8px;
+    font-size: var(--theme-text-main-size);
+    color: var(--theme-text-color);
+    background-color: #2f3034;
+    border: 1px solid rgb(255 255 255 / 8%);
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
+}
+.user_list_row.dashboard_widgets_container {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+.user_list_row.dashboard_widgets_container .member_detail_text {
+    padding-left: 10px;
+}
+.user_list_row.dashboard_widgets_container .further_detail_arrow {
+    margin-left: auto;
+}
+.heading_with_Action_button{
+    display: flex;
+    align-items: center;
+}
+.heading_with_Action_button svg{
+    margin-left: 5px;
+}
+
+
+
+.floating_input_section.input-group {
+    position: relative;
+    margin: 13px 0 20px;
+}
+
+.floating_input_section .form_input_section_floating {
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 100%;
+    color: #ffffff;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #757575;
+}
+
+.floating_input_section label {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 10px;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+
+.floating_input_section .form_input_section_floating:focus ~ label{
+    top: -20px;
+    color:#ffffff;
+}
+
+.floating_input_section .bar {
+    position: relative;
+    display:block;
+    width: 100%;
+}
+
+.floating_input_section .bar:before,
+.floating_input_section .bar:after {
+    content: '';
+    height: 2px;
+    width: 0;
+    bottom: 1px;
+    position: absolute;
+    background: #ffffff;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+
+.floating_input_section .bar:before {
+    left: 50%;
+}
+
+.floating_input_section .bar:after {
+    right: 50%;
+}
+
+.floating_input_section .form_input_section_floating:focus ~ .bar:before,
+.floating_input_section .form_input_section_floating:focus ~ .bar:after {
+    width: 50%;
+}
+
+.floating_input_section select.form_input_section_floating:not([value=""]) ~ label{
+    top: -20px;
+    color:#ffffff;
+}
+
+
+.floating_input_section select.form_input_section_floating:not([value=""]) ~ .bar:before {
+    left: 50%;
+}
+
+.floating_input_section select.form_input_section_floating:not([value=""]) ~ .bar:after {
+    right: 50%;
+}
+
+.floating_input_section select.form_input_section_floating:not([value=""])  ~ .bar:before,
+.floating_input_section select.form_input_section_floating:not([value=""])  ~ .bar:after {
+    width: 50%;
+}
+.membership_list_container .dashboard_widgets_container {
+    margin-bottom: 30px;
+}
+.member_ship_name_text {
+    position: absolute;
+    top: -9px;
+    left: auto;
+    background: black;
+    padding: 0px 6px;
+}
+button.member_ship_renew_suspend {
+    width: 70px;
+    height: 44px;
+    border-radius: 5px;
+}
+.member_page_widgets_container {
+    .user_image_section_svg {
+        text-align: center;
+    }
+}
+.member_detail_main_container {
+    background: var(--theme-background-color);
+    padding: 19px 0px;
+    .tab_buttons.active:after {
+        content: "";
+        position: absolute;
+        width: 58%;
+        height: 2px;
+        bottom: 0px;
+        background: var(--theme-logo-color);
+        left: 18px;
+    }
+}

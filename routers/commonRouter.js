@@ -36,12 +36,11 @@ commonRouter.post(
                 if(user?.id) {
                     responseToSend = {
                         success:1,
+                        userData:user
                     }
                     req.session.userSession = user;
-                    res.status(200).send(responseToSend);
-                }else{
-                    res.status(200).send(responseToSend);
                 }
+                res.status(200).send(responseToSend);
             }).catch(error => {
             res.status(500).send(error);
         })

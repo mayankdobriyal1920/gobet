@@ -1,11 +1,13 @@
 import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
-import {userAuthDetailReducer} from './CommonReducers';
+import {userAuthDetailReducer, userSessionReducer} from './CommonReducers';
 
 const initialState = {
-    userAuthDetail: {userInfo: null, loading:true}
+    userSession: {loading: true, status:0},
+    userAuthDetail: {userInfo: null, loading:false}
 }
 export const rootReducer = combineReducers({
+    userSession: userSessionReducer,
     userAuthDetail: userAuthDetailReducer,
 });
 
