@@ -11,7 +11,7 @@ const PORT = 4000;
 
 // Configure CORS options
 const corsOptions = {
-    origin: 'http://localhost:3000',  // Allow all origins (adjust for security in production)
+    origin: 'http://192.168.1.6:3000',  // Allow all origins (adjust for security in production)
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['X-Requested-With', 'Content-Type'],
     credentials: true,  // Allow cookies to be sent with the request

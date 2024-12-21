@@ -5,7 +5,7 @@ http://ionicframework.com/docs/theming/ */
 :root {
   /** primary **/
   --ion-default-font:"Esqadero FF CY 4F-Regular", sans-serif !important;
-  --ion-color-primary: #3880ff;
+  --ion-color-primary: #f57b2c;
   --theme-background-color: #ffffff;
   --theme-background-secondry-color: #ffffff;
   --theme-modal-color: #ffffff;
