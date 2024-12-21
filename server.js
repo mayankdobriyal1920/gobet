@@ -4,40 +4,10 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import session from 'express-session';
 import commonRouter from './routers/commonRouter.js';
-import { RedisStore } from 'connect-redis';
-import { createClient } from 'redis';
 
 // Initialize Express app
 const app = express();
 const PORT = 4000;
-
-// Create a Redis client
-const redisClient = createClient();
-
-redisClient.connect().catch(console.error);
-redisClient.on('error', (err) => console.error('Redis connection error:', err));
-
-// Create a Redis store instance
-const redisStore = new RedisStore({
-    client: redisClient,
-    prefix: 'sess:', // Optional: Add a prefix to all session keys in Redis
-});
-
-// Set up session middleware
-app.use(
-    session({
-        store: redisStore,
-        secret: 'get-bet-app-session', // Replace with a strong secret
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: false, // Set to true if your app is running on HTTPS
-            httpOnly: true,
-            sameSite: 'lax', // Adjust based on your application's needs
-        },
-    })
-);
-
 
 const allowedOrigins = ['http://localhost:3000', 'http://192.168.1.6:3000'];
 
@@ -60,6 +30,21 @@ app.options('*', cors(corsOptions)); // Handle preflight
 // Middleware to parse the request body
 app.use(express.urlencoded({ extended: true, limit: '250mb' }));
 app.use(express.json({ limit: '250mb' }));
+
+// Set up the session middleware
+app.use(
+    session({
+        secret: 'get-bet-session-store',
+        resave: false,
+        saveUninitialized: false,
+        store: new session.MemoryStore(), // Default store
+        cookie: {
+            secure: false,
+            httpOnly: true,
+            sameSite: 'lax',
+        },
+    })
+);
 
 // Create HTTP server
 const server = http.createServer(app);
