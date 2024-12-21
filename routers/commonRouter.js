@@ -53,7 +53,7 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         let responseToSend = {success:0}
         if(req?.session?.userSession){
-            responseToSend = {success:1,}
+            responseToSend = {success:1}
         }
         res.status(200).send(responseToSend);
     })
