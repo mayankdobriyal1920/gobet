@@ -16,8 +16,15 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "socket.io": "^4.8.1"
+    "express-async-handler": "^1.2.0",
+    "express-session": "^1.18.1",
+    "generic-pool": "^3.9.0",
+    "mysql2": "^3.11.5",
+    "socket.io": "^4.8.1",
+    "ssh2": "^1.16.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
