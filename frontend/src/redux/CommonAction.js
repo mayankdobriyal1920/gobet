@@ -7,8 +7,8 @@ import {
     USER_SIGNIN_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
-    baseURL: `http://localhost:4000/api-call/common/`,
-    // baseURL: `https://gobet.onrender.com/api-call/common/`,
+    //baseURL: `http://localhost:4000/api-call/common/`,
+    baseURL: `https://gobet.onrender.com/api-call/common/`,
     withCredentials:true
 })
 

@@ -10,8 +10,17 @@ const app = express();
 const PORT = 4000;
 
 // Configure CORS options
+const allowedOrigins = ['http://localhost:3000', 'http://192.168.1.6:3000'];
+
 const corsOptions = {
-    origin: 'http://localhost:3000',  // Allow all origins (adjust for security in production)
+    origin: (origin, callback) => {
+        // Allow requests with no origin, such as mobile apps or curl
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['X-Requested-With', 'Content-Type'],
     credentials: true,  // Allow cookies to be sent with the request
