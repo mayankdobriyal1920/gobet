@@ -9,23 +9,36 @@ import commonRouter from './routers/commonRouter.js';
 const app = express();
 const PORT = 4000;
 
-// Configure CORS options
-const allowedOrigins = ['http://localhost','http://localhost:3000', 'http://192.168.1.6:3000'];
+// Define allowed origins
+const allowedOrigins = [
+    'http://localhost',
+    'http://localhost:3000',
+    'https://localhost',
+    'https://localhost:3000',
+    'http://192.168.1.6:3000'
+];
 
+// Configure CORS options
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.error('Blocked by CORS:', origin); // Log blocked origin
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['X-Requested-With', 'Content-Type'],
+    credentials: true, // Enable cookies and other credentials
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'], // Allowed HTTP methods
+    allowedHeaders: [
+        'X-Requested-With',
+        'Content-Type',
+        'Authorization', // Add Authorization if tokens are used
+    ],
+    optionsSuccessStatus: 200, // Support for legacy browsers
 };
 
-// Use CORS middleware with the defined options
+// Use CORS middleware
 app.use(cors(corsOptions));
 
 // Middleware to parse the request body
