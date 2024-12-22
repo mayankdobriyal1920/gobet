@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import session from 'express-session';
 import commonRouter from './routers/commonRouter.js';
+import pgSession from 'connect-pg-simple';
+import pool from "./models/connection.js";
 
 // Initialize Express app
 const app = express();
@@ -44,21 +46,21 @@ app.use(cors(corsOptions));
 // Middleware to parse the request body
 app.use(express.urlencoded({ extended: true, limit: '250mb' }));
 app.use(express.json({ limit: '250mb' }));
-
+const pgSessionStore = pgSession(session);
 // Set up the session middleware
-app.use(
-    session({
-        secret: 'get-bet-session-store',
-        resave: false,
-        saveUninitialized: false,
-        store: new session.MemoryStore(), // Default store
-        cookie: {
-            secure: false,
-            httpOnly: true,
-            sameSite: 'lax',
-        },
-    })
-);
+app.use(session({
+    store:  new pgSessionStore({
+        pool: pool, // Use the imported pool connection
+        tableName: 'sessions' // Name of the table storing session data
+    }),
+    secret: 'get-bet-session-store',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // Set true if using HTTPS
+        maxAge: 3600000 // 1 hour
+    }
+}));
 
 // Create HTTP server
 const server = http.createServer(app);

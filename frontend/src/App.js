@@ -69,7 +69,7 @@ const App = () => {
                  {userInfo?.id ? <AppEnterMainPage/> : <PublicRoutes/>}
                 </React.Fragment>:''
             }
-            <IonLoading isOpen={userSession?.loading}/>
+            <IonLoading isOpen={userSession?.loading} message={"Loading..."}/>
         </IonApp>
     )
 }

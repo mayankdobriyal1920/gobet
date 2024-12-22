@@ -14,7 +14,6 @@ body{
 
 .main_logo_and_slogan_container_header .main_welcome_header_logo_section {
     margin: auto;
-    display: flex;
 }
 
 .main_logo_and_slogan_container_header .main_welcome_header_logo_section svg {
@@ -24,7 +23,7 @@ body{
 .main_logo_and_slogan_container_header .main_welcome_header_logo_section .logo_login_text {
     margin: auto;
     text-align: center;
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     color: #ffffff;
     font-weight: 900;
 }
@@ -47,13 +46,13 @@ body{
 }
 
 .main_logo_and_slogan_container_header.logo_section {
-    padding: 10px 0px;
+    padding: 20px 0px;
     border-bottom: 1px solid #d2d2d2;
 }
 .main_form_container_section {
     padding: 16px;
     background: #f4f4f4;
-    height: 72vh;
+    height: 90vh;
 }
 
 .main_form_container_section .login_form_label {
@@ -112,4 +111,10 @@ body{
 }
 .main_form_container_section .form_second_label_input {
     margin-top: 0.5rem;
+}
+.loading-spinner+.loading-content {
+    font-size: .37em;
+}
+.first_time_user_container_screen .logo_in_container svg {
+    margin: auto;
 }

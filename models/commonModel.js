@@ -1,35 +1,6 @@
-let userDummyDataArray = [
-    {
-        id:'3213213-efgfd-435245',
-        name:'Mayank Dobriyal',
-        phone:'7017935899',
-        otp:1234
-    },
-    {
-        id:'132te13-ef65gfd-gffgfgs',
-        name:'Neeraj Payal',
-        phone:'9876543210',
-        otp:1234
-    },
-    {
-        id:'errsae92-5435345-gfgfg',
-        name:'Manmohan',
-        phone:'9123456780',
-        otp:1234
-    },
-    {
-        id:'45486yhgf-gfhgfudf-ykhjgj',
-        name:'Nirmal Gaur',
-        phone:'8123456780',
-        otp:1234
-    },
-    {
-        id:'435324-rtthyfgh-ljkhersf',
-        name:'Amit Negi',
-        phone:'7123456780',
-        otp:1234
-    }
-]
+import pool from "./connection.js";
+import {loginUserQuery} from "../queries/commonQuries.js";
+
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
     return new Promise(function(resolve, reject) {
@@ -60,7 +31,6 @@ export const actionToVerifyLoginUserOtpApiCall = (body) => {
     return new Promise(function(resolve, reject) {
         let found = null;
         let userData = {};
-        console.log('phone,otp',phone,otp)
         userDummyDataArray?.forEach((users,key)=>{
             if(users.phone === phone && users?.otp === Number(otp)){
                 found = key;
@@ -70,5 +40,15 @@ export const actionToVerifyLoginUserOtpApiCall = (body) => {
             userData = userDummyDataArray[found];
         }
         resolve(userData);
+
+
+        const query = loginUserQuery();
+        pool.query(query,[phone,otp], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            resolve(results);
+        })
+
     })
 }
