@@ -26,11 +26,9 @@ export default function LoginPage(){
     );
     const dispatch = useDispatch();
 
-
-
     useEffect(()=>{
         if(Capacitor.isNativePlatform()){
-            NavigationBar.setColor({ color: '#f4f4f4' , darkButtons:false});
+            NavigationBar.setColor({ color: '#ffffff' , darkButtons:true});
             StatusBar.setBackgroundColor({ color: '#f57b2c' });
             StatusBar.setStyle({ style:Style.Dark });
         }
