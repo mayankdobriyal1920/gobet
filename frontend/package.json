@@ -1,10 +1,16 @@
 {
-  "name": "frontend",
+  "name": "getbet",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/ios": "^6.2.0",
+    "@capacitor/status-bar": "^6.0.2",
     "@ionic/react": "^7.0.0",
     "@ionic/react-router": "^7.0.0",
+    "@mauricewegner/capacitor-navigation-bar": "^2.0.3",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^12.6.3",

@@ -10,6 +10,7 @@ http://ionicframework.com/docs/theming/ */
   --theme-background-secondry-color: #ffffff;
   --theme-modal-color: #ffffff;
   --theme-logo-color: #f57b2c;
+  --theme-gradiant-color: linear-gradient(90deg, #f57b2c 0%, #ffb17f 100%);
   --theme-primary-button-color: #f57b2c;
   --theme-text-color: #000000;
   --theme-button-text-color: #ffffff;
