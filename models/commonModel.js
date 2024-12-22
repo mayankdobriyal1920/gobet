@@ -4,18 +4,6 @@ import {loginUserQuery} from "../queries/commonQuries.js";
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
     return new Promise(function(resolve, reject) {
-        let found = null;
-        let userData = {};
-        userDummyDataArray?.forEach((users,key)=>{
-            if(users.phone === phone){
-                found = key;
-            }
-        })
-        if(found !== null){
-            userData = userDummyDataArray[found];
-        }
-        resolve(userData);
-
         // const query = loginUserQuery(password);
         // pool.query(query, (error, results) => {
         //     if (error) {

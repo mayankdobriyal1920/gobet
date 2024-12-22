@@ -43,10 +43,19 @@
 
 .first_time_user_container_screen .welcome_screen_text_2_sec button.welcome_txt_se_button {
     padding: 25px 55px;
-    border-radius: 10px;
     margin: 10px 17px;
     color: #fff;
-    font-size: 20px;
+    font-size: .4rem;
+    letter-spacing: .04333rem;
+    border-radius: 1.06667rem;
     background: #bf4f2b;
-    box-shadow: 1px 1px 15px 1px #ffffff5e;
+}
+.first_time_user_container_screen .welcome_screen_text_2_sec .welcome_txt_se_2 {
+    font-size: .38rem;
+}
+
+.first_time_user_container_screen .welcome_screen_text_2_sec .welcome_txt_se_3 {
+    font-size: .32rem;
+    text-align: justify;
+    padding: .33rem;
 }

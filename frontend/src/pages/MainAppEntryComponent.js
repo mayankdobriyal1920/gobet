@@ -13,14 +13,12 @@ import { Route, Redirect } from 'react-router-dom';
 import { home, wallet, person } from 'ionicons/icons';
 import HomePage from "./HomePage";
 import siteSmallLogo from "../theme/img/get-bet-app-logo-small.png";
+import AccountPage from "./AccountPage";
 
 function Wallet() {
     return <h1 className="text-center text-xl font-bold">Wallet Page</h1>;
 }
 
-function Account() {
-    return <h1 className="text-center text-xl font-bold">Account Page</h1>;
-}
 
 export default function MainAppEntryComponent() {
     const [isFirstTimeEnterInApp,setIsFirstTimeEnterInApp] = useState(localStorage.getItem('isFirstTimeEnterInApp'));
@@ -41,19 +39,24 @@ export default function MainAppEntryComponent() {
                     </div>
                     <div className={"welcome_screen_text"}>
                         <div className={"welcome_txt"}>
-                            Welcome To The
+                            WELCOME TO THE
                         </div>
                         <div className={"welcome_txt2"}>
-                            Get Bet Platform
+                            GET BET PLATFORM
                         </div>
                     </div>
                     <hr></hr>
                     <div className={"welcome_screen_text_2_sec"}>
-                        <button onClick={closeFirstTimeScreen} className={"signup_button_main_form"}>
+                        <button onClick={closeFirstTimeScreen} className={"welcome_txt_se_button"}>
                             Play Your Bet With Us
                         </button>
                         <div className={"welcome_txt_se_2"}>
-                            Play securely play responsibly
+                            Play securely play responsibly.
+                        </div>
+                        <div className={"welcome_txt_se_3"}>
+                            At Get Bet, we provide a secure, exciting, and responsible betting experience. Your personal and financial information is safeguarded with top-tier encryption. Our platform ensures fair play, transparent odds, and smooth transactions.
+
+                            We emphasize responsible betting—set limits, stay in control, and take breaks when needed. If you feel your betting habits are becoming problematic, we offer tools to help you make informed decisions. With sub-admin support available, you can manage your account and monitor your bets with ease. Sign up today for a secure and responsible betting experience.
                         </div>
                     </div>
                 </div>
@@ -63,7 +66,7 @@ export default function MainAppEntryComponent() {
                         <IonRouterOutlet>
                             <Route path="/dashboard/home" component={HomePage} exact={true}/>
                             <Route path="/dashboard/wallet" component={Wallet} exact={true}/>
-                            <Route path="/dashboard/account" component={Account} exact={true}/>
+                            <Route path="/dashboard/account" component={AccountPage} exact={true}/>
                             <Redirect exact from="/dashboard" to="/dashboard/home" />
                             <Route render={()=><Redirect to={"/dashboard/home"}/>}/>
                         </IonRouterOutlet>

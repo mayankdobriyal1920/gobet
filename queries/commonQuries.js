@@ -3,13 +3,14 @@ export const loginUserQuery = () => {
         SELECT
             app_user.id,
             app_user.name,
-            app_user.profile_picture,
+            app_user.profile_url,
             app_user.role,
             app_user.phone_number,
+            app_user.wallet_balance,
             jsonb_build_object(
                     'id', sub_admin_users.id,
                     'name', sub_admin_users.name,
-                    'profile_picture', sub_admin_users.profile_picture,
+                    'profile_picture', sub_admin_users.profile_url,
                     'role', sub_admin_users.role,
                     'phone_number', sub_admin_users.phone_number
             ) AS sub_admin
