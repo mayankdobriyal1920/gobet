@@ -129,7 +129,7 @@ export default function LoginPage(){
                                 <input className={"form_input_section input"}
                                        onChange={(e) => onChangePhoneNumber(e.target.value)}
                                        value={phone}
-                                       placeholder={"Enter Phone Number..."} type={"text"} required={true}/>
+                                       placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                             </IonCol>
                         </IonRow>
                         <IonRow className={"form_second_label_input"}>
@@ -148,7 +148,7 @@ export default function LoginPage(){
                                 <input className={"form_input_section input"}
                                        value={otp}
                                        onChange={(e)=>setOtp(e.target.value)}
-                                       placeholder={"Enter OTP..."} type={"text"} required={true}/>
+                                       placeholder={"Enter OTP"} type={"text"} required={true}/>
                             </IonCol>
                             <IonCol size={3}>
                                 <button onClick={callFunctionToLoginUser} disabled={phone?.length !== 10} type={"button"}

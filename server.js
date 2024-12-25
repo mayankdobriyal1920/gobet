@@ -90,7 +90,7 @@ app.use((req, res, next) => {
         cookie: {
             expires: new Date(Date.now() + 31536000000),  // 1 year expiration
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: 'lax',
             secure: false,  // Ensure HTTPS for secure cookies
             maxAge: 31536000000  // 1 year max age
         }

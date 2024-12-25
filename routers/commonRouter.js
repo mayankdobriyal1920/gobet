@@ -57,11 +57,11 @@ commonRouter.post(
 commonRouter.post(
     '/actionToGetCurrentUserSessionDataApiCall',
     expressAsyncHandler(async (req, res) => {
-        console.log('req?.session',req?.session);
         // Check if the session exists and the user is logged in
         if (req?.session?.userSessionData?.id) {
             res.status(200).send({
                 success: true,
+                userData:req?.session?.userSessionData,
                 message: 'Session data retrieved successfully',
             });
         } else {
