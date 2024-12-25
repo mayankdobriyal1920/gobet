@@ -7,6 +7,8 @@ import commonRouter from './routers/commonRouter.js';
 import pgSession from 'connect-pg-simple';
 import pool from "./models/connection.js";
 import EventEmitter from 'events';
+import dotenv  from 'dotenv';
+dotenv.config();
 
 // Initialize Express app
 const app = express();
@@ -90,8 +92,8 @@ app.use((req, res, next) => {
         cookie: {
             expires: new Date(Date.now() + 31536000000),  // 1 year expiration
             httpOnly: true,
-            sameSite: 'lax',
-            secure: false,  // Ensure HTTPS for secure cookies
+            sameSite: process.env.NODE_ENV === 'PRODUCTION' ? 'none' :'lax',
+            secure: process.env.NODE_ENV === 'PRODUCTION',  // Ensure HTTPS for secure cookies
             maxAge: 31536000000  // 1 year max age
         }
     })(req,res,next) // Call the next middleware
