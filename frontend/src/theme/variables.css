@@ -92,13 +92,16 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-tint: #f5f6f9;
   --off-white-back-color: #F7F8FF;
 
+
   --text_color_L1: #1E2637;
   --text_color_L2: #768096;
   --text_color_L3: #B6BCC8;
   --text_color_L4: #FFF;
   --bg_color_L2: #FFFFFF;
+  --bg_color_L1: #F7F8FF;
   --main-color: #f57b2c;
-
+  --norm_red-color: #FB5B5B;
+  --norm_green-color: #18B660;
 }
 
 /*@media (prefers-color-scheme: dark) {*/
