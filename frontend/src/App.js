@@ -27,6 +27,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionToGetUserSessionData} from "./redux/CommonAction";
 import LoginPage from "./pages/LoginPage";
 import MainAppEntryComponent from "./pages/MainAppEntryComponent";
+import SignupPage from "./pages/SignupPage";
 
 setupIonicReact();
 
@@ -34,6 +35,7 @@ const PublicRoutes = () => {
   return (
       <IonReactRouter>
         <Route path="/login" exact={true} component={LoginPage} />
+        <Route path="/signup" exact={true} component={SignupPage} />
         <Redirect  exact from="/"  to="/login" />
         <Route render={() => <Redirect to="/login" />} />
       </IonReactRouter>

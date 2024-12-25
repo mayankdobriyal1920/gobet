@@ -7,8 +7,8 @@ import {
     USER_SIGNIN_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
-    //baseURL: `http://192.168.1.6:4000/api-call/common/`,
-    baseURL: `https://gobet.onrender.com/api-call/common/`,
+    baseURL: `http://192.168.1.6:4000/api-call/common/`,
+    //baseURL: `https://gobet.onrender.com/api-call/common/`,
     withCredentials:true
 })
 
@@ -40,6 +40,19 @@ export const actionToLoginUserAndSendOtp = (phone) => async (dispatch) => {
     // } catch (error) {
     //
     // }
+}
+
+export const actionToLogoutUserSession = (setUserLogoutLoading) => async (dispatch) => {
+    try {
+        api.post(`actionToLogoutUserSessionApiCall`, {}).then(() => {
+            if(setUserLogoutLoading){
+                setUserLogoutLoading(false);
+            }
+            dispatch({ type: USER_SIGNIN_SUCCESS, payload: {}});
+        })
+    } catch (error) {
+        console.log('error',error)
+    }
 }
 
 export const actionToVerifyLoginUserOtp = (phone,otp) => async (dispatch) => {

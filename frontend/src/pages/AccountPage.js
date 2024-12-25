@@ -1,10 +1,20 @@
-import React from "react";
-import {IonContent, IonPage} from "@ionic/react";
-import {useSelector} from "react-redux";
-import avatarImage from "../theme/avatar/avatar-3.png";
+import React, {useState} from "react";
+import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
+import {useDispatch, useSelector} from "react-redux";
+import {actionToLogoutUserSession} from "../redux/CommonAction";
 
 export default function AccountPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const [userLogoutLoading,setUserLogoutLoading] = useState(false);
+    const [userLogoutAlertConfirm,setUserLogoutAlertConfirm] = useState(false);
+    const dispatch = useDispatch();
+
+    const callFunctionToLogoutUser = ()=>{
+        setUserLogoutLoading(true);
+        setUserLogoutAlertConfirm(false);
+        dispatch(actionToLogoutUserSession(setUserLogoutLoading));
+    }
+
     return (
         <IonPage>
             <IonContent>
@@ -203,7 +213,7 @@ export default function AccountPage() {
                                     </div>
                                 </div>
                                 <div className="serviceCenter-wrap-header">
-                                    <button>
+                                    <button onClick={()=>setUserLogoutAlertConfirm(true)}>
                                         <svg className="svg-icon icon-logout" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 48 48" fill="none">
                                                 <path
@@ -220,6 +230,30 @@ export default function AccountPage() {
                         </div>
                     </div>
                 </div>
+
+                <IonAlert
+                    header="Are you sure?"
+                    subHeader="You want to logout from app?"
+                    isOpen={userLogoutAlertConfirm}
+                    buttons={[
+                        {
+                            text: 'Cancel',
+                            role: 'cancel',
+                            handler: () => {
+                                setUserLogoutAlertConfirm(false);
+                            },
+                        },
+                        {
+                            text: 'Logout',
+                            role: 'confirm',
+                            handler: () => {
+                                callFunctionToLogoutUser()
+                            },
+                        },
+                    ]}
+                    onDidDismiss={() => setUserLogoutAlertConfirm(false)}
+                />
+                <IonLoading isOpen={userLogoutLoading} message={"Logging out..."}/>
             </IonContent>
         </IonPage>
     )

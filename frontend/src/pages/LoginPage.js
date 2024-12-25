@@ -11,6 +11,7 @@ import {actionToVerifyLoginUserOtp} from "../redux/CommonAction";
 import {Capacitor} from "@capacitor/core";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
+import {useHistory} from "react-router";
 
 export default function LoginPage(){
     const [otp,setOtp] = useState('');
@@ -25,6 +26,7 @@ export default function LoginPage(){
         }
     );
     const dispatch = useDispatch();
+    const history = useHistory();
 
     useEffect(()=>{
         if(Capacitor.isNativePlatform()){
@@ -34,6 +36,9 @@ export default function LoginPage(){
         }
     },[])
 
+    const callFunctionToGoToSignupPage = ()=>{
+        history.replace('/signup');
+    }
     const callFunctionToValidateOtpAndLoginUser = ()=>{
         if(otp) {
             dispatch(actionToVerifyLoginUserOtp(phone, otp))
@@ -151,14 +156,22 @@ export default function LoginPage(){
                                 </button>
                             </IonCol>
                         </IonRow>
-                        <IonRow>
-                            <IonCol>
-                                <button onClick={callFunctionToValidateOtpAndLoginUser} type={"button"}
-                                        className={"signup_button_main_form"}>
-                                    Login
-                                </button>
-                            </IonCol>
-                        </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <button onClick={callFunctionToValidateOtpAndLoginUser} type={"button"}
+                                            className={"signup_button_main_form"}>
+                                        Login
+                                    </button>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <button onClick={callFunctionToGoToSignupPage} type={"button"}
+                                            className={"signup_button_main_form signup"}>
+                                        Signup
+                                    </button>
+                                </IonCol>
+                            </IonRow>
                         </form>
                     </div>
                 </div>

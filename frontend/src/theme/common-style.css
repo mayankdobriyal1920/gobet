@@ -445,3 +445,8 @@ body{
     width: .64rem;
     height: .64rem;
 }
+.signup_button_main_form.signup,.signup_button_main_form.login {
+    border: 1px solid var(--theme-primary-button-color);
+    background: none;
+    color: var(--theme-primary-button-color);
+}
