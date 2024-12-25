@@ -1,5 +1,5 @@
 .first_time_user_container_screen {
-    background: #db8341;
+    background: var(--theme-gradiant-color);
     width: 100%;
     height: 100%;
 }
