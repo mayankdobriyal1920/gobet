@@ -80,6 +80,7 @@ commonRouter.post(
         // Check if the session exists and the user is logged in
         const oldSessionId = req?.session?.id;
         deleteOldSessionFileFromSessionStore(oldSessionId).then(() => {
+            req?.session?.destroy();
             res.status(200).send({
                 success: true,
                 message: 'User logged out',

@@ -233,8 +233,9 @@ export default function AccountPage() {
 
                 <IonAlert
                     header="Are you sure?"
-                    subHeader="You want to logout from app?"
+                    message="You want to logout from app?"
                     isOpen={userLogoutAlertConfirm}
+                    className={"custom_site_alert_toast"}
                     buttons={[
                         {
                             text: 'Cancel',

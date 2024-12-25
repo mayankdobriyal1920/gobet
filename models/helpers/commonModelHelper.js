@@ -23,11 +23,11 @@ export const createNewSessionWithUserDataAndRole = (req, userData) => {
 export async function deleteOldSessionFileFromSessionStore(oldSessionId) {
     let condition = `sid = '${oldSessionId}'`;
     let tableName = "sessions";
-    await deleteCommonApiCall({condition, tableName, returnColumnName: 'sid'})
+    await deleteCommonApiCall({condition, tableName})
 }
 
-export function deleteCommonApiCall({condition, tableName, returnColumnName}) {
-    let deleteQuery = `DELETE FROM ${tableName} ${condition} ${returnColumnName ? returnColumnName : 'id'}`;
+export function deleteCommonApiCall({condition, tableName}) {
+    let deleteQuery = `DELETE FROM ${tableName} ${condition}`;
     pool.query(deleteQuery, (error) => {
         if (error) {
             console.log('error in inserting session',error)

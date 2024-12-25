@@ -12,13 +12,8 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Route, Redirect } from 'react-router-dom';
 import { home, wallet, person } from 'ionicons/icons';
 import HomePage from "./HomePage";
-import siteSmallLogo from "../theme/img/get-bet-app-logo-small.png";
 import AccountPage from "./AccountPage";
-import WalletPage from "./HomePage";
-
-function Wallet() {
-    return <h1 className="text-center text-xl font-bold">Wallet Page</h1>;
-}
+import WalletPage from "./WalletPage";
 
 
 export default function MainAppEntryComponent() {
