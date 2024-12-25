@@ -68,7 +68,7 @@ export default function SignupPage(){
     }
 
     const callFunctionToSignupUser = ()=>{
-        if(otp) {
+        if(phone.trim() !== '' && otp.trim() !== '' && passcode.trim() !== '') {
             dispatch(actionToSignupUser(phone, otp, passcode));
         }
     }
