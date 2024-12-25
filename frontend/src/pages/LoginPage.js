@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {
-    IonCol,
+    IonCol, IonContent,
     IonLoading,
     IonPage,
     IonRow
@@ -72,6 +72,7 @@ export default function LoginPage(){
 
     return (
         <IonPage>
+            <IonContent>
             <div className={"login_main_container_outer"}>
                 <div className={"login_main_container_inner"}>
                     {/*///////////// LOGO SLOGAN CONTAINER /////////////////////*/}
@@ -177,6 +178,7 @@ export default function LoginPage(){
                 </div>
             </div>
             <IonLoading isOpen={userAuthDetail?.loading} className={"loading_loader_spinner_container"} message={"Please Wait..."}/>
+         </IonContent>
         </IonPage>
     )
 }
