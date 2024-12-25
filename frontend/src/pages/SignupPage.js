@@ -7,18 +7,22 @@ import {
 } from "@ionic/react";
 import {countries as countriesList} from 'countries-list';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToVerifyLoginUserOtp} from "../redux/CommonAction";
+import {actionToSendOtp, actionToSignupUser, actionToVerifyLoginUserOtp} from "../redux/CommonAction";
 import {Capacitor} from "@capacitor/core";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import {useHistory} from "react-router";
+import {USER_GET_OTP_REQUEST_FAIL} from "../redux/CommonConstants";
 
 export default function SignupPage(){
     const [otp,setOtp] = useState('');
     const [passcode,setPasscode] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
+    const userOtpDetails = useSelector((state) => state.userOtpDetails);
     const [phone,setPhone] = useState('');
     const [countries, setCountries] = useState([]);
+    const [timer, setTimer] = useState(60);
+    const [isOtpExpired, setIsOtpExpired] = useState(true);
     const [selectedCountry, setSelectedCountry] = useState(
         {
             code: "IN",
@@ -37,6 +41,23 @@ export default function SignupPage(){
         }
     },[])
 
+    useEffect(()=>{
+        if (userOtpDetails.loading){
+            setIsOtpExpired(false);
+            const interval = setInterval(() => {
+                setTimer(prevTimer => {
+                    if (prevTimer <= 1) {
+                        clearInterval(interval);
+                        setIsOtpExpired(true); // OTP expired
+                        dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
+                        return 0;
+                    }
+                    return prevTimer - 1;
+                });
+            }, 1000);
+        }
+    },[userOtpDetails])
+
     const callFunctionToGoToLoginPage = ()=>{
         history.replace('/login');
     }
@@ -45,9 +66,22 @@ export default function SignupPage(){
             dispatch(actionToVerifyLoginUserOtp(phone, otp))
         }
     }
+
+    const callFunctionToSignupUser = ()=>{
+        if(otp) {
+            dispatch(actionToSignupUser(phone, otp, passcode));
+        }
+    }
+
     const callFunctionToLoginUser = ()=>{
         if(phone?.length === 10) {
             //dispatch(actionToLoginUserAndSendOtp(phone))
+        }
+    }
+
+    const callFunctionToSendOtp = () =>{
+        if(phone?.length === 10) {
+            dispatch(actionToSendOtp(phone))
         }
     }
 
@@ -152,12 +186,23 @@ export default function SignupPage(){
                                            placeholder={"Enter OTP"} type={"text"} required={true}/>
                                 </IonCol>
                                 <IonCol size={3}>
-                                    <button onClick={callFunctionToLoginUser} disabled={phone?.length !== 10} type={"button"}
+                                    <button onClick={callFunctionToSendOtp} disabled={phone?.length !== 10 || userOtpDetails?.loading} type={"button"}
                                             className={"otp_button_main_form"}>
                                         GET
                                     </button>
                                 </IonCol>
                             </IonRow>
+                            {!isOtpExpired
+                                ? <>
+                                    <IonRow>
+                                        <IonCol size={12}>
+                                            <p>Get new OTP in: {timer} seconds</p>
+                                        </IonCol>
+                                    </IonRow>
+                                </>
+                                :
+                                ''
+                            }
                             <IonRow className={"form_second_label_input"}>
                                 <div className={"login_form_label"}>
                                     <svg fill="#f57b2c" width="20px" height="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +234,7 @@ export default function SignupPage(){
                             </IonRow>
                             <IonRow>
                                 <IonCol>
-                                    <button onClick={callFunctionToValidateOtpAndLoginUser} type={"button"}
+                                    <button onClick={callFunctionToSignupUser} type={"button"}
                                             className={"signup_button_main_form"}>
                                         Signup
                                     </button>

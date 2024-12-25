@@ -1,4 +1,6 @@
 import {
+    USER_GET_OTP_REQUEST_FAIL,
+    USER_GET_OTP_REQUEST_SUCCESS,
     USER_SESSION_REQUEST, USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
@@ -27,6 +29,17 @@ export const userSessionReducer = (state = {}, action) => {
             return { loading: true };
         case USER_SESSION_SUCCESS:
             return { loading: false, success: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const userOtpReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_GET_OTP_REQUEST_SUCCESS:
+            return { loading: true };
+        case USER_GET_OTP_REQUEST_FAIL:
+            return { loading: false };
         default:
             return state;
     }

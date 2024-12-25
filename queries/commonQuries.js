@@ -21,3 +21,36 @@ export const loginUserQuery = () => {
           AND app_user.otp = $2;
     `;
 };
+
+export const CheckMobNumberAlreadyExistQuery = () => {
+    return `
+        SELECT
+            app_user.id,
+            app_user.name
+        FROM app_user
+        WHERE app_user.phone_number = $1;
+    `;
+};
+
+export const isPassCodeValidQuery = () => {
+    return `
+        SELECT
+            pass_code.id,
+            pass_code.user_id,
+            pass_code.code
+        FROM pass_code
+        WHERE pass_code.allot_to is null and pass_code.code = $1;
+    `;
+};
+
+export const signupQuery = () => {
+    return `INSERT INTO app_user(id,name,phone_number,profile_url,sub_admin,wallet_balance,role,created_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+};
+
+export const updatePassCodeQuery = () => {
+    return `
+        UPDATE pass_code set allot_to = $1
+        WHERE id = $2;
+    `;
+};
+

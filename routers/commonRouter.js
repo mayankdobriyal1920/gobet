@@ -1,10 +1,17 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import {actionToLoginUserAndSendOtpApiCall, actionToVerifyLoginUserOtpApiCall} from "../models/commonModel.js";
+import {
+    actionSignupApiCall,
+    actionToLoginUserAndSendOtpApiCall,
+    actionToSendOtpApiCall,
+    actionToVerifyLoginUserOtpApiCall, actionUpdatePassCodeApiCall, actionValidatePassCodeApiCall
+} from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
     deleteOldSessionFileFromSessionStore
 } from "../models/helpers/commonModelHelper.js";
+const otpFilePath = './data.json'; // Path to your JSON file
+import fs from 'fs';
 const commonRouter = express.Router();
 
 commonRouter.post(
@@ -21,6 +28,50 @@ commonRouter.post(
                     }
                     res.status(200).send(responseToSend);
                 }else{
+                    res.status(200).send(responseToSend);
+                }
+            }).catch(error => {
+            res.status(500).send(error);
+        })
+    })
+);
+
+commonRouter.post(
+    '/actionToSendOtpApiCall',
+    expressAsyncHandler(async (req, res) => {
+        let responseToSend = {
+            success:0,
+        }
+        const phone = req.body.phone;
+        actionToSendOtpApiCall(req.body)
+            .then(user => {
+                if(user?.id) {
+                    responseToSend = {
+                        success:0, message:'Mobile no already registered'
+                    }
+                    res.status(200).send(responseToSend);
+                }else{
+                    const otp = Math.floor(1000 + Math.random() * 9000);
+                    console.log(otp);
+                    // Check if the file exists
+                    if (fs.existsSync(otpFilePath)) {
+                        // Read the file if it exists
+                        const fileData = fs.readFileSync(otpFilePath, 'utf-8');
+                        let jsonData = {};
+                        jsonData = JSON.parse(fileData); // Parse the existing data
+                        // Add new data to the existing array or object
+                        jsonData[phone] = otp;
+                        // Write the updated data back to the file
+                        fs.writeFileSync(otpFilePath, JSON.stringify(jsonData, null, 2));
+                    } else {
+                        // If the file does not exist, create it with the new data
+                        const initialData = {}; // Initialize as an array
+                        initialData[phone] = otp;
+                        fs.writeFileSync(otpFilePath, JSON.stringify(initialData, null, 2));
+                    }
+                    responseToSend = {
+                        success:1,
+                    }
                     res.status(200).send(responseToSend);
                 }
             }).catch(error => {
@@ -51,6 +102,98 @@ commonRouter.post(
             }).catch(error => {
             res.status(500).send(error);
         })
+    })
+);
+
+commonRouter.post(
+    '/actionToSignupUserApiCall',
+    expressAsyncHandler(async (req, res) => {
+        let responseToSend = {
+            success:0,
+        }
+        const {phone,otp,passcode}= req.body;
+        if (fs.existsSync(otpFilePath)) {
+            // Read the file if it exists
+            const fileData = fs.readFileSync(otpFilePath, 'utf-8');
+            let jsonData = {};
+            jsonData = JSON.parse(fileData); // Parse the existing data
+            if (jsonData[phone] == otp){
+                actionToSendOtpApiCall(phone)
+                    .then(user => {
+                        if(user?.id) {
+                            responseToSend = {
+                                success:0, message:'Mobile no already registered'
+                            }
+                            res.status(200).send(responseToSend);
+                        }else{
+                            actionValidatePassCodeApiCall(passcode)
+                                .then(passCodeData => {
+                                    if(!passCodeData?.id) {
+                                        responseToSend = {
+                                            success:0, message:'Pass code is not valid'
+                                        }
+                                        res.status(200).send(responseToSend);
+                                    }else{
+                                        const passCodeId = passCodeData.id;
+                                        actionSignupApiCall({phone:phone, userId:passCodeData.user_id})
+                                            .then(savedUser => {
+                                                if(!savedUser?.id) {
+                                                    responseToSend = {
+                                                        success:0, message:'Something went wrong while saving data in user table'
+                                                    }
+                                                    res.status(200).send(responseToSend);
+                                                }else{
+                                                    const newUser = savedUser;
+                                                    const newUserId = newUser?.id;
+                                                    actionUpdatePassCodeApiCall({passCodeId: passCodeId, newUserId: newUserId})
+                                                        .then(updatedPassCode => {
+                                                            if(updatedPassCode?.status && updatedPassCode?.status === 'success') {
+                                                                /*responseToSend = {
+                                                                    success:1, message:'User Registered Successfully'
+                                                                }
+                                                                res.status(200).send(responseToSend);*/
+
+                                                                createNewSessionWithUserDataAndRole(req,user).then(()=>{
+                                                                    res.status(200).send({
+                                                                        success: 1,
+                                                                        userData:newUser,
+                                                                        message: 'Session data retrieved successfully',
+                                                                    });
+                                                                })
+
+                                                            }else{
+                                                                responseToSend = {
+                                                                    success:0, message:'User Registered but issue while updating pass code table'
+                                                                }
+                                                                res.status(200).send(responseToSend);
+                                                            }
+                                                        }).catch(error => {
+                                                        res.status(500).send(error);
+                                                    })
+                                                }
+                                            }).catch(error => {
+                                            res.status(500).send(error);
+                                        })
+                                    }
+                                }).catch(error => {
+                                res.status(500).send(error);
+                            })
+                        }
+                    }).catch(error => {
+                    res.status(500).send(error);
+                })
+            }else{
+                responseToSend = {
+                    success: 0, message: 'OTP is not correct'
+                }
+                res.status(200).send(responseToSend);
+            }
+        }else {
+            responseToSend = {
+                success: 0, message: 'OTP file not exist'
+            }
+            res.status(200).send(responseToSend);
+        }
     })
 );
 

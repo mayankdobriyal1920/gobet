@@ -1,5 +1,7 @@
 import Axios from 'axios';
 import {
+    USER_GET_OTP_REQUEST_SUCCESS,
+    USER_GET_OTP_REQUEST_FAIL,
     USER_SESSION_REQUEST,
     USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
@@ -40,6 +42,36 @@ export const actionToLoginUserAndSendOtp = (phone) => async (dispatch) => {
     //
     // }
 }
+
+export const actionToSendOtp = (phone) => async (dispatch) => {
+    try {
+        api.post(`actionToSendOtpApiCall`, {phone}).then(responseData => {
+            if(responseData?.data?.success){
+                dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS, payload: {}});
+            }else{
+                dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToSignupUser = (phone,otp,passcode) => async (dispatch) => {
+    //dispatch({type: USER_SIGNIN_REQUEST});
+    try {
+        api.post(`actionToSignupUserApiCall`, {phone,otp,passcode}).then(responseData => {
+            if(responseData?.data?.success){
+                dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
+            }else{
+                dispatch({type: USER_SIGNIN_FAIL, payload:'Auth Fail!',});
+            }
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 export const actionToLogoutUserSession = (setUserLogoutLoading) => async (dispatch) => {
     try {
