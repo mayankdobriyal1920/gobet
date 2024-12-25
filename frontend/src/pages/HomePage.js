@@ -89,8 +89,7 @@ export default function HomePage() {
                         Processing fee of 1% will be auto deduct when you enter in the game
                     </div>
                     <div className="foot">
-                        <div className="progress"
-                             style={{background:"var(--bg_color_L1)", height: "16px",borderRadius:"16px"}}>
+                        <div className="progress">
                             <div className="step">Eligible bet ₹7000</div>
                         </div>
                     </div>
