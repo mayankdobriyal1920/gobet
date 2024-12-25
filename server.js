@@ -21,34 +21,10 @@ const allowedOrigins = [
     'http://192.168.1.6:3000'
 ];
 
-// Configure CORS options
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.error('Blocked by CORS:', origin); // Log blocked origin
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true, // Enable cookies and other credentials
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'], // Allowed HTTP methods
-    allowedHeaders: [
-        'X-Requested-With',
-        'Content-Type',
-        'Authorization', // Add Authorization if tokens are used
-    ],
-    optionsSuccessStatus: 200, // Support for legacy browsers
-};
-
-// Use CORS middleware
-app.use(cors(corsOptions));
-
 // Middleware to parse the request body
 app.use(express.urlencoded({ extended: true, limit: '250mb' }));
 app.use(express.json({ limit: '250mb' }));
 const PgSessionStore = pgSession(session);
-
 
 ///////// ADDING SESSION POOL FOR USER SESSION /////////////////
 EventEmitter.defaultMaxListeners = 0;
@@ -58,7 +34,6 @@ const UserDataSessionPgStore = new PgSessionStore({
 });
 UserDataSessionPgStore.setMaxListeners(0);
 ///////// ADDING SESSION POOL FOR USER SESSION /////////////////
-
 
 //This is the middleware function which will be called before any routes get hit which are defined after this point, i.e. in your index.js
 app.use(function (req, res, next) {
@@ -99,7 +74,7 @@ app.use(cors({
     allowedHeaders: 'X-Requested-With, content-type, Accept' // Allowed headers
 }));
 
-app.set('trust proxy', 1)
+app.set('trust proxy', 1);
 app.use((req, res, next) => {
     // Check for an existing session
     if (req?.session && req?.session?.userSessionData) {

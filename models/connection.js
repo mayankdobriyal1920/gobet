@@ -4,7 +4,6 @@ const { Pool } = pkg;
 // Database configuration
 // const dbConfig = {
 //     host: 'dpg-ctjrh70gph6c738ildn0-a',
-//     //host: 'dpg-ctjrh70gph6c738ildn0-a',
 //     port: 5432,
 //     user: 'getbet', // PostgreSQL uses 'user' instead of 'username'
 //     password: 'RHaMdjZVq1vfoK5XxgGjVwAJGlGiZPZw',
