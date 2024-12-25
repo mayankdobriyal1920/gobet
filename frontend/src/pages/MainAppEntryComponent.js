@@ -14,6 +14,7 @@ import { home, wallet, person } from 'ionicons/icons';
 import HomePage from "./HomePage";
 import siteSmallLogo from "../theme/img/get-bet-app-logo-small.png";
 import AccountPage from "./AccountPage";
+import WalletPage from "./HomePage";
 
 function Wallet() {
     return <h1 className="text-center text-xl font-bold">Wallet Page</h1>;
@@ -65,7 +66,7 @@ export default function MainAppEntryComponent() {
                     <IonTabs>
                         <IonRouterOutlet>
                             <Route path="/dashboard/home" component={HomePage} exact={true}/>
-                            <Route path="/dashboard/wallet" component={Wallet} exact={true}/>
+                            <Route path="/dashboard/wallet" component={WalletPage} exact={true}/>
                             <Route path="/dashboard/account" component={AccountPage} exact={true}/>
                             <Redirect exact from="/dashboard" to="/dashboard/home" />
                             <Route render={()=><Redirect to={"/dashboard/home"}/>}/>
