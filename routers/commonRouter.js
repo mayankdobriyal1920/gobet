@@ -13,6 +13,7 @@ import {
 const otpFilePath = './data.json'; // Path to your JSON file
 import fs from 'fs';
 const commonRouter = express.Router();
+let storeUserPhoneOtbObj = {};
 
 commonRouter.post(
     '/actionToLoginUserAndSendOtpApiCall',
@@ -53,22 +54,7 @@ commonRouter.post(
                 }else{
                     const otp = Math.floor(1000 + Math.random() * 9000);
                     console.log(otp);
-                    // Check if the file exists
-                    if (fs.existsSync(otpFilePath)) {
-                        // Read the file if it exists
-                        const fileData = fs.readFileSync(otpFilePath, 'utf-8');
-                        let jsonData = {};
-                        jsonData = JSON.parse(fileData); // Parse the existing data
-                        // Add new data to the existing array or object
-                        jsonData[phone] = otp;
-                        // Write the updated data back to the file
-                        fs.writeFileSync(otpFilePath, JSON.stringify(jsonData, null, 2));
-                    } else {
-                        // If the file does not exist, create it with the new data
-                        const initialData = {}; // Initialize as an array
-                        initialData[phone] = otp;
-                        fs.writeFileSync(otpFilePath, JSON.stringify(initialData, null, 2));
-                    }
+                    storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {
                         success:1,
                     }
@@ -112,12 +98,7 @@ commonRouter.post(
             success:0,
         }
         const {phone,otp,passcode}= req.body;
-        if (fs.existsSync(otpFilePath)) {
-            // Read the file if it exists
-            const fileData = fs.readFileSync(otpFilePath, 'utf-8');
-            let jsonData = {};
-            jsonData = JSON.parse(fileData); // Parse the existing data
-            if (jsonData[phone] == otp){
+            if (storeUserPhoneOtbObj[phone] == otp){
                 actionToSendOtpApiCall(phone)
                     .then(user => {
                         if(user?.id) {
@@ -188,12 +169,7 @@ commonRouter.post(
                 }
                 res.status(200).send(responseToSend);
             }
-        }else {
-            responseToSend = {
-                success: 0, message: 'OTP file not exist'
-            }
-            res.status(200).send(responseToSend);
-        }
+
     })
 );
 
