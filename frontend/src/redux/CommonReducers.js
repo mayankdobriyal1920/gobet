@@ -5,7 +5,7 @@ import {
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
     USER_SIGNIN_SUCCESS,
-    USER_SIGNOUT
+    USER_SIGNOUT, USER_SIGNUP_ERROR
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -40,6 +40,15 @@ export const userOtpReducer = (state = {}, action) => {
             return { loading: true };
         case USER_GET_OTP_REQUEST_FAIL:
             return { loading: false };
+        default:
+            return state;
+    }
+};
+
+export const signupErrorReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_SIGNUP_ERROR:
+            return { error: action.payload.error,  message: action.payload.message};
         default:
             return state;
     }

@@ -48,7 +48,9 @@ commonRouter.post(
             .then(user => {
                 if(user?.id) {
                     responseToSend = {
-                        success:0, message:'Mobile no already registered'
+                        success:0,
+                        error:'phone',
+                        message:'Mobile no already registered'
                     }
                     res.status(200).send(responseToSend);
                 }else{
@@ -103,7 +105,9 @@ commonRouter.post(
                     .then(user => {
                         if(user?.id) {
                             responseToSend = {
-                                success:0, message:'Mobile no already registered'
+                                success:0,
+                                error:'phone',
+                                message:'Mobile no already registered'
                             }
                             res.status(200).send(responseToSend);
                         }else{
@@ -111,7 +115,9 @@ commonRouter.post(
                                 .then(passCodeData => {
                                     if(!passCodeData?.id) {
                                         responseToSend = {
-                                            success:0, message:'Pass code is not valid'
+                                            success:0,
+                                            error:'passcode',
+                                            message:'Pass code is not valid'
                                         }
                                         res.status(200).send(responseToSend);
                                     }else{
@@ -120,7 +126,9 @@ commonRouter.post(
                                             .then(savedUser => {
                                                 if(!savedUser?.id) {
                                                     responseToSend = {
-                                                        success:0, message:'Something went wrong while saving data in user table'
+                                                        success:0,
+                                                        error:'passcode',
+                                                        message:'Something went wrong while saving data in user table'
                                                     }
                                                     res.status(200).send(responseToSend);
                                                 }else{
@@ -144,7 +152,9 @@ commonRouter.post(
 
                                                             }else{
                                                                 responseToSend = {
-                                                                    success:0, message:'User Registered but issue while updating pass code table'
+                                                                    success:0,
+                                                                    error:'passcode',
+                                                                    message:'User Registered but issue while updating pass code table'
                                                                 }
                                                                 res.status(200).send(responseToSend);
                                                             }
@@ -165,7 +175,9 @@ commonRouter.post(
                 })
             }else{
                 responseToSend = {
-                    success: 0, message: 'OTP is not correct'
+                    success: 0,
+                    error:'otp',
+                    message: 'OTP is not correct'
                 }
                 res.status(200).send(responseToSend);
             }

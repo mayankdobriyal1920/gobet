@@ -19,10 +19,20 @@ export default function SignupPage(){
     const [passcode,setPasscode] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
     const userOtpDetails = useSelector((state) => state.userOtpDetails);
+    const signupFormError = useSelector((state) => state.signupFormError);
     const [phone,setPhone] = useState('');
     const [countries, setCountries] = useState([]);
     const [timer, setTimer] = useState(60);
     const [isOtpExpired, setIsOtpExpired] = useState(true);
+    const [phoneError,setPhoneError] = useState(false);
+    const [phoneErrorMessage,setPhoneErrorMessage] = useState('');
+
+    const [otpError,setOtpError] = useState(false);
+    const [otpErrorMessage,setOtpErrorMessage] = useState('');
+
+    const [passCodeError,setPassCodeError] = useState(false);
+    const [passCodeErrorMessage,setPassCodeErrorMessage] = useState('');
+
     const [selectedCountry, setSelectedCountry] = useState(
         {
             code: "IN",
@@ -58,6 +68,24 @@ export default function SignupPage(){
         }
     },[userOtpDetails])
 
+
+    useEffect(()=>{
+        if (signupFormError?.error && signupFormError?.message){
+            if (signupFormError?.error === 'phone'){
+                setPhoneError(true);
+                setPhoneErrorMessage(signupFormError?.message);
+            }
+            if (signupFormError?.error === 'otp'){
+                setOtpError(true);
+                setOtpErrorMessage(signupFormError?.message);
+            }
+            if (signupFormError?.error === 'passcode'){
+                setPassCodeError(true);
+                setPassCodeErrorMessage(signupFormError?.message);
+            }
+        }
+    },[signupFormError])
+
     const callFunctionToGoToLoginPage = ()=>{
         history.replace('/login');
     }
@@ -68,7 +96,8 @@ export default function SignupPage(){
     }
 
     const callFunctionToSignupUser = ()=>{
-        if(phone.trim() !== '' && otp.trim() !== '' && passcode.trim() !== '') {
+        const isValidate = validateFields('signup');
+        if (isValidate){
             dispatch(actionToSignupUser(phone, otp, passcode));
         }
     }
@@ -80,9 +109,49 @@ export default function SignupPage(){
     }
 
     const callFunctionToSendOtp = () =>{
-        if(phone?.length === 10) {
-            dispatch(actionToSendOtp(phone))
+        //if(phone?.length === 10) {
+            const isValidate = validateFields('get otp');
+            if (isValidate){
+                dispatch(actionToSendOtp(phone))
+            }
+        //}
+    }
+
+    /**
+     * This function is used to validate the form for get otp and signup actions
+     * @param action
+     * @returns {boolean}
+     */
+    const validateFields = (action) =>{
+        let isFormValid = true;
+        setPhoneError(false);
+        setOtpError(false);
+        setPassCodeError(false);
+        setPhoneErrorMessage('');
+        setOtpErrorMessage('');
+        setPassCodeErrorMessage('');
+        if (phone.trim() === '') {
+            isFormValid = false;
+            setPhoneErrorMessage('Phone number is required');
+            setPhoneError(true);
+        } else if (!/^\d{10}$/.test(phone)) {
+            isFormValid = false;
+            setPhoneErrorMessage('Phone number must be 10 digits');
+            setPhoneError(true);
         }
+        if (action === 'signup'){
+            if (otp.trim() === ''){
+                isFormValid = false;
+                setOtpErrorMessage('OTP is required');
+                setOtpError(true);
+            }
+            if (passcode.trim() === ''){
+                isFormValid = false;
+                setPassCodeErrorMessage('OTP is required');
+                setPassCodeError(true);
+            }
+        }
+        return isFormValid;
     }
 
     useEffect(() => {
@@ -149,6 +218,7 @@ export default function SignupPage(){
                                     Phone Number
                                 </div>
                             </IonRow>
+
                             <IonRow>
                                 <IonCol size={3}>
                                     <select className={"form_input_section select"} value={selectedCountry.mobileCode}
@@ -167,6 +237,7 @@ export default function SignupPage(){
                                            placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                                 </IonCol>
                             </IonRow>
+                            {phoneError && <p className="error">{phoneErrorMessage}</p>}
                             <IonRow className={"form_second_label_input"}>
                                 <div className={"login_form_label"}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
@@ -192,6 +263,7 @@ export default function SignupPage(){
                                     </button>
                                 </IonCol>
                             </IonRow>
+                            {otpError && <p className="error">{otpErrorMessage}</p>}
                             {!isOtpExpired
                                 ? <>
                                     <IonRow>
@@ -232,6 +304,7 @@ export default function SignupPage(){
                                            placeholder={"Enter pass code"} type={"text"} required={true}/>
                                 </IonCol>
                             </IonRow>
+                            {passCodeError && <p className="error">{passCodeErrorMessage}</p>}
                             <IonRow>
                                 <IonCol>
                                     <button onClick={callFunctionToSignupUser} type={"button"}
