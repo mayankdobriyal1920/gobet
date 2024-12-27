@@ -69,22 +69,69 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToSendOtpForLoginApiCall',
+    expressAsyncHandler(async (req, res) => {
+        let responseToSend = {
+            success:0,
+        }
+        const phone = req.body.phone;
+        actionToSendOtpApiCall(req.body)
+            .then(user => {
+                if(!user?.id) {
+                    responseToSend = {
+                        success:0,
+                        error:'phone',
+                        message:'Mobile not registered'
+                    }
+                    res.status(200).send(responseToSend);
+                }else{
+                    const otp = Math.floor(1000 + Math.random() * 9000);
+                    console.log(otp);
+                    storeUserPhoneOtbObj[phone] = otp;
+                    responseToSend = {
+                        success:1,
+                    }
+                    res.status(200).send(responseToSend);
+                }
+            }).catch(error => {
+            res.status(500).send(error);
+        })
+    })
+);
+
+commonRouter.post(
     '/actionToVerifyLoginUserOtpApiCall',
     expressAsyncHandler(async (req, res) => {
         let responseToSend = {
             success:0,
         }
-        actionToVerifyLoginUserOtpApiCall(req.body)
+        const otp = req.body.otp;
+        const phone = req.body.phone;
+        actionToVerifyLoginUserOtpApiCall(req.body.phone)
             .then(user => {
                 if(user?.id) {
-                    createNewSessionWithUserDataAndRole(req,user).then(()=>{
-                        res.status(200).send({
-                            success: 1,
-                            userData:user,
-                            message: 'Session data retrieved successfully',
-                        });
-                    })
+                    if (storeUserPhoneOtbObj[phone] == otp) {
+                        createNewSessionWithUserDataAndRole(req, user).then(() => {
+                            res.status(200).send({
+                                success: 1,
+                                userData: user,
+                                message: 'Session data retrieved successfully',
+                            });
+                        })
                 }else {
+                        responseToSend = {
+                            success: 0,
+                            error:'otp',
+                            message: 'OTP is not correct'
+                        }
+                        res.status(200).send(responseToSend);
+                    }
+                }else {
+                    responseToSend = {
+                        success:0,
+                        error:'phone',
+                        message:'Mobile not registered'
+                    }
                     res.status(200).send(responseToSend);
                 }
             }).catch(error => {

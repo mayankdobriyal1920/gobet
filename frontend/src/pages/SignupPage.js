@@ -19,7 +19,7 @@ export default function SignupPage(){
     const [passcode,setPasscode] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
     const userOtpDetails = useSelector((state) => state.userOtpDetails);
-    const signupFormError = useSelector((state) => state.signupFormError);
+    const signupFormError = useSelector((state) => state.signupSigninFormError);
     const [phone,setPhone] = useState('');
     const [countries, setCountries] = useState([]);
     const [timer, setTimer] = useState(60);

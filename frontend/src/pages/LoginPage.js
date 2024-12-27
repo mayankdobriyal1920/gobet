@@ -7,7 +7,7 @@ import {
 } from "@ionic/react";
 import {countries as countriesList} from 'countries-list';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToVerifyLoginUserOtp} from "../redux/CommonAction";
+import {actionToSendOtpForLogin, actionToVerifyLoginUserOtp} from "../redux/CommonAction";
 import {Capacitor} from "@capacitor/core";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
@@ -16,8 +16,14 @@ import {useHistory} from "react-router";
 export default function LoginPage(){
     const [otp,setOtp] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
+    const loginFormError = useSelector((state) => state.signupSigninFormError);
     const [phone,setPhone] = useState('');
     const [countries, setCountries] = useState([]);
+    const [phoneError,setPhoneError] = useState(false);
+    const [phoneErrorMessage,setPhoneErrorMessage] = useState('');
+
+    const [otpError,setOtpError] = useState(false);
+    const [otpErrorMessage,setOtpErrorMessage] = useState('');
     const [selectedCountry, setSelectedCountry] = useState(
         {
             code: "IN",
@@ -40,14 +46,59 @@ export default function LoginPage(){
         history.replace('/signup');
     }
     const callFunctionToValidateOtpAndLoginUser = ()=>{
-        if(otp) {
+        const isValidate = validateFields('login');
+        if(isValidate) {
             dispatch(actionToVerifyLoginUserOtp(phone, otp))
         }
     }
     const callFunctionToLoginUser = ()=>{
-        if(phone?.length === 10) {
-            //dispatch(actionToLoginUserAndSendOtp(phone))
+        const isValidate = validateFields('get otp');
+        if (isValidate){
+            dispatch(actionToSendOtpForLogin(phone))
         }
+    }
+
+    useEffect(()=>{
+        if (loginFormError?.error && loginFormError?.message){
+            if (loginFormError?.error === 'phone'){
+                setPhoneError(true);
+                setPhoneErrorMessage(loginFormError?.message);
+            }
+            if (loginFormError?.error === 'otp'){
+                setOtpError(true);
+                setOtpErrorMessage(loginFormError?.message);
+            }
+        }
+    },[loginFormError])
+
+    /**
+     * This function is used to validate the form for get otp and signup actions
+     * @param action
+     * @returns {boolean}
+     */
+    const validateFields = (action) =>{
+        let isFormValid = true;
+        setPhoneError(false);
+        setOtpError(false);
+        setPhoneErrorMessage('');
+        setOtpErrorMessage('');
+        if (phone.trim() === '') {
+            isFormValid = false;
+            setPhoneErrorMessage('Phone number is required');
+            setPhoneError(true);
+        } else if (!/^\d{10}$/.test(phone)) {
+            isFormValid = false;
+            setPhoneErrorMessage('Phone number must be 10 digits');
+            setPhoneError(true);
+        }
+        if (action === 'login'){
+            if (otp.trim() === ''){
+                isFormValid = false;
+                setOtpErrorMessage('OTP is required');
+                setOtpError(true);
+            }
+        }
+        return isFormValid;
     }
 
     useEffect(() => {
@@ -132,6 +183,7 @@ export default function LoginPage(){
                                        placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                             </IonCol>
                         </IonRow>
+                            {phoneError && <p className="error">{phoneErrorMessage}</p>}
                         <IonRow className={"form_second_label_input"}>
                             <div className={"login_form_label"}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
@@ -151,12 +203,13 @@ export default function LoginPage(){
                                        placeholder={"Enter OTP"} type={"text"} required={true}/>
                             </IonCol>
                             <IonCol size={3}>
-                                <button onClick={callFunctionToLoginUser} disabled={phone?.length !== 10} type={"button"}
+                                <button onClick={callFunctionToLoginUser} disabled={phone?.trim().length !== 10} type={"button"}
                                         className={"otp_button_main_form"}>
                                     GET
                                 </button>
                             </IonCol>
                         </IonRow>
+                            {otpError && <p className="error">{otpErrorMessage}</p>}
                             <IonRow>
                                 <IonCol>
                                     <button onClick={callFunctionToValidateOtpAndLoginUser} type={"button"}

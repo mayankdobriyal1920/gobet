@@ -6,7 +6,7 @@ import {
     USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
-    USER_SIGNIN_SUCCESS, USER_SIGNUP_ERROR
+    USER_SIGNIN_SUCCESS, USER_SIGNUP_SIGNIN_ERROR
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -50,7 +50,22 @@ export const actionToSendOtp = (phone) => async (dispatch) => {
                 dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS, payload: {}});
             }else{
                 dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
-                dispatch({ type: USER_SIGNUP_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
+                dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToSendOtpForLogin = (phone) => async (dispatch) => {
+    try {
+        api.post(`actionToSendOtpForLoginApiCall`, {phone}).then(responseData => {
+            if(responseData?.data?.success){
+                dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS, payload: {}});
+            }else{
+                dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
+                dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
             }
         })
     } catch (error) {
@@ -65,7 +80,7 @@ export const actionToSignupUser = (phone,otp,passcode) => async (dispatch) => {
             if(responseData?.data?.success){
                 dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
             }else{
-                dispatch({ type: USER_SIGNUP_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
+                dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
                 dispatch({type: USER_SIGNIN_FAIL, payload:'Auth Fail!',});
             }
         })
@@ -96,6 +111,7 @@ export const actionToVerifyLoginUserOtp = (phone,otp) => async (dispatch) => {
                 dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
             }else{
                 dispatch({type: USER_SIGNIN_FAIL, payload:'Auth Fail!',});
+                dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
             }
         })
     } catch (error) {

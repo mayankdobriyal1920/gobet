@@ -103,11 +103,11 @@ export const actionUpdatePassCodeApiCall = (body) => {
 }
 
 export const actionToVerifyLoginUserOtpApiCall = (body) => {
-    const {phone,otp} = body;
+    const phone = body;
     return new Promise(function(resolve, reject) {
         let userData = {};
         const query = loginUserQuery();
-        pool.query(query,[phone,otp], (error, results) => {
+        pool.query(query,[phone], (error, results) => {
             if (error) {
                 reject(error)
             }

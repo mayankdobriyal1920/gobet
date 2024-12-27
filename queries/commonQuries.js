@@ -17,8 +17,7 @@ export const loginUserQuery = () => {
         FROM app_user
                  LEFT JOIN app_user AS sub_admin_users
                            ON sub_admin_users.id = app_user.sub_admin
-        WHERE app_user.phone_number = $1
-          AND app_user.otp = $2;
+        WHERE app_user.phone_number = $1;
     `;
 };
 
