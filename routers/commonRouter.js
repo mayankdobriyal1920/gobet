@@ -1,10 +1,14 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import {
+    actionGetUserByIdApiCall,
     actionSignupApiCall,
     actionToLoginUserAndSendOtpApiCall,
     actionToSendOtpApiCall,
-    actionToVerifyLoginUserOtpApiCall, actionUpdatePassCodeApiCall, actionValidatePassCodeApiCall
+    actionToVerifyLoginUserOtpApiCall,
+    actionUpdateAvatarApiCall,
+    actionUpdatePassCodeApiCall,
+    actionValidatePassCodeApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -264,6 +268,33 @@ commonRouter.post(
                 message: 'User logged out',
             });
         });
+    })
+);
+
+commonRouter.post(
+    '/actionUpdateAvatarApiCall',
+    expressAsyncHandler(async (req, res) => {
+        let responseToSend = {
+            success:0,
+        }
+        const userId = req.body.userId;
+        actionUpdateAvatarApiCall(req.body)
+            .then(responseData => {
+                if(responseData?.status && responseData?.status === 'success') {
+                    actionGetUserByIdApiCall(userId)
+                        .then(user => {
+                            res.status(200).send({
+                                success: 1,
+                                userData: user,
+                                message: 'Avatar updated successfully',
+                            });
+                        }).catch(error => {
+                        res.status(500).send(error);
+                    })
+                }
+            }).catch(error => {
+            res.status(500).send(error);
+        })
     })
 );
 

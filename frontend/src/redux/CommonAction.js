@@ -6,7 +6,7 @@ import {
     USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
-    USER_SIGNIN_SUCCESS, USER_SIGNUP_SIGNIN_ERROR
+    USER_SIGNIN_SUCCESS, USER_SIGNUP_SIGNIN_ERROR, CHANGE_USER_AVATAR_MODAL
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -122,5 +122,22 @@ export const actionToVerifyLoginUserOtp = (phone,otp) => async (dispatch) => {
                     ? error.response.data.message
                     : error.message,
         });
+    }
+}
+
+export const actionOpenCloseChangeAvatarModal = (action) => async (dispatch) => {
+    dispatch({type: CHANGE_USER_AVATAR_MODAL, payload: {open: action}});
+}
+
+export const actionUpdateUserAvatar = (userId, avatar) => async (dispatch) => {
+    dispatch({type: CHANGE_USER_AVATAR_MODAL, payload: {open: false}});
+    try {
+        api.post(`actionUpdateAvatarApiCall`, {userId,avatar}).then(responseData => {
+            if(responseData?.data?.success){
+                dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
+            }
+        })
+    } catch (error) {
+        console.log(error);
     }
 }

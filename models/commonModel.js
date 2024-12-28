@@ -1,10 +1,10 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    CheckMobNumberAlreadyExistQuery,
+    CheckMobNumberAlreadyExistQuery, getUserByIdQuery,
     isPassCodeValidQuery,
     loginUserQuery,
-    signupQuery, updatePassCodeQuery
+    signupQuery, updatePassCodeQuery, updateUserAvatarQuery
 } from "../queries/commonQuries.js";
 
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
@@ -108,6 +108,47 @@ export const actionToVerifyLoginUserOtpApiCall = (body) => {
         let userData = {};
         const query = loginUserQuery();
         pool.query(query,[phone], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                userData = results?.rows[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionUpdateAvatarApiCall = (body) => {
+    const {userId, avatar} = body;
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const query = updateUserAvatarQuery();
+        pool.query(query,[avatar, userId], (error, results) => {
+            if (error) {
+                console.log(error);
+                reject(error)
+            }
+            let responseToSend = {
+                status:'failed'
+            }
+            if(results){
+                responseToSend = {
+                    status:'success'
+                }
+            }
+            resolve(responseToSend);
+        })
+    })
+}
+
+
+export const actionGetUserByIdApiCall = (body) => {
+    const userId = body;
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const query = getUserByIdQuery();
+        pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
             }

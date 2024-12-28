@@ -1,4 +1,5 @@
 import {
+    CHANGE_USER_AVATAR_MODAL,
     USER_GET_OTP_REQUEST_FAIL,
     USER_GET_OTP_REQUEST_SUCCESS,
     USER_SESSION_REQUEST, USER_SESSION_SUCCESS,
@@ -49,6 +50,15 @@ export const signupSigninFormError = (state = {}, action) => {
     switch (action.type) {
         case USER_SIGNUP_SIGNIN_ERROR:
             return { error: action.payload.error,  message: action.payload.message};
+        default:
+            return state;
+    }
+};
+
+export const changeUserAvatarModal = (state = {}, action) => {
+    switch (action.type) {
+        case CHANGE_USER_AVATAR_MODAL:
+            return { open: action.payload.open};
         default:
             return state;
     }
