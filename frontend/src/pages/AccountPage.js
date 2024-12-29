@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
-import {actionOpenCloseChangeAvatarModal, actionToLogoutUserSession} from "../redux/CommonAction";
+import {actionToLogoutUserSession} from "../redux/CommonAction";
 import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 
 export default function AccountPage() {
@@ -16,10 +16,6 @@ export default function AccountPage() {
         dispatch(actionToLogoutUserSession(setUserLogoutLoading));
     }
 
-    const openChangeAvatarModal = () =>{
-        dispatch(actionOpenCloseChangeAvatarModal(true));
-    }
-
     return (
         <>
         <IonPage>
@@ -29,8 +25,7 @@ export default function AccountPage() {
                         <div className={"userInfo__container-content"}>
                             <div className={"profile_account_main_page_header_wrapper"}>
                                 <div className={"profile_account_container-content__avatar"}>
-                                    <img alt={"userInfo"} onClick={()=>openChangeAvatarModal()} src={`assets/avatar/${userInfo?.profile_url}.png`}
-                                         className="userAvatar"/>
+                                    <UserAvatarModal/>
                                 </div>
                             </div>
                         </div>
@@ -263,7 +258,6 @@ export default function AccountPage() {
                 <IonLoading isOpen={userLogoutLoading} message={"Logging out..."}/>
             </IonContent>
         </IonPage>
-            <UserAvatarModal/>
         </>
     )
 }

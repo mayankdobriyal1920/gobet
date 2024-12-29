@@ -130,7 +130,7 @@ export const actionOpenCloseChangeAvatarModal = (action) => async (dispatch) => 
 }
 
 export const actionUpdateUserAvatar = (userId, avatar) => async (dispatch) => {
-    dispatch({type: CHANGE_USER_AVATAR_MODAL, payload: {open: false}});
+    //dispatch({type: CHANGE_USER_AVATAR_MODAL, payload: {open: false}});
     try {
         api.post(`actionUpdateAvatarApiCall`, {userId,avatar}).then(responseData => {
             if(responseData?.data?.success){
