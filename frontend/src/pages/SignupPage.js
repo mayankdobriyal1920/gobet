@@ -49,6 +49,18 @@ export default function SignupPage(){
             StatusBar.setBackgroundColor({ color: '#f57b2c' });
             StatusBar.setStyle({ style:Style.Dark });
         }
+        setPhoneError(false);
+        setPassCodeErrorMessage('');
+        setOtpErrorMessage('');
+        setOtpError(false);
+        // Convert the countries object into an array
+        const countriesArray = Object.entries(countriesList).map(([code, details]) => ({
+            code,
+            name: details.name,
+            mobileCode: details.phone[0],
+        }));
+
+        setCountries(countriesArray);
     },[])
 
     useEffect(()=>{
@@ -102,11 +114,6 @@ export default function SignupPage(){
         }
     }
 
-    const callFunctionToLoginUser = ()=>{
-        if(phone?.length === 10) {
-            //dispatch(actionToLoginUserAndSendOtp(phone))
-        }
-    }
 
     const callFunctionToSendOtp = () =>{
         //if(phone?.length === 10) {
@@ -153,17 +160,6 @@ export default function SignupPage(){
         }
         return isFormValid;
     }
-
-    useEffect(() => {
-        // Convert the countries object into an array
-        const countriesArray = Object.entries(countriesList).map(([code, details]) => ({
-            code,
-            name: details.name,
-            mobileCode: details.phone[0],
-        }));
-
-        setCountries(countriesArray);
-    }, []);
 
     const onChangePhoneNumber = (value) => {
         if(value?.length <= 10 && !isNaN(value)) {
@@ -237,7 +233,7 @@ export default function SignupPage(){
                                            placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                                 </IonCol>
                             </IonRow>
-                            {phoneError && <p className="error">{phoneErrorMessage}</p>}
+                            {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
                             <IonRow className={"form_second_label_input"}>
                                 <div className={"login_form_label"}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
@@ -263,7 +259,7 @@ export default function SignupPage(){
                                     </button>
                                 </IonCol>
                             </IonRow>
-                            {otpError && <p className="error">{otpErrorMessage}</p>}
+                            {otpError && <p className="error fontsize2">{otpErrorMessage}</p>}
                             {!isOtpExpired
                                 ? <>
                                     <IonRow>
@@ -304,7 +300,7 @@ export default function SignupPage(){
                                            placeholder={"Enter pass code"} type={"text"} required={true}/>
                                 </IonCol>
                             </IonRow>
-                            {passCodeError && <p className="error">{passCodeErrorMessage}</p>}
+                            {passCodeError && <p className="error fontsize2">{passCodeErrorMessage}</p>}
                             <IonRow>
                                 <IonCol>
                                     <button onClick={callFunctionToSignupUser} type={"button"}

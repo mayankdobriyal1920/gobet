@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {IonContent, IonPage} from "@ionic/react";
 import {useSelector} from "react-redux";
 import siteSmallIcon from "../theme/img/site-logo-small-white.png";
@@ -6,9 +6,19 @@ import aviatorGame from "../theme/img/aviator.png";
 import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import "./Home.css";
+import {Capacitor} from "@capacitor/core";
+import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
+import {StatusBar, Style} from "@capacitor/status-bar";
 
 export default function HomePage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    useEffect(()=>{
+        if(Capacitor.isNativePlatform()){
+            NavigationBar.setColor({ color: '#ffffff' , darkButtons:true});
+            StatusBar.setBackgroundColor({ color: '#f57b2c' });
+            StatusBar.setStyle({ style:Style.Dark });
+        }
+    },[])
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonContent>

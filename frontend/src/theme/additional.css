@@ -87,16 +87,7 @@ ion-content{
 .theme_bg{
     --background: var(--theme-background-color)!important;
 }
-.main_form_container_section p {
-    color: var(--theme-text-color);
-    font-size: var(--theme-text-main-size);
-}
 
-.main_form_container_section a {
-    color: var(--theme-logo-color);
-    font-weight: 600;
-    font-size: var(--theme-text-small-size);
-}
 .logo_section_welcome_top {
     display: flex;
     width: 100%;

@@ -71,7 +71,7 @@ const App = () => {
                  {userInfo?.id ? <AppEnterMainPage/> : <PublicRoutes/>}
                 </React.Fragment>:''
             }
-            <IonLoading isOpen={userSession?.loading} message={"Loading..."}/>
+            <IonLoading className={"loading_loader_spinner_container"} isOpen={userSession?.loading} message={"Loading..."}/>
         </IonApp>
     )
 }

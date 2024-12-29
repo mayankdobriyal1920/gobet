@@ -43,6 +43,17 @@ export default function LoginPage(){
             StatusBar.setBackgroundColor({ color: '#f57b2c' });
             StatusBar.setStyle({ style:Style.Dark });
         }
+        setPhoneError(false);
+        setOtpErrorMessage('');
+        setOtpError(false);
+        // Convert the countries object into an array
+        const countriesArray = Object.entries(countriesList).map(([code, details]) => ({
+            code,
+            name: details.name,
+            mobileCode: details.phone[0],
+        }));
+
+        setCountries(countriesArray);
     },[])
 
     const callFunctionToGoToSignupPage = ()=>{
@@ -121,16 +132,6 @@ export default function LoginPage(){
         return isFormValid;
     }
 
-    useEffect(() => {
-        // Convert the countries object into an array
-        const countriesArray = Object.entries(countriesList).map(([code, details]) => ({
-            code,
-            name: details.name,
-            mobileCode: details.phone[0],
-        }));
-
-        setCountries(countriesArray);
-    }, []);
 
     const onChangePhoneNumber = (value) => {
         if(value?.length <= 10 && !isNaN(value)) {
@@ -203,7 +204,7 @@ export default function LoginPage(){
                                        placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                             </IonCol>
                         </IonRow>
-                            {phoneError && <p className="error">{phoneErrorMessage}</p>}
+                            {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
                         <IonRow className={"form_second_label_input"}>
                             <div className={"login_form_label"}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
@@ -229,7 +230,7 @@ export default function LoginPage(){
                                 </button>
                             </IonCol>
                         </IonRow>
-                            {otpError && <p className="error">{otpErrorMessage}</p>}
+                            {otpError && <p className="error fontsize2">{otpErrorMessage}</p>}
                             {!isOtpExpired
                                 ? <>
                                     <IonRow>
