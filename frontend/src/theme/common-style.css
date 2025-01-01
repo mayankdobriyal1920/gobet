@@ -1074,4 +1074,24 @@ body{
 .error {
     color: #f70000;
 }
-ion-row.avatarListTableRow.md{padding:0.5rem 0.5rem 0.5rem 0.5rem}
+
+.avatar-modal-main-wrapper .avatar-grid {
+    margin-top: 0.625rem;
+}
+
+.avatar-modal-main-wrapper .avatar-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.25rem; /* Space between rows */
+}
+
+.avatar-modal-main-wrapper .avatar-col img{
+    cursor: pointer;
+}
+
+/* Highlight selected avatar with a border */
+.avatar-modal-main-wrapper .avatar-col .selected-avatar {
+    border: 2px solid #4CAF50; /* Green border for selected avatar */
+    transform: scale(1.1); /* Slight zoom effect */
+}
