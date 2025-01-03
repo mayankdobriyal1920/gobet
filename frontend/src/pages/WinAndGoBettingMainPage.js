@@ -32,7 +32,7 @@ export default function WinAndGoBettingMainPage() {
                 <div className="Wallet__C inner_page">
                     <div className="Wallet__C-balance">
                         <div className="Wallet__C-balance-l1">
-                            <div>₹0.00</div>
+                            <div>₹1000.00</div>
                         </div>
                         <div className="Wallet__C-balance-l2">
                             <svg className="svg-icon icon-lottyWallet" viewBox="0 0 40 40" fill="none"
