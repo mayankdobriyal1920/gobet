@@ -18,6 +18,9 @@ body{
     font-size: 12px;
     font-family: 'Roboto', 'Inter', sans-serif;;
 }
+ion-header {
+    box-shadow: none!important;
+}
 .main_logo_and_slogan_container_header {
     background: var(--theme-gradiant-color);
     display: flex;
@@ -47,7 +50,9 @@ body{
     color: #ffffff;
     font-size: .29333rem;
 }
-
+.content-theme-off-white-bg-color{
+    background: var(--off-white-back-color)!important;
+}
 
 .main_logo_and_slogan_container_header.login_text_in_page .login_head {
     font-size: 0.4rem;
@@ -1094,4 +1099,185 @@ body{
 .avatar-modal-main-wrapper .avatar-col .selected-avatar {
     border: 2px solid #4CAF50; /* Green border for selected avatar */
     transform: scale(1.1); /* Slight zoom effect */
+}
+.navbar__content-center {
+    color: #ffffff;
+    font-size: .4rem;
+}
+
+.inner_page.Wallet__C:before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 5rem;
+    background: var(--theme-gradiant-color);
+    border-radius: 0 0 1.53333rem 1.53333rem;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+}
+
+.inner_page.Wallet__C .Wallet__C-balance {
+    min-height: 2rem!important;
+}
+.Betting__C {
+    width: calc(100% - .69333rem);
+    margin: .29333rem auto 0;
+    background: var(--bg_color_L2);
+    border-radius: .26667rem;
+    position: relative;
+}
+
+.Betting__C-mark {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background: rgba(0, 0, 0, .6);
+    position: absolute;
+    z-index: 99;
+    top: 0;
+    left: 0;
+    color: var(--main-color);
+    border-radius: .26667rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+.Betting__C-mark>div {
+    border-radius: .1rem;
+    margin: 0 .1rem;
+    background-color: var(--bg_color_L3);
+    font-weight: 700;
+    width: 20%;
+    font-size: 1.2rem;
+    text-align: center;
+}
+.TimeLeft__C {
+    width: calc(100% - .69333rem);
+    height: 2.66667rem;
+    margin: .48rem auto 0;
+    background: var(--ion-color-primary);
+    color: var(--text_color_L4);
+    border-radius: .2rem;
+    padding: 0.4rem;
+}
+.TimeLeft__C_bottom .TimeLeft__C-id {
+    font-size: .37333rem;
+    line-height: .52rem;
+    color: #ffffff;
+}
+.Betting__C-numC {
+    width: 100%;
+    height: 7.5rem;
+    margin-top: .34667rem;
+    background: var(--bg_color_L1);
+    border-radius: .26667rem;
+    padding: 0.4rem;
+}
+
+.Betting__C-numC .Betting__C-numC-head {
+    text-align: center;
+    font-size: .45rem;
+    color: var(--ion-color-primary);
+    font-weight: 600;
+}
+.GameList__C {
+    height: 2.4rem;
+    width: calc(100% - .69333rem);
+    background: var(--bg_color_L3);
+    border-radius: .26667rem;
+    position: relative;
+    margin: .34667rem auto 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.GameList__C-item.active {
+    background: var(--ion-color-primary);
+    width: 35%;
+}
+.GameList__C-item {
+    width: 65%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    border-radius: .26667rem;
+}
+
+.GameList__C-item.active>div {
+    height: 100%;
+    line-height: .4rem;
+    font-size: .32rem;
+    margin: auto;
+    padding-top: 1.44rem;
+    background-size: 1.17333rem;
+    background-position: center .18667rem;
+    background-repeat: no-repeat;
+    color: var(--text_color_L4);
+    background-image: url(./img/time_a-win-go-img.png);
+}
+.GameList__C-item.not_active .bet_pre_txt_1 {
+    letter-spacing: .04rem;
+    font-size: .55rem;
+    color: #00be00;
+    font-weight: 600;
+}
+
+.GameList__C-item.not_active {
+    box-shadow: 4px 0px 20px 0px #cccccc82;
+    width: 65%;
+    height: 100%;
+    padding: .2rem;
+}
+.GameList__C-item.not_active .bet_pre_txt_2 {
+    letter-spacing: .04rem;
+    font-size: .5rem;
+    color: var(--text_color_L1);
+    font-weight: 600;
+}
+
+
+.TimeLeft__C-up .TimeLeft__C-id {
+    font-weight: 700;
+    font-size: .37333rem;
+    height: .52rem;
+    line-height: .52rem;
+    color: #ffffff;
+}
+.TimeLeft__C-up .TimeLeft__C-time {
+    height: .8rem;
+    line-height: .8rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    margin-top: .3rem;
+}
+.TimeLeft__C-up .TimeLeft__C-time>div:first-child {
+    background: var(--bg_color_L1);
+}
+
+.TimeLeft__C-up .TimeLeft__C-time>div {
+    color: var(--text_color_L1);
+    font-weight: 700;
+    font-size: .48rem;
+    text-align: center;
+    padding: 0 .3rem;
+    margin: auto;
+    border-radius: .1rem;
+    background-color: var(--bg_color_L2);
+}
+.TimeLeft__C-up  .TimeLeft__C-time>div+div {
+    margin-left: .12rem;
+}
+.TimeLeft__C-up  .TimeLeft__C-time>div:last-child {
+    background: var(--bg_color_L1);
 }

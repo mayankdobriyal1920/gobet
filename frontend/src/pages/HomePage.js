@@ -1,27 +1,21 @@
-import React, {useEffect} from "react";
-import {IonContent, IonPage} from "@ionic/react";
+import React from "react";
+import {IonContent, IonHeader, IonPage} from "@ionic/react";
 import {useSelector} from "react-redux";
 import siteSmallIcon from "../theme/img/site-logo-small-white.png";
 import aviatorGame from "../theme/img/aviator.png";
 import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
-import "./Home.css";
-import {Capacitor} from "@capacitor/core";
-import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
-import {StatusBar, Style} from "@capacitor/status-bar";
+import {useHistory} from "react-router-dom";
 
 export default function HomePage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
-    useEffect(()=>{
-        if(Capacitor.isNativePlatform()){
-            NavigationBar.setColor({ color: '#ffffff' , darkButtons:true});
-            StatusBar.setBackgroundColor({ color: '#f57b2c' });
-            StatusBar.setStyle({ style:Style.Dark });
-        }
-    },[])
+    const history = useHistory();
+    const goToPage = (page)=>{
+        history.push(page);
+    }
     return (
         <IonPage className={"home_welcome_page_container"}>
-            <IonContent>
+            <IonHeader>
                 <div className={"content-getbet content"}>
                     <div className="navbar">
                         <div className="navbar-fixed">
@@ -45,6 +39,8 @@ export default function HomePage() {
                         </div>
                     </div>
                 </div>
+            </IonHeader>
+            <IonContent>
                 <div className="Wallet__C">
                     <div className="Wallet__C-balance">
                         <div className="Wallet__C-balance-l1">
@@ -74,15 +70,15 @@ export default function HomePage() {
                         </div>
                     </div>
                     <div className="getbet__container allGame">
-                        <div className="item">
+                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
                             <img className="gameImg"
                                  src={wingoGame}/>
                         </div>
-                        <div className="item">
+                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
                             <img className="gameImg"
                                  src={aviatorGame}/>
                         </div>
-                        <div className="item">
+                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
                             <img className="gameImg"
                                  src={limboGame}/>
                         </div>
