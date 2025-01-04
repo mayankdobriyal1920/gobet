@@ -6,7 +6,11 @@ import {
     USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
-    USER_SIGNIN_SUCCESS, USER_SIGNUP_SIGNIN_ERROR, CHANGE_USER_AVATAR_MODAL, USER_WALLET_AND_GAME_BALANCE_REQUEST
+    USER_SIGNIN_SUCCESS,
+    USER_SIGNUP_SIGNIN_ERROR,
+    CHANGE_USER_AVATAR_MODAL,
+    USER_WALLET_AND_GAME_BALANCE_REQUEST,
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -146,8 +150,7 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
     dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST, payload: {open: false}});
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
-            console.log('responseData',responseData);
-            dispatch({ type: USER_WALLET_AND_GAME_BALANCE_REQUEST, payload: {...responseData?.data}});
+            dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData?.data}});
         })
     } catch (error) {
         console.log(error);

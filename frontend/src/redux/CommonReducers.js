@@ -40,7 +40,7 @@ export const userWalletAndGameBalanceReducer = (state = {}, action) => {
         case USER_WALLET_AND_GAME_BALANCE_REQUEST:
             return { loading: true,walletBalance:0,gameBalance:0};
         case USER_WALLET_AND_GAME_BALANCE_SUCCESS:
-            return { loading: false, walletBalance: action.wallet_balance,gameBalance:action.game_balance };
+            return { loading: false, walletBalance: action.payload.wallet_balance,gameBalance:action.payload.game_balance };
         default:
             return state;
     }

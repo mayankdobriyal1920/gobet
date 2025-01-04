@@ -8,12 +8,15 @@ import widthdrawBlue from "../theme/img/widthdrawBlue.png";
 import rechargeIcon from "../theme/img/rechargeIcon.png";
 
 export default function WalletPage() {
-    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [totalWalletBalancePercentage,setTotalWalletBalancePercentage] = useState(0);
+    const [totalGameBalancePercentage,setTotalGameBalancePercentage] = useState(0);
+    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
 
     useEffect(() => {
-        setTotalWalletBalancePercentage(100)
-    }, [userInfo?.wallet_balance]);
+        let totalBalance = Number(walletBalance)+Number(gameBalance);
+        setTotalWalletBalancePercentage(Math.round(walletBalance * 100 / totalBalance));
+        setTotalGameBalancePercentage(Math.round(gameBalance * 100 / totalBalance));
+    }, [walletBalance,gameBalance]);
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -30,7 +33,7 @@ export default function WalletPage() {
                                     d="M49.5007 13.1719V25.8385H20.8673C13.9673 25.8385 8.33398 31.4719 8.33398 38.3719V26.1385C8.33398 22.1719 10.7673 18.6385 14.4673 17.2385L40.934 7.23854C45.0673 5.7052 49.5007 8.73854 49.5007 13.1719ZM75.1973 46.5652V53.4319C75.1973 55.2652 73.7307 56.7652 71.864 56.8319H65.3307C61.7307 56.8319 58.4306 54.1985 58.1306 50.5985C57.9306 48.4985 58.7307 46.5319 60.1307 45.1652C61.364 43.8985 63.064 43.1652 64.9307 43.1652H71.864C73.7307 43.2319 75.1973 44.7319 75.1973 46.5652ZM46.6673 42.4985H23.334C21.9673 42.4985 20.834 41.3652 20.834 39.9985C20.834 38.6319 21.9673 37.4985 23.334 37.4985H46.6673C48.034 37.4985 49.1673 38.6319 49.1673 39.9985C49.1673 41.3652 48.034 42.4985 46.6673 42.4985Z"
                                     fill="white"></path>
                             </svg>
-                            <div>₹{userInfo?.wallet_balance ? userInfo?.wallet_balance : '0.00'}</div>
+                            <div>₹{walletBalance ? walletBalance : '0.00'}</div>
                             <span className={"wallet_header"}>Total balance</span>
                         </div>
                     </div>
@@ -50,7 +53,7 @@ export default function WalletPage() {
                                     </svg>
                                     <div className="van-circle__text">{totalWalletBalancePercentage}%</div>
                                 </div>
-                                <h3 >₹{userInfo?.wallet_balance ? userInfo?.wallet_balance : '0.00'}</h3><span >Main wallet</span></div>
+                                <h3 >₹{walletBalance ? walletBalance : '0.00'}</h3><span >Main wallet</span></div>
                             <div  className="progressBarsR">
                                 <div  className="van-circle">
                                     <svg viewBox="0 0 1100 1100">
@@ -60,11 +63,11 @@ export default function WalletPage() {
                                         <path
                                             d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
                                             className="van-circle__hover"
-                                            style={{strokeWidth: "101px",strokeLinecap: "butt",strokeDasharray: "0px,3140px"}}></path>
+                                            style={{strokeWidth: "101px",strokeLinecap: "butt",strokeDasharray: `${totalGameBalancePercentage * 31.4}px,3140px`}}></path>
                                     </svg>
-                                    <div className="van-circle__text">0%</div>
+                                    <div className="van-circle__text">{totalGameBalancePercentage}%</div>
                                 </div>
-                                <h3 >₹0.00</h3><span >3rd party wallet</span></div>
+                                <h3 >₹{gameBalance ? gameBalance : 0.00}</h3><span >Game wallet</span></div>
                         </div>
                         <div  className="recycleBtnD">
                             <button  className="recycleBtn">Main wallet transfer</button>

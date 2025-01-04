@@ -9,6 +9,7 @@ import {useHistory} from "react-router-dom";
 
 export default function HomePage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const history = useHistory();
     const goToPage = (page)=>{
         history.push(page);
@@ -31,7 +32,7 @@ export default function HomePage() {
                                     <div className="content-getbet__right">
                                         <div className="message">
                                             Wallet Balance
-                                            ₹{userInfo?.wallet_balance ? userInfo?.wallet_balance : '0.00'}
+                                            ₹{walletBalance ? walletBalance : '0.00'}
                                         </div>
                                     </div>
                                 </div>
@@ -44,7 +45,7 @@ export default function HomePage() {
                 <div className="Wallet__C">
                     <div className="Wallet__C-balance">
                         <div className="Wallet__C-balance-l1">
-                            <div>₹0.00</div>
+                            <div>₹{gameBalance ? gameBalance : '0.00'}</div>
                         </div>
                         <div className="Wallet__C-balance-l2">
                             <svg className="svg-icon icon-lottyWallet" viewBox="0 0 40 40" fill="none"
@@ -89,14 +90,14 @@ export default function HomePage() {
                         <div className="title">
                             Processing Fee
                         </div>
-                        <div className="orange">₹1000</div>
+                        <div className="orange">₹{Math.round(gameBalance / 100)}</div>
                     </div>
                     <div className="description">
                         Processing fee of 1% will be auto deduct when you enter in the game
                     </div>
                     <div className="foot">
                         <div className="progress">
-                            <div className="step">Eligible bet ₹7000</div>
+                            <div className="step">Eligible bet ₹{gameBalance}</div>
                         </div>
                     </div>
                 </div>

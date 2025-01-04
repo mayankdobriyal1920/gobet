@@ -6,7 +6,7 @@ import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 
 export default function AccountPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
-    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [userLogoutLoading,setUserLogoutLoading] = useState(false);
     const [userLogoutAlertConfirm,setUserLogoutAlertConfirm] = useState(false);
     const dispatch = useDispatch();
@@ -49,7 +49,7 @@ export default function AccountPage() {
                                         <span>Total balance</span>
                                     </div>
                                     <p className="totalSavings__container-header__subtitle">
-                                        <span>₹{userInfo?.wallet_balance ? userInfo?.wallet_balance : '0.00'}</span>
+                                        <span>₹{walletBalance ? walletBalance : '0.00'}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="svg-icon icon-refreshBalance"
                                              viewBox="0 0 24 24" fill="none">
                                             <circle opacity="0.5" cx="12" cy="12" r="10" fill="#1C274C"/>
