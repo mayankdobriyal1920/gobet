@@ -1041,10 +1041,12 @@ ion-header {
 .processing_fee_container.first_list-item .head .title {
     font-size: .4rem;
     color: var(--text_color_L1);
+    font-weight: 600;
 }
 .processing_fee_container.first_list-item .head .orange {
     font-size: .4rem;
     color: var(--theme-primary-button-color);
+    font-weight: 600;
 }
 .processing_fee_container.first_list-item .description {
     font-size: .29333rem;
