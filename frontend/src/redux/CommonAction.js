@@ -157,10 +157,11 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
     }
 }
 
-export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame = (callFunctionToEnterInGame) => async () => {
+export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame = (callFunctionToEnterInGame) => async (dispatch) => {
     try {
         api.post(`actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall`, {}).then(() => {
             if(callFunctionToEnterInGame) {
+                dispatch(actionToGetUserWalletAndGameBalance());
                 callFunctionToEnterInGame();
             }
         })

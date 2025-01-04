@@ -81,15 +81,3 @@ export function storeNewSessionFileFromSessionStore(req,userSessionData) {
         })
     }
 }
-export function actionToGetUserGameBalance(userId,resolve) {
-    const query = `SELECT game_balance from app_user WHERE id = $1`;
-    pool.query(query,[userId], (error, results) => {
-        if (error) {
-            reject(error)
-        }
-        if(results?.rows?.length){
-            let userGameBalance = results?.rows[0]?.game_balance;
-        }
-
-    })
-}

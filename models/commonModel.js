@@ -6,7 +6,7 @@ import {
     loginUserQuery,
     signupQuery, updatePassCodeQuery, updateUserAvatarQuery
 } from "../queries/commonQuries.js";
-import {actionToGetUserGameBalance, insertCommonApiCall, updateCommonApiCall} from "./helpers/commonModelHelper.js";
+import {insertCommonApiCall, updateCommonApiCall} from "./helpers/commonModelHelper.js";
 
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
@@ -188,7 +188,7 @@ export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCal
                         valuesArray = [percentageOfGame,userId];
                         insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
                         insertCommonApiCall(insertData).then(()=>{
-                            aliasArray = ['$1','$2'];
+                            aliasArray = ['$1','$2','$3'];
                             columnArray = ["amount", "user_id","type"];
                             valuesArray = [percentageOfGame,userId,'game_percentage_deduct'];
                             insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
