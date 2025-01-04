@@ -24,7 +24,7 @@ import './theme/variables.css';
 import './theme/additional.css';
 import './theme/common-style.css';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetUserSessionData} from "./redux/CommonAction";
+import {actionToGetUserSessionData, actionToGetUserWalletAndGameBalance} from "./redux/CommonAction";
 import LoginPage from "./pages/LoginPage";
 import MainAppTabsRoutePage from "./pages/MainAppTabsRoutePage";
 import SignupPage from "./pages/SignupPage";
@@ -33,28 +33,33 @@ import WinAndGoBettingMainPage from "./pages/WinAndGoBettingMainPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
-  return (
-      <IonReactRouter>
-          <IonRouterOutlet>
-            <Route path="/login" exact={true} component={LoginPage} />
-            <Route path="/signup" exact={true} component={SignupPage} />
-            <Redirect  exact from="/"  to="/login" />
-            <Route render={() => <Redirect to="/login" />} />
-          </IonRouterOutlet>
-      </IonReactRouter>
-  );
+    return (
+        <IonReactRouter>
+            <IonRouterOutlet>
+                <Route path="/login" exact={true} component={LoginPage} />
+                <Route path="/signup" exact={true} component={SignupPage} />
+                <Redirect  exact from="/"  to="/login" />
+                <Route render={() => <Redirect to="/login" />} />
+            </IonRouterOutlet>
+        </IonReactRouter>
+    );
 };
 const AppEnterMainPage = () => {
-  return (
-      <IonReactRouter>
-           <IonRouterOutlet>
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(actionToGetUserWalletAndGameBalance());
+    }, []);
+
+    return (
+        <IonReactRouter>
+            <IonRouterOutlet>
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
                 <Route path="/win-go-betting" component={WinAndGoBettingMainPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
-           </IonRouterOutlet>
-      </IonReactRouter>
-  );
+            </IonRouterOutlet>
+        </IonReactRouter>
+    );
 };
 
 const App = () => {
@@ -66,15 +71,11 @@ const App = () => {
         dispatch(actionToGetUserSessionData());
     }, []);
 
-    useEffect(() => {
-        console.log('userInfo',userInfo)
-    }, [userInfo]);
-
     return (
         <IonApp>
             {(!userSession?.loading) ?
                 <React.Fragment>
-                 {userInfo?.id ? <AppEnterMainPage/> : <PublicRoutes/>}
+                    {userInfo?.id ? <AppEnterMainPage/> : <PublicRoutes/>}
                 </React.Fragment>:''
             }
             <IonLoading className={"loading_loader_spinner_container"} isOpen={userSession?.loading} message={"Loading..."}/>

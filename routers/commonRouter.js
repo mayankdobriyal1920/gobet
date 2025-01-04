@@ -2,7 +2,7 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import {
     actionGetUserByIdApiCall,
-    actionSignupApiCall,
+    actionSignupApiCall, actionToGetUserWalletAndGameBalanceApiCall,
     actionToLoginUserAndSendOtpApiCall,
     actionToSendOtpApiCall,
     actionToVerifyLoginUserOtpApiCall,
@@ -268,6 +268,22 @@ commonRouter.post(
                 message: 'User logged out',
             });
         });
+    })
+);
+
+commonRouter.post(
+    '/actionToGetUserWalletAndGameBalanceApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetUserWalletAndGameBalanceApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
     })
 );
 

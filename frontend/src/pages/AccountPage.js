@@ -6,6 +6,7 @@ import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 
 export default function AccountPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [userLogoutLoading,setUserLogoutLoading] = useState(false);
     const [userLogoutAlertConfirm,setUserLogoutAlertConfirm] = useState(false);
     const dispatch = useDispatch();

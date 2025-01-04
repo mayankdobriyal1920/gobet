@@ -6,7 +6,7 @@ import {
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
     USER_SIGNIN_SUCCESS,
-    USER_SIGNOUT, USER_SIGNUP_SIGNIN_ERROR
+    USER_SIGNOUT, USER_SIGNUP_SIGNIN_ERROR, USER_WALLET_AND_GAME_BALANCE_REQUEST, USER_WALLET_AND_GAME_BALANCE_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -30,6 +30,17 @@ export const userSessionReducer = (state = {}, action) => {
             return { loading: true };
         case USER_SESSION_SUCCESS:
             return { loading: false, success: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const userWalletAndGameBalanceReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_WALLET_AND_GAME_BALANCE_REQUEST:
+            return { loading: true,walletBalance:0,gameBalance:0};
+        case USER_WALLET_AND_GAME_BALANCE_SUCCESS:
+            return { loading: false, walletBalance: action.wallet_balance,gameBalance:action.game_balance };
         default:
             return state;
     }

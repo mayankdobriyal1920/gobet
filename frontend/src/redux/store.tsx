@@ -5,7 +5,7 @@ import {
     signupSigninFormError,
     userAuthDetailReducer,
     userOtpReducer,
-    userSessionReducer
+    userSessionReducer, userWalletAndGameBalanceReducer
 } from './CommonReducers';
 
 const initialState = {
@@ -13,14 +13,16 @@ const initialState = {
     userAuthDetail: {userInfo: null, loading:false},
     userOtpDetails: {loading: false},
     signupSigninFormError: {},
-    changeUserAvatarModal: {open:false}
+    changeUserAvatarModal: {open:false},
+    userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     userAuthDetail: userAuthDetailReducer,
     userOtpDetails: userOtpReducer,
     signupSigninFormError: signupSigninFormError,
-    changeUserAvatarModal: changeUserAvatarModal
+    changeUserAvatarModal: changeUserAvatarModal,
+    userWalletAndGameBalance: userWalletAndGameBalanceReducer,
 });
 
 declare global {

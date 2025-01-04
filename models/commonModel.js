@@ -142,6 +142,25 @@ export const actionUpdateAvatarApiCall = (body) => {
     })
 }
 
+export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        let userData = {
+            wallet_balance:0,
+            game_balance:0
+        };
+        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        pool.query(query,[userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                userData = results?.rows[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
 
 export const actionGetUserByIdApiCall = (body) => {
     const userId = body;
