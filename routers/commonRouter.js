@@ -294,7 +294,7 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetUserBetPredictionDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
-                res.status(200).send({success:1,prediction:responseData});
+                res.status(200).send(responseData);
             })
         }else{
             res.status(200).send({
