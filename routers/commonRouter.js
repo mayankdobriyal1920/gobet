@@ -2,7 +2,9 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import {
     actionGetUserByIdApiCall,
-    actionSignupApiCall, actionToGetUserWalletAndGameBalanceApiCall,
+    actionSignupApiCall,
+    actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall,
+    actionToGetUserWalletAndGameBalanceApiCall,
     actionToLoginUserAndSendOtpApiCall,
     actionToSendOtpApiCall,
     actionToVerifyLoginUserOtpApiCall,
@@ -282,6 +284,22 @@ commonRouter.post(
             res.status(200).send({
                 wallet_balance:0,
                 game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
             });
         }
     })

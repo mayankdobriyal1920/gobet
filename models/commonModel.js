@@ -6,6 +6,7 @@ import {
     loginUserQuery,
     signupQuery, updatePassCodeQuery, updateUserAvatarQuery
 } from "../queries/commonQuries.js";
+import {actionToGetUserGameBalance, insertCommonApiCall, updateCommonApiCall} from "./helpers/commonModelHelper.js";
 
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
@@ -157,6 +158,48 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
                 userData = results?.rows[0];
             }
             resolve(userData);
+        })
+    })
+}
+
+export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT game_balance from app_user WHERE id = $1`;
+        pool.query(query,[userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                let userGameBalance = results?.rows[0]?.game_balance;
+                let percentageOfGame = Math.round(userGameBalance / 100);
+                let userTotalGameBalance = userGameBalance - percentageOfGame;
+                ////////// UPDATE USER GAME BALANCE ///////
+                let setData = `game_balance = $1`;
+                const whereCondition = `id = '${userId}'`;
+                let dataToSend = {column: setData, value: [userTotalGameBalance], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                updateCommonApiCall(dataToSend).then(()=>{
+                    let aliasArray = ['$1','$2'];
+                    let columnArray = ["user_id", "status"];
+                    let valuesArray = [userId,1];
+                    let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
+                    insertCommonApiCall(insertData).then(()=>{
+                        aliasArray = ['$1','$2'];
+                        columnArray = ["amount", "user_id"];
+                        valuesArray = [percentageOfGame,userId];
+                        insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
+                        insertCommonApiCall(insertData).then(()=>{
+                            aliasArray = ['$1','$2'];
+                            columnArray = ["amount", "user_id","type"];
+                            valuesArray = [percentageOfGame,userId,'game_percentage_deduct'];
+                            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+                            insertCommonApiCall(insertData).then(()=>{
+                                resolve({success:true});
+                            })
+                        })
+                    })
+                })
+                ////////// UPDATE USER GAME BALANCE ///////
+            }
         })
     })
 }

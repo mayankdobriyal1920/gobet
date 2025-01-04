@@ -156,3 +156,15 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
         console.log(error);
     }
 }
+
+export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame = (callFunctionToEnterInGame) => async () => {
+    try {
+        api.post(`actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall`, {}).then(() => {
+            if(callFunctionToEnterInGame) {
+                callFunctionToEnterInGame();
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}

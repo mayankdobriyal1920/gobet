@@ -1,18 +1,29 @@
-import React from "react";
-import {IonContent, IonHeader, IonPage} from "@ionic/react";
-import {useSelector} from "react-redux";
+import React, {useState} from "react";
+import {IonAlert, IonContent, IonHeader, IonLoading, IonPage} from "@ionic/react";
+import {useDispatch, useSelector} from "react-redux";
 import siteSmallIcon from "../theme/img/site-logo-small-white.png";
 import aviatorGame from "../theme/img/aviator.png";
 import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
+import {actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame} from "../redux/CommonAction";
 
 export default function HomePage() {
-    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const history = useHistory();
+    const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
+    const [userEnterLoading,setUserEnterLoading] = useState(false);
+    const dispatch = useDispatch();
     const goToPage = (page)=>{
         history.push(page);
+    }
+    const callFunctionToEnterInGame = ()=>{
+        goToPage('/win-go-betting');
+        setUserEnterLoading(false);
+    }
+    const callFunctionToDeductBalanceAndEnterInGame = ()=>{
+        setUserEnterLoading(true);
+        dispatch(actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame(callFunctionToEnterInGame))
     }
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -71,7 +82,7 @@ export default function HomePage() {
                         </div>
                     </div>
                     <div className="getbet__container allGame">
-                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
+                        <div onClick={()=>setUserEnterInGameConfirm(true)} className="item">
                             <img className="gameImg"
                                  src={wingoGame}/>
                         </div>
@@ -102,6 +113,30 @@ export default function HomePage() {
                     </div>
                 </div>
             </IonContent>
+            <IonAlert
+                header="Warning!"
+                message="To get a prediction for this game, we will deduct 1% of your game amount. If you are sure, press the I AM IN button to proceed."
+                isOpen={userEnterInGameConfirm}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            setUserEnterInGameConfirm(false);
+                        },
+                    },
+                    {
+                        text: 'I AM IN',
+                        role: 'confirm',
+                        handler: () => {
+                            callFunctionToDeductBalanceAndEnterInGame()
+                        },
+                    },
+                ]}
+                onDidDismiss={() => setUserEnterInGameConfirm(false)}
+            />
+            <IonLoading isOpen={userEnterLoading} message={"Entering in game..."}/>
         </IonPage>
     )
 }

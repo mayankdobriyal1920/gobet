@@ -25,15 +25,50 @@ export async function deleteOldSessionFileFromSessionStore(oldSessionId) {
     let tableName = "sessions";
     await deleteCommonApiCall({condition, tableName})
 }
-
-export function deleteCommonApiCall({condition, tableName}) {
-    let deleteQuery = `DELETE FROM ${tableName} ${condition}`;
-    pool.query(deleteQuery, (error) => {
-        if (error) {
-            console.log('error in inserting session',error)
-        }
+export const insertCommonApiCall = (body) => {
+    const {column,alias,tableName,values} = body;
+    return new Promise(function(resolve, reject) {
+        const query =`INSERT INTO ${tableName} (${column.toString()}) VALUES (${alias.toString()})`;
+        pool.query(query,values, (error) => {
+            if (error) {
+                reject(error)
+            }
+            let data = {success:1};
+            resolve(data);
+        })
     })
 }
+export function deleteCommonApiCall({condition, tableName}) {
+    return new Promise(function(resolve, reject) {
+        let deleteQuery = `DELETE FROM ${tableName} ${condition}`;
+        pool.query(deleteQuery, (error) => {
+            if (error) {
+                console.log('error in inserting session', error)
+                reject(error);
+            }
+            resolve({success:true});
+        })
+    })
+}
+
+export const updateCommonApiCall = (body) => {
+    const {column,value,whereCondition,tableName} = body;
+    try {
+        return new Promise(function(resolve, reject) {
+            const query = `UPDATE ${tableName} set ${column.toString()} WHERE ${whereCondition}`;
+            pool.query(query,value, (error) => {
+                if (error) {
+                    reject(error)
+                }
+                let data = {success:1};
+                resolve(data);
+            })
+        })
+    }catch (e){
+        return e;
+    }
+}
+
 export function storeNewSessionFileFromSessionStore(req,userSessionData) {
     if(userSessionData?.id) {
         req.session.userSessionData = userSessionData;
@@ -45,4 +80,16 @@ export function storeNewSessionFileFromSessionStore(req,userSessionData) {
             }
         })
     }
+}
+export function actionToGetUserGameBalance(userId,resolve) {
+    const query = `SELECT game_balance from app_user WHERE id = $1`;
+    pool.query(query,[userId], (error, results) => {
+        if (error) {
+            reject(error)
+        }
+        if(results?.rows?.length){
+            let userGameBalance = results?.rows[0]?.game_balance;
+        }
+
+    })
 }
