@@ -1281,3 +1281,22 @@ ion-header {
 .TimeLeft__C-up  .TimeLeft__C-time>div:last-child {
     background: var(--bg_color_L1);
 }
+.avatar_heading_choose {
+    width: 100%;
+    text-align: center;
+    font-size: .4rem;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.avatar_heading_choose h2 {
+    letter-spacing: .01rem;
+    padding-bottom: .1rem;
+    padding-top: .1rem;
+}
+
+.avatar-grid .avatar-col .userAvatar {
+    width: 86px;
+    height: 86px;
+    max-width: unset!important;
+    box-shadow: 0px 0px 4px 0px #ccc;
+}
