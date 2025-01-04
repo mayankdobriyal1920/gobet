@@ -205,7 +205,6 @@ export const actionToGetUserBetPredictionData = () => async (dispatch) => {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {}).then(responseData => {
             if(responseData?.data?.success) {
                 dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
-                dispatch(actionToGetUserWalletAndGameBalance());
                 dispatch(actionToStartTimeIntervalOfUserTime());
             }else{
                 setTimeout(()=>{

@@ -1,4 +1,5 @@
 import pool from "../connection.js";
+import {getAliveUsersQuery} from "../../queries/commonQuries.js";
 
 export const createNewSessionWithUserDataAndRole = (req, userData) => {
     return new Promise((resolve, reject) => {
@@ -81,3 +82,45 @@ export function storeNewSessionFileFromSessionStore(req,userSessionData) {
         })
     }
 }
+
+export const actionToGetAliveUserAndStartTimerOnIt = () => {
+    // Query to check if there are other active users
+    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = $1`;
+    pool.query(getAliveUsersQuery, [1], (error, results) => {
+        // If there are other alive users, trigger the function
+        if (results?.rows?.length === 1) {
+            // More than 1 alive user, trigger the function
+            actionToStartUserAliveCheckTimer(); // Replace this with the function you want to trigger
+        }
+    });
+}
+
+const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
+
+}
+
+export const actionToDeactivateSingleBetting = () => {
+    let setData = `status = $1`;
+    const whereCondition = `status = 1`;
+    let dataToSend = {column: setData, value: [0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+    updateCommonApiCall(dataToSend).then(()=>{})
+}
+
+const actionToGetAllAliveUserDataFromBetLive = () => {
+    pool.query(getAliveUsersQuery(), [1], (error, results) => {
+        // If there are other alive users, trigger the function
+        if (results?.rows?.length > 1) {
+            // More than 1 alive user, trigger the function
+            actionToDistributeBettingFunctionAmongUsers(results?.rows); // Replace this with the function you want to trigger
+        }else{
+            actionToDeactivateSingleBetting();
+        }
+    });
+}
+
+// Function to start the timer when the first user becomes active
+const actionToStartUserAliveCheckTimer = () => {
+    setTimeout(() => {
+        actionToGetAllAliveUserDataFromBetLive();
+    }, 5 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
+};

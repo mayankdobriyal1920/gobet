@@ -1,5 +1,5 @@
 import {
-    CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_STATUS,
+    CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_SUCCESS,
     USER_BET_PREDICTION_STATUS,
     USER_BET_PREDICTION_STATUS_REQUEST,
     USER_BET_PREDICTION_STATUS_TIMER,
@@ -57,7 +57,7 @@ export const userBetPredictionHistoryReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_BET_PREDICTION_HISTORY_REQUEST:
             return { loading: true};
-        case USER_BET_PREDICTION_HISTORY_STATUS:
+        case USER_BET_PREDICTION_HISTORY_SUCCESS:
             return { loading: false, predictionHistory: action.payload};
         default:
             return state;

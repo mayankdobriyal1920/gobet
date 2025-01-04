@@ -3,15 +3,17 @@ import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetUserBetPredictionData} from "../redux/CommonAction";
+import {actionToGetUserBetPredictionData, actionToGetUserBetPredictionHistory} from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
 import LineLoaderComponent from "../components/LineLoaderComponent";
+import TimeLeftComponent from "../components/TimeLeftComponent";
+import {_formatTimeMMSS} from "../redux/CommonHelper";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
     const {gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
-    const {status,prediction} = useSelector((state) => state.userBetPredictionStatus);
+    const {status,prediction,timer} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const dispatch = useDispatch();
     const goBack = ()=>{
@@ -20,6 +22,7 @@ export default function WinAndGoBettingMainPage() {
 
     useEffect(() => {
         dispatch(actionToGetUserBetPredictionData());
+        dispatch(actionToGetUserBetPredictionHistory());
     }, []);
 
     return (
@@ -89,13 +92,23 @@ export default function WinAndGoBettingMainPage() {
                         </div>
                         <div className={"TimeLeft__C TimeLeft__C-up"}>
                             <div className="TimeLeft__C-id">ID - {prediction?.bet_id}</div>
-                            <div className="TimeLeft__C-time">
-                                <div>0</div>
-                                <div>0</div>
-                                <div>:</div>
-                                <div>2</div>
-                                <div>6</div>
-                            </div>
+                            {(timer) ?
+                                <div className="TimeLeft__C-time">
+                                    <div>{_formatTimeMMSS(timer)[0]}</div>
+                                    <div>{_formatTimeMMSS(timer)[1]}</div>
+                                    <div>{_formatTimeMMSS(timer)[2]}</div>
+                                    <div>{_formatTimeMMSS(timer)[3]}</div>
+                                    <div>{_formatTimeMMSS(timer)[4]}</div>
+                                </div>
+                                :
+                                <div className="TimeLeft__C-time">
+                                    <div>0</div>
+                                    <div>0</div>
+                                    <div>:</div>
+                                    <div>0</div>
+                                    <div>0</div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

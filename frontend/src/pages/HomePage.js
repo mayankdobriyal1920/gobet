@@ -101,10 +101,10 @@ export default function HomePage() {
                         <div className="title">
                             Processing Fee
                         </div>
-                        <div className="orange">₹{Math.round(gameBalance / 100)}</div>
+                        <div className="orange">1%</div>
                     </div>
                     <div className="description">
-                        Processing fee of 1% will be auto deduct when you enter in the game
+                        We deduct 1% of the amount when you transfer funds from your main wallet to your game wallet. You will receive 99% of the transferred amount in your game wallet, which can be used for betting predictions.
                     </div>
                     <div className="foot">
                         <div className="progress">
@@ -114,8 +114,8 @@ export default function HomePage() {
                 </div>
             </IonContent>
             <IonAlert
-                header="Warning!"
-                message="To get a prediction for this game, we will deduct 1% of your game amount. If you are sure, press the I AM IN button to proceed."
+                header="Warning!!"
+                message="To get a prediction for this game, press the I AM IN button to proceed if you are sure."
                 isOpen={userEnterInGameConfirm}
                 className={"custom_site_alert_toast"}
                 buttons={[

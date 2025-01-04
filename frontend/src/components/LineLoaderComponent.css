@@ -6,7 +6,7 @@
 }
 
 /* Line loader card */
-.line-loader {
+.line-loader-container .line-loader {
     background: #fff;
     border-radius: 8px;
     padding: 16px;
@@ -15,13 +15,13 @@
 }
 
 /* Header section */
-.line-loader-header {
+.line-loader-container .line-loader-header {
     display: flex;
     align-items: center;
     margin-bottom: 16px;
 }
 
-.avatar {
+.line-loader-container .avatar {
     width: 50px;
     height: 50px;
     background: #e0e0e0;
@@ -29,12 +29,12 @@
     flex-shrink: 0;
 }
 
-.title {
+.line-loader-container .title {
     flex: 1;
     margin-left: 16px;
 }
 
-.line {
+.line-loader-container .line {
     height: 12px;
     background: #e0e0e0;
     border-radius: 4px;
@@ -42,12 +42,12 @@
     animation: pulse 1.5s infinite ease-in-out;
 }
 
-.line.short {
+.line-loader-container .line.short {
     width: 60%;
 }
 
 /* Body section */
-.line-loader-body .line {
+.line-loader-container .line-loader-body .line {
     margin-bottom: 12px;
 }
 

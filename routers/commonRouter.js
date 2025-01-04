@@ -8,7 +8,7 @@ import {
     actionToGetUserBetPredictionHistoryApiCall,
     actionToGetUserWalletAndGameBalanceApiCall,
     actionToLoginUserAndSendOtpApiCall,
-    actionToSendOtpApiCall,
+    actionToSendOtpApiCall, actionToTransferAmountFromUserMainWalletToGameWalletApiCall,
     actionToVerifyLoginUserOtpApiCall,
     actionUpdateAvatarApiCall,
     actionUpdatePassCodeApiCall,
@@ -324,6 +324,22 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToTransferAmountFromUserMainWalletToGameWalletApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToTransferAmountFromUserMainWalletToGameWalletApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

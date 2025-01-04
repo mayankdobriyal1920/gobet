@@ -83,3 +83,18 @@ export const getUserByIdQuery = () => {
     `;
 };
 
+export const getAliveUsersQuery = () => {
+    return `
+        SELECT
+            betting_active_users.*,
+            jsonb_build_object(
+                    'id', app_user.id,
+                    'game_balance', app_user.game_balance,
+                    'wallet_balance', app_user.wallet_balance,
+            ) AS user_data
+        FROM betting_active_users
+         LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
+        WHERE betting_active_users.status = $1;
+    `;
+};
+
