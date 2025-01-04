@@ -3,7 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import {
     actionGetUserByIdApiCall,
     actionSignupApiCall,
-    actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall,
+    actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall, actionToGetUserBetPredictionDataApiCall,
     actionToGetUserWalletAndGameBalanceApiCall,
     actionToLoginUserAndSendOtpApiCall,
     actionToSendOtpApiCall,
@@ -284,6 +284,21 @@ commonRouter.post(
             res.status(200).send({
                 wallet_balance:0,
                 game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetUserBetPredictionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetUserBetPredictionDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send({success:1,prediction:responseData});
+            })
+        }else{
+            res.status(200).send({
+                success:0,
             });
         }
     })

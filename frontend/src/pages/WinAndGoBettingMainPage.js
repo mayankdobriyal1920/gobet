@@ -1,13 +1,23 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {actionToGetUserBetPredictionData} from "../redux/CommonAction";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
+    const {gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const {status,prediction} = useSelector((state) => state.userBetPredictionStatus);
+    const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
     }
+
+    useEffect(() => {
+        dispatch(actionToGetUserBetPredictionData());
+    }, []);
+
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
@@ -32,7 +42,7 @@ export default function WinAndGoBettingMainPage() {
                 <div className="Wallet__C inner_page">
                     <div className="Wallet__C-balance">
                         <div className="Wallet__C-balance-l1">
-                            <div>₹1000.00</div>
+                            <div>₹{gameBalance}</div>
                         </div>
                         <div className="Wallet__C-balance-l2">
                             <svg className="svg-icon icon-lottyWallet" viewBox="0 0 40 40" fill="none"
@@ -50,12 +60,15 @@ export default function WinAndGoBettingMainPage() {
                 </div>
                 <div className="Betting__C">
                     {/*///////// WAITING MODE SECTION /////////*/}
-                    <div className="Betting__C-mark" style={{display:"none"}}>
-                        <div>W</div>
-                        <div>A</div>
-                        <div>I</div>
-                        <div>T</div>
-                    </div>
+                    {(!status) ?
+                        <div className="Betting__C-mark">
+                            <div>W</div>
+                            <div>A</div>
+                            <div>I</div>
+                            <div>T</div>
+                        </div>
+                        :''
+                    }
                     {/*///////// WAITING MODE SECTION /////////*/}
                     <div className={"Betting__C-numC"}>
                         <div className="Betting__C-numC-head">
@@ -63,15 +76,15 @@ export default function WinAndGoBettingMainPage() {
                         </div>
                         <div className={"GameList__C"}>
                             <div className={"GameList__C-item active"}>
-                                <div>Win Go<br/>1 Min</div>
+                                <div>Win Go<br/>${prediction?.min} Min</div>
                             </div>
                             <div className={"GameList__C-item not_active"}>
-                                <div className={"bet_pre_txt_1"}>SMALL</div>
-                                <div className={"bet_pre_txt_2"}>₹500</div>
+                                <div className={"bet_pre_txt_1"}>{prediction?.option_name}</div>
+                                <div className={"bet_pre_txt_2"}>₹{prediction?.amount ?? '0.00'}</div>
                             </div>
                         </div>
                         <div className={"TimeLeft__C TimeLeft__C-up"}>
-                            <div className="TimeLeft__C-id">ID - 20250103100051250</div>
+                            <div className="TimeLeft__C-id">ID - {prediction?.bet_id}</div>
                             <div className="TimeLeft__C-time">
                                 <div>0</div>
                                 <div>0</div>
@@ -84,7 +97,11 @@ export default function WinAndGoBettingMainPage() {
                 </div>
                 <div className={"TimeLeft__C_bottom TimeLeft__C"}>
                     <div className="TimeLeft__C-id">
-                        You are in waiting mode. Please stay on this page while we provide your bet prediction.
+                        {(status) ?
+                            <>Please check the above bet prediction and ensure you place this bet within the given time. If you lose, we will refund your bet amount to your main wallet in our app.</>
+                            :
+                            <>You are in waiting mode. Please stay on this page while we provide your bet prediction.</>
+                        }
                     </div>
                 </div>
             </IonContent>

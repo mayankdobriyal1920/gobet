@@ -1,12 +1,19 @@
 import {
     CHANGE_USER_AVATAR_MODAL,
+    USER_BET_PREDICTION_STATUS,
+    USER_BET_PREDICTION_STATUS_REQUEST,
+    USER_BET_PREDICTION_STATUS_TIMER,
     USER_GET_OTP_REQUEST_FAIL,
     USER_GET_OTP_REQUEST_SUCCESS,
-    USER_SESSION_REQUEST, USER_SESSION_SUCCESS,
+    USER_SESSION_REQUEST,
+    USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
     USER_SIGNIN_SUCCESS,
-    USER_SIGNOUT, USER_SIGNUP_SIGNIN_ERROR, USER_WALLET_AND_GAME_BALANCE_REQUEST, USER_WALLET_AND_GAME_BALANCE_SUCCESS
+    USER_SIGNOUT,
+    USER_SIGNUP_SIGNIN_ERROR,
+    USER_WALLET_AND_GAME_BALANCE_REQUEST,
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -41,6 +48,18 @@ export const userWalletAndGameBalanceReducer = (state = {}, action) => {
             return { loading: true,walletBalance:0,gameBalance:0};
         case USER_WALLET_AND_GAME_BALANCE_SUCCESS:
             return { loading: false, walletBalance: action.payload.wallet_balance,gameBalance:action.payload.game_balance };
+        default:
+            return state;
+    }
+};
+export const userBetPredictionStatusReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_BET_PREDICTION_STATUS_REQUEST:
+            return {status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
+        case USER_BET_PREDICTION_STATUS:
+            return {status: 1,prediction:state.payload,timer:59,dateTime:new Date()};
+        case USER_BET_PREDICTION_STATUS_TIMER:
+            return {status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
         default:
             return state;
     }

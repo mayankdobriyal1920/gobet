@@ -10,7 +10,10 @@ import {
     USER_SIGNUP_SIGNIN_ERROR,
     CHANGE_USER_AVATAR_MODAL,
     USER_WALLET_AND_GAME_BALANCE_REQUEST,
-    USER_WALLET_AND_GAME_BALANCE_SUCCESS
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS,
+    USER_BET_PREDICTION_STATUS,
+    USER_BET_PREDICTION_STATUS_REQUEST,
+    USER_BET_PREDICTION_STATUS_TIMER
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -151,6 +154,51 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
             dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData?.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToStartTimeIntervalOfUserTime = () => async (dispatch, getState) => {
+    // Retrieve the previous date-time from the Redux state
+    let prevDateTime = getState().userBetPredictionStatus.dateTime;
+
+    // Start an interval to calculate the seconds difference
+    let timeInterval = setInterval(() => {
+        // Get the current time
+        let currentDateTime = new Date();
+
+        // Calculate the difference in seconds between the current and previous time
+        let secondCount = Math.floor((currentDateTime - new Date(prevDateTime)) / 1000);
+
+        // Check if the interval has reached 60 seconds
+        if (secondCount >= 60) {
+            clearInterval(timeInterval); // Stop the interval
+            dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
+        } else {
+            // Dispatch the remaining seconds as a negative countdown
+            dispatch({
+                type: USER_BET_PREDICTION_STATUS_TIMER,
+                payload: secondCount - 59, // Adjusting to create a countdown effect
+            });
+        }
+    }, 1000); // Execute the interval every 1 second
+};
+
+export const actionToGetUserBetPredictionData = () => async (dispatch) => {
+    dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
+    try {
+        api.post(`actionToGetUserBetPredictionDataApiCall`, {}).then(responseData => {
+            if(responseData?.data?.success) {
+                dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
+                dispatch(actionToGetUserWalletAndGameBalance());
+                dispatch(actionToStartTimeIntervalOfUserTime());
+            }else{
+                setTimeout(()=>{
+                    dispatch(actionToGetUserBetPredictionData());
+                },5000)
+            }
         })
     } catch (error) {
         console.log(error);

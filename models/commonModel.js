@@ -162,6 +162,22 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     })
 }
 
+export const actionToGetUserBetPredictionDataApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        let predData = {success:0};
+        const query = `SELECT * from bet_prediction_history WHERE user_id = $1 AND status = $2 AND game_type = $3`;
+        pool.query(query,[userId,1,'win_go'], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                predData = {success:1,prediction:results?.rows[0]}
+            }
+            resolve(predData);
+        })
+    })
+}
+
 export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         const query = `SELECT game_balance from app_user WHERE id = $1`;

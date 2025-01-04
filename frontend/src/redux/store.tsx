@@ -3,7 +3,7 @@ import {thunk} from 'redux-thunk';
 import {
     changeUserAvatarModal,
     signupSigninFormError,
-    userAuthDetailReducer,
+    userAuthDetailReducer, userBetPredictionStatusReducer,
     userOtpReducer,
     userSessionReducer, userWalletAndGameBalanceReducer
 } from './CommonReducers';
@@ -15,6 +15,7 @@ const initialState = {
     signupSigninFormError: {},
     changeUserAvatarModal: {open:false},
     userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0},
+    userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -23,6 +24,7 @@ export const rootReducer = combineReducers({
     signupSigninFormError: signupSigninFormError,
     changeUserAvatarModal: changeUserAvatarModal,
     userWalletAndGameBalance: userWalletAndGameBalanceReducer,
+    userBetPredictionStatus: userBetPredictionStatusReducer,
 });
 
 declare global {
