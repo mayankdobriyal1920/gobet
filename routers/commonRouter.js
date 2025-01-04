@@ -3,7 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import {
     actionGetUserByIdApiCall,
     actionSignupApiCall,
-    actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall,
+    actionToUpdateUserAliveForGameApiCall,
     actionToGetUserBetPredictionDataApiCall,
     actionToGetUserBetPredictionHistoryApiCall,
     actionToGetUserWalletAndGameBalanceApiCall,
@@ -320,10 +320,10 @@ commonRouter.post(
 );
 
 commonRouter.post(
-    '/actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall',
+    '/actionToUpdateUserAliveForGameApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
+            actionToUpdateUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

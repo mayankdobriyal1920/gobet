@@ -243,8 +243,8 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
         })
     })
 }
-export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall = (userId) => {
-    return new Promise(function(resolve, reject) {
+export const actionToUpdateUserAliveForGameApiCall = (userId) => {
+    return new Promise(function(resolve) {
         let aliasArray = ['$1','$2'];
         let columnArray = ["user_id", "status"];
         let valuesArray = [userId,1];

@@ -217,9 +217,9 @@ export const actionToGetUserBetPredictionData = () => async (dispatch) => {
     }
 }
 
-export const actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame = (callFunctionToEnterInGame) => async (dispatch) => {
+export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => async (dispatch) => {
     try {
-        api.post(`actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGameApiCall`, {}).then(() => {
+        api.post(`actionToUpdateUserAliveForGameApiCall`, {}).then(() => {
             if(callFunctionToEnterInGame) {
                 dispatch(actionToGetUserWalletAndGameBalance());
                 callFunctionToEnterInGame();

@@ -6,7 +6,7 @@ import aviatorGame from "../theme/img/aviator.png";
 import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
-import {actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame} from "../redux/CommonAction";
+import {actionToUpdateUserAliveForGame} from "../redux/CommonAction";
 
 export default function HomePage() {
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
@@ -23,7 +23,7 @@ export default function HomePage() {
     }
     const callFunctionToDeductBalanceAndEnterInGame = ()=>{
         setUserEnterLoading(true);
-        dispatch(actionToDeductPercentOfUserGameBalanceAndMakeUserAliveForGame(callFunctionToEnterInGame))
+        dispatch(actionToUpdateUserAliveForGame(callFunctionToEnterInGame))
     }
     return (
         <IonPage className={"home_welcome_page_container"}>
