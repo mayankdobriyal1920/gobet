@@ -96,7 +96,7 @@ export const actionToGetAliveUserAndStartTimerOnIt = () => {
 }
 
 const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
-
+    console.log('allLiveUsersData',allLiveUsersData)
 }
 
 export const actionToDeactivateSingleBetting = () => {
@@ -108,6 +108,7 @@ export const actionToDeactivateSingleBetting = () => {
 
 const actionToGetAllAliveUserDataFromBetLive = () => {
     pool.query(getAliveUsersQuery(), [1], (error, results) => {
+        console.log('results?.rows',results?.rows);
         // If there are other alive users, trigger the function
         if (results?.rows?.length > 1) {
             // More than 1 alive user, trigger the function
@@ -122,5 +123,5 @@ const actionToGetAllAliveUserDataFromBetLive = () => {
 const actionToStartUserAliveCheckTimer = () => {
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, 5 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
+    }, 2 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
 };
