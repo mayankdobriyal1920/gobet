@@ -4,11 +4,15 @@ import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {actionToGetUserBetPredictionData} from "../redux/CommonAction";
+import noDataImage from "../theme/img/no_data_img.png";
+import moment from "moment-timezone";
+import LineLoaderComponent from "../components/LineLoaderComponent";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
     const {gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const {status,prediction} = useSelector((state) => state.userBetPredictionStatus);
+    const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
@@ -101,6 +105,42 @@ export default function WinAndGoBettingMainPage() {
                             <>Please check the above bet prediction and ensure you place this bet within the given time. If you lose, we will refund your bet amount to your main wallet in our app.</>
                             :
                             <>You are in waiting mode. Please stay on this page while we provide your bet prediction.</>
+                        }
+                    </div>
+                </div>
+                <div className={"GameRecord__C game-record"}>
+                    <div className="getbet-title getbet-line">
+                        <div className="getbet-title-left">
+                            <span>Prediction History</span>
+                        </div>
+                    </div>
+                    <div className="GameRecord__C-head">
+                        <div className="van-row">
+                            <div className="van-col van-col--9">Betting Id</div>
+                            <div className="van-col van-col--5">Big Small</div>
+                            <div className="van-col van-col--5">Time</div>
+                        </div>
+                    </div>
+                    <div className={"GameRecord__C-body"}>
+                        {(userBetPredictionHistory?.loading) ?
+                            <LineLoaderComponent/>
+                            :
+                            (userBetPredictionHistory?.predictionHistory?.length) ?
+                                (userBetPredictionHistory?.predictionHistory?.map((predictionHistory)=> (
+                                    <div className="van-row" key={predictionHistory?.id}>
+                                        <div className="van-col van-col--9">{predictionHistory?.bet_id}</div>
+                                        <div className="van-col van-col--5">
+                                            <span>{predictionHistory?.option_name}</span>
+                                        </div>
+                                        <div className="van-col van-col--5">
+                                            <span>{moment(predictionHistory?.created_at)?.format('HH:mm')}</span>
+                                        </div>
+                                    </div>
+                                )))
+                                :
+                                <div className={"no_data_img"}>
+                                    <img src={noDataImage} alt={'noDataImage'}/>
+                                </div>
                         }
                     </div>
                 </div>

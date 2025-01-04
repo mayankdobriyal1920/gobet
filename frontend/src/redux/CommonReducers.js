@@ -1,5 +1,5 @@
 import {
-    CHANGE_USER_AVATAR_MODAL,
+    CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_STATUS,
     USER_BET_PREDICTION_STATUS,
     USER_BET_PREDICTION_STATUS_REQUEST,
     USER_BET_PREDICTION_STATUS_TIMER,
@@ -48,6 +48,17 @@ export const userWalletAndGameBalanceReducer = (state = {}, action) => {
             return { loading: true,walletBalance:0,gameBalance:0};
         case USER_WALLET_AND_GAME_BALANCE_SUCCESS:
             return { loading: false, walletBalance: action.payload.wallet_balance,gameBalance:action.payload.game_balance };
+        default:
+            return state;
+    }
+};
+
+export const userBetPredictionHistoryReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_BET_PREDICTION_HISTORY_REQUEST:
+            return { loading: true};
+        case USER_BET_PREDICTION_HISTORY_STATUS:
+            return { loading: false, predictionHistory: action.payload};
         default:
             return state;
     }

@@ -13,7 +13,9 @@ import {
     USER_WALLET_AND_GAME_BALANCE_SUCCESS,
     USER_BET_PREDICTION_STATUS,
     USER_BET_PREDICTION_STATUS_REQUEST,
-    USER_BET_PREDICTION_STATUS_TIMER
+    USER_BET_PREDICTION_STATUS_TIMER,
+    USER_BET_PREDICTION_HISTORY_REQUEST,
+    USER_BET_PREDICTION_HISTORY_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -150,10 +152,21 @@ export const actionUpdateUserAvatar = (userId, avatar) => async (dispatch) => {
 }
 
 export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
-    dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST, payload: {open: false}});
+    dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
             dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData?.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
+    dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
+    try {
+        api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
+            dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: {...responseData?.data}});
         })
     } catch (error) {
         console.log(error);
