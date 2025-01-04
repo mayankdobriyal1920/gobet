@@ -1,5 +1,6 @@
 import pool from "../connection.js";
 import {getAliveUsersQuery} from "../../queries/commonQuries.js";
+import {calculateUserBetAmount} from "./bettingDistributionHelper.js";
 
 export const createNewSessionWithUserDataAndRole = (req, userData) => {
     return new Promise((resolve, reject) => {
@@ -96,7 +97,32 @@ export const actionToGetAliveUserAndStartTimerOnIt = () => {
 }
 
 const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
-    console.log('allLiveUsersData',allLiveUsersData)
+    // betting_active_users
+    //20250104100010878 25-01-04 20:07
+    let userPayloadData = calculateUserBetAmount(allLiveUsersData);
+
+    userPayloadData?.map((userPredData)=>{
+        let aliasArray = ['$1','$2','$3','$4','$6'];
+        let columnArray = ["user_id", "min","betting_active_users_id","option_name","amount","bet_id"];
+        let valuesArray = [userPredData.user_id,userPredData?.min,userPredData?.betting_active_users_id,userPredData?.option_name,userPredData?.amount,userPredData?.bet_id];
+        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
+        insertCommonApiCall(insertData).then(()=>{})
+
+        ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+        let setData = `game_balance = $1`;
+        const whereCondition = `id = '${userId}'`;
+        let dataToSend = {column: setData, value: [Number(userPredData?.balance)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+            aliasArray = ['$1','$2','$3'];
+            columnArray = ["amount", "user_id","type"];
+            valuesArray = [userPredData?.amount,userPredData?.user_id,'game_play_deduct'];
+            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+            insertCommonApiCall(insertData).then(()=>{})
+            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+        })
+
+    })
 }
 
 export const actionToDeactivateSingleBetting = () => {
@@ -108,7 +134,6 @@ export const actionToDeactivateSingleBetting = () => {
 
 const actionToGetAllAliveUserDataFromBetLive = () => {
     pool.query(getAliveUsersQuery(), [1], (error, results) => {
-        console.log('results?.rows',results?.rows);
         // If there are other alive users, trigger the function
         if (results?.rows?.length > 1) {
             // More than 1 alive user, trigger the function
@@ -123,5 +148,5 @@ const actionToGetAllAliveUserDataFromBetLive = () => {
 const actionToStartUserAliveCheckTimer = () => {
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, 2 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
+    }, 4 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
 };
