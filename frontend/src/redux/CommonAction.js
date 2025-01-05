@@ -169,7 +169,7 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
     dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
     try {
         api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
-            dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: {...responseData?.data}});
+            dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData?.data]});
         })
     } catch (error) {
         console.log(error);

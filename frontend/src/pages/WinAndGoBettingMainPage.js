@@ -17,7 +17,6 @@ export default function WinAndGoBettingMainPage() {
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const dispatch = useDispatch();
     const {betting_active_users_id} = useParams();
-    console.log('prediction',prediction);
     const goBack = ()=>{
         history.goBack();
     }

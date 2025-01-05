@@ -202,7 +202,7 @@ export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
                 reject(error)
             }
             if(results?.rows?.length){
-                predData = results?.rows[0]
+                predData = results?.rows;
             }
             resolve(predData);
         })
