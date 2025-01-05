@@ -184,10 +184,12 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let updatesArray = [];
     let valuesArrayUserTransaction = [];
     let updatesBerUserActiveArray = [];
+    let betActiveUserIds = ids.map((uid)=> uid.id);;
     userPayloadData?.map((userPredData)=> {
         valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go']);
         updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
         updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
+        betActiveUserIds.push(userPredData.betting_active_users_id);
         valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
     })
 
@@ -200,9 +202,9 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
             ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
             setTimeout(() => {
                 // Prepare the update data
-                const setData = `status = $1`; // Update the status column to 0
-                const whereCondition = `id IN (${idInJoin.join(",")})`; // Use the IN operator for the IDs
-                const dataToSend = {
+                let setData = `status = $1`; // Update the status column to 0
+                let whereCondition = `id IN (${idInJoin.join(",")})`; // Use the IN operator for the IDs
+                let dataToSend = {
                     column: setData,
                     value: [0], // Value to update (status = 0)
                     whereCondition: whereCondition,
@@ -219,7 +221,19 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                 });
 
                 //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+                setData = `status = $1`; // Update the status column to 0
+                whereCondition = `id IN (${betActiveUserIds.join(",")})`; // Use the IN operator for the IDs
+                dataToSend = {column: setData, value: [2], whereCondition: whereCondition, tableName: 'betting_active_users',};
+                // Perform the update
+                updateCommonApiCall(dataToSend)
+                    .then(() => {
+                        console.log('Status updated to 0 for IDs:', ids);
+                    })
+                    .catch((error) => {
+                        console.error('Error updating status:', error);
+                    });
                 //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+
             }, 1000 * 60); // Delay of 1 minute
 
 
