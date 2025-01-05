@@ -183,9 +183,11 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let valuesArray = [];
     let updatesArray = [];
     let valuesArrayUserTransaction = [];
+    let updatesBerUserActiveArray = [];
     userPayloadData?.map((userPredData)=> {
         valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go']);
         updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
+        updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
         valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
     })
 
@@ -234,6 +236,15 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                 .then(() => {})
                 .catch((error) => {console.error('Error:', error)});
             /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+
+
+            //////////// UPDATE USER GAME BALANCE ///////////
+            const updateAllBetUserActiveData = {tableName: "betting_active_users", conditionColumn: "id", updates: updatesBerUserActiveArray};
+            bulkUpdateCommonApiCall(updateAllBetUserActiveData)
+                .then((response) => console.log("Bulk update successful:", response))
+                .catch((error) => console.error("Bulk update error:", error));
+            //////////// UPDATE USER GAME BALANCE ///////////
+
 
         }).catch((error) => {
             console.error('Error:', error);
