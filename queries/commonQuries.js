@@ -90,7 +90,7 @@ export const getAliveUsersQuery = () => {
             app_user.game_balance as balance
             FROM betting_active_users
             LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
-        WHERE betting_active_users.status = $1 OR betting_active_users.status = $2
+        WHERE betting_active_users.status = $1
         ORDER BY betting_active_users.user_id, betting_active_users.created_at DESC`;
 };
 

@@ -1,7 +1,7 @@
 import {
     CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_SUCCESS,
     USER_BET_PREDICTION_STATUS, USER_BET_PREDICTION_STATUS_EXPIRED, USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
-    USER_BET_PREDICTION_STATUS_REQUEST,
+    USER_BET_PREDICTION_STATUS_WAITING,
     USER_BET_PREDICTION_STATUS_TIMER,
     USER_GET_OTP_REQUEST_FAIL,
     USER_GET_OTP_REQUEST_SUCCESS,
@@ -13,7 +13,7 @@ import {
     USER_SIGNOUT,
     USER_SIGNUP_SIGNIN_ERROR,
     USER_WALLET_AND_GAME_BALANCE_REQUEST,
-    USER_WALLET_AND_GAME_BALANCE_SUCCESS
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS, USER_BET_PREDICTION_STATUS_READY, USER_BET_PREDICTION_STATUS_READY_TIMER
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -69,10 +69,14 @@ export const userBetPredictionStatusReducer = (state = {}, action) => {
             return {loading:true,status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
         case USER_BET_PREDICTION_STATUS_EXPIRED:
             return {loading:false,status: 5,prediction:state.prediction,timer:60,dateTime:state.dateTime};
-        case USER_BET_PREDICTION_STATUS_REQUEST:
-            return {loading:false,status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
+        case USER_BET_PREDICTION_STATUS_WAITING:
+            return {loading:false,status: 3,prediction:state.prediction,timer:60,dateTime:state.dateTime};
+        case USER_BET_PREDICTION_STATUS_READY:
+            return {loading:false,status: 2,prediction:state.prediction,readyState:120,readyStateDateTime:new Date(),timer:60,dateTime:state.dateTime};
         case USER_BET_PREDICTION_STATUS:
-            return {loading:false,status: 1,prediction:state.payload,timer:59,dateTime:new Date()};
+            return {loading:false,status: 1,prediction:state.payload,timer:60,dateTime:new Date()};
+        case USER_BET_PREDICTION_STATUS_READY_TIMER:
+            return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,readyStateDateTime:state.readyStateDateTime,timer:60,readyState:action.payload};
         case USER_BET_PREDICTION_STATUS_TIMER:
             return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
         default:

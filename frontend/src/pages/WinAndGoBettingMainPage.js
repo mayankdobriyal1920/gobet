@@ -53,6 +53,8 @@ export default function WinAndGoBettingMainPage() {
                         <LineLoaderComponent/>
                         <LineLoaderComponent/>
                         <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
                     </React.Fragment>
                     :(status === 5) ?
                         <React.Fragment>

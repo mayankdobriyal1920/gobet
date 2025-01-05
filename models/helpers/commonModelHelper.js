@@ -165,8 +165,8 @@ export function storeNewSessionFileFromSessionStore(req,userSessionData) {
 
 export const actionToGetAliveUserAndStartTimerOnIt = () => {
     // Query to check if there are other active users
-    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = $1 OR status = $2`;
-    pool.query(getAliveUsersQuery, [2,3], (error, results) => {
+    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = $1`;
+    pool.query(getAliveUsersQuery, [2], (error, results) => {
         // If there are other alive users, trigger the function
         if (results?.rows?.length === 1) {
             // More than 1 alive user, trigger the function
@@ -282,13 +282,13 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
 
 export const actionToDeactivateSingleBetting = () => {
     let setData = `status = $1`;
-    const whereCondition = `status = 3`;
+    const whereCondition = `status = 2`;
     let dataToSend = {column: setData, value: [4], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
     updateCommonApiCall(dataToSend).then(()=>{})
 }
 
 const actionToGetAllAliveUserDataFromBetLive = () => {
-    pool.query(getAliveUsersQuery(), [2,3], (error, results) => {
+    pool.query(getAliveUsersQuery(), [2], (error, results) => {
         // If there are other alive users, trigger the function
         if (results?.rows?.length > 1) {
             // More than 1 alive user, trigger the function

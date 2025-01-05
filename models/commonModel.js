@@ -170,16 +170,15 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
     return new Promise(function(resolve, reject) {
         let predData = {success:5};
         const query = `SELECT
-                           bau.id AS betting_active_users_id,
-                           bau.status AS betting_active_users_status,
-                           bph.id AS bet_prediction_id,
-                           bph.amount AS bet_prediction_amount,
-                           bph.bet_id AS bet_prediction_bet_id,
-                           bph.created_at AS bet_prediction_created_at,
-                           bph.option_name AS bet_prediction_option_name,
-                           bph.min AS bet_prediction_min
+                           bph.id AS id,
+                           bau.status AS status,
+                           bph.amount AS amount,
+                           bph.bet_id AS bet_id,
+                           bph.created_at AS created_at,
+                           bph.option_name AS option_name,
+                           bph.min AS min
                        FROM betting_active_users bau
-                                LEFT JOIN bet_prediction_history bph ON bau.id = bph.betting_active_users_id AND bph.status = $2 AND bph.game_type = $3
+                       LEFT JOIN bet_prediction_history bph ON bau.id = bph.betting_active_users_id AND bph.status = $2 AND bph.game_type = $3
                        WHERE bau.id = $1`;
         pool.query(query,[betting_active_users_id,1,'win_go'], (error, results) => {
             if (error) {
@@ -266,7 +265,7 @@ export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         let aliasArray = ['$1','$2'];
         let columnArray = ["user_id", "status"];
-        let valuesArray = [userId,3]; // 3 = WAIT
+        let valuesArray = [userId,2]; // 3 = WAIT
         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
         insertCommonApiCall(insertData).then((id)=>{
             ///////// BETTING DISTRIBUTION FUNCTION ////////

@@ -12,10 +12,13 @@ import {
     USER_WALLET_AND_GAME_BALANCE_REQUEST,
     USER_WALLET_AND_GAME_BALANCE_SUCCESS,
     USER_BET_PREDICTION_STATUS,
-    USER_BET_PREDICTION_STATUS_REQUEST,
+    USER_BET_PREDICTION_STATUS_WAITING,
     USER_BET_PREDICTION_STATUS_TIMER,
     USER_BET_PREDICTION_HISTORY_REQUEST,
-    USER_BET_PREDICTION_HISTORY_SUCCESS, USER_BET_PREDICTION_STATUS_LOADING_REQUEST, USER_BET_PREDICTION_STATUS_EXPIRED
+    USER_BET_PREDICTION_HISTORY_SUCCESS,
+    USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
+    USER_BET_PREDICTION_STATUS_EXPIRED,
+    USER_BET_PREDICTION_STATUS_READY, USER_BET_PREDICTION_STATUS_READY_TIMER
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -188,7 +191,7 @@ export const actionToStartTimeIntervalOfUserTime = () => async (dispatch, getSta
         // Check if the interval has reached 60 seconds
         if (secondCount >= 60) {
             clearInterval(timeInterval); // Stop the interval
-            dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
+            dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
         } else {
             // Dispatch the remaining seconds as a negative countdown
             dispatch({
@@ -198,6 +201,35 @@ export const actionToStartTimeIntervalOfUserTime = () => async (dispatch, getSta
         }
     }, 1000); // Execute the interval every 1 second
 };
+
+
+export const actionToStartTimeIntervalReadyStateTimer = () => async (dispatch, getState) => {
+    // Retrieve the previous date-time from the Redux state
+    let prevDateTime = getState().userBetPredictionStatus.readyStateDateTime;
+
+    // Start an interval to calculate the seconds difference
+    let timeInterval = setInterval(() => {
+        // Get the current time
+        let currentDateTime = new Date();
+
+        // Calculate the difference in seconds between the current and previous time
+        let secondCount = Math.floor((currentDateTime - new Date(prevDateTime)) / 1000);
+
+        // Check if the interval has reached 60 seconds
+        if (secondCount >= 60) {
+            clearInterval(timeInterval); // Stop the interval
+            dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
+        } else {
+            // Dispatch the remaining seconds as a negative countdown
+            dispatch({
+                type: USER_BET_PREDICTION_STATUS_READY_TIMER,
+                payload: secondCount - 119, // Adjusting to create a countdown effect
+            });
+        }
+    }, 1000); // Execute the interval every 1 second
+};
+
+let getPredictionTimeOut = null;
 
 export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
 
@@ -211,13 +243,27 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                 if (responseData?.data?.success === 5) {
                     dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
                 } else if (responseData?.data?.success === 1) {
-                    dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
-                    dispatch(actionToStartTimeIntervalOfUserTime());
-                } else {
-                    dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
-                    setTimeout(() => {
+
+                    /////////// CHECK REGULAR FOR BET PROGRESS ////////
+                    getPredictionTimeOut = setTimeout(() => {
                         dispatch(actionToGetUserBetPredictionData(betting_active_users_id, false));
                     }, 5000)
+                    /////////// CHECK REGULAR FOR BET PROGRESS ////////
+
+                    if(responseData?.data.prediction?.status === 3){
+                        dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
+                    }else if(responseData?.data.prediction?.status === 2){
+                        dispatch({type: USER_BET_PREDICTION_STATUS_READY});
+                        dispatch(actionToStartTimeIntervalReadyStateTimer());
+                    }else if(responseData?.data.prediction?.status === 1) {
+                        dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
+                        dispatch(actionToStartTimeIntervalOfUserTime());
+                    }else if(responseData?.data.prediction?.status === 0 || responseData?.data.prediction?.status === 4) {
+                          if(getPredictionTimeOut){
+                              clearTimeout(getPredictionTimeOut);
+                          }
+                         dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
+                    }
                 }
             })
         } catch (error) {
