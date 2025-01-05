@@ -184,7 +184,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let updatesArray = [];
     let valuesArrayUserTransaction = [];
     let updatesBerUserActiveArray = [];
-    let betActiveUserIds = ids.map((uid)=> uid.id);;
+    let betActiveUserIds = [];
     userPayloadData?.map((userPredData)=> {
         valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go']);
         updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
