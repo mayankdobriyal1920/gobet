@@ -80,10 +80,10 @@ function distributeBetAmount(members, distributionBetAmount) {
 
     // Split members into two groups: 'small' and 'big'
     let resultMemberInBet = { small: [], big: [] };
-    let curIndex = 'small';
+    let curIndex = Math.random() < 0.5 ? 'small' : 'big';
     members.forEach((member) => {
         resultMemberInBet[curIndex].push(member);
-        curIndex = curIndex === 'small' ? 'big' : 'small';
+        curIndex = (curIndex === 'small') ? 'big' : 'small';
     });
 
     // Calculate the total members in each group
