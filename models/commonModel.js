@@ -170,17 +170,18 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
     return new Promise(function(resolve, reject) {
         let predData = {success:5};
         const query = `SELECT
-                           bph.id as id,
-                           bph.amount as amount,
-                           bph.bet_id as bet_id,
-                           bph.created_at as created_at,
-                           bph.option_name as option_name,
-                           bph.min as min,
-                           bau.status as status
-                       FROM bet_prediction_history bph 
-                       INNER JOIN betting_active_users bau ON bph.betting_active_users_id = bau.id
-                       WHERE bph.user_id = $1 AND bph.status = $2 AND bph.game_type = $3 AND bph.betting_active_users_id = $4`;
-        pool.query(query,[userId,1,'win_go',betting_active_users_id], (error, results) => {
+                           bau.id AS betting_active_users_id,
+                           bau.status AS betting_active_users_status,
+                           bph.id AS bet_prediction_id,
+                           bph.amount AS bet_prediction_amount,
+                           bph.bet_id AS bet_prediction_bet_id,
+                           bph.created_at AS bet_prediction_created_at,
+                           bph.option_name AS bet_prediction_option_name,
+                           bph.min AS bet_prediction_min
+                       FROM betting_active_users bau
+                                LEFT JOIN bet_prediction_history bph ON bau.id = bph.betting_active_users_id AND bph.status = $2 AND bph.game_type = $3
+                       WHERE bau.id = $1`;
+        pool.query(query,[betting_active_users_id,1,'win_go'], (error, results) => {
             if (error) {
                 reject(error)
             }
@@ -191,6 +192,7 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
         })
     })
 }
+
 
 export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
     return new Promise(function(resolve, reject) {

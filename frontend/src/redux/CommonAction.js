@@ -204,22 +204,27 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
     if(loading){
         dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
     }
-    try {
-        api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
-            if(responseData?.data?.success === 5) {
-                dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
-            }else if(responseData?.data?.success === 1) {
-                dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
-                dispatch(actionToStartTimeIntervalOfUserTime());
-            }else{
-                dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
-                setTimeout(()=>{
-                    dispatch(actionToGetUserBetPredictionData(betting_active_users_id,false));
-                },5000)
-            }
-        })
-    } catch (error) {
-        console.log(error);
+
+    if(betting_active_users_id && !isNaN(betting_active_users_id)) {
+        try {
+            api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
+                if (responseData?.data?.success === 5) {
+                    dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
+                } else if (responseData?.data?.success === 1) {
+                    dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
+                    dispatch(actionToStartTimeIntervalOfUserTime());
+                } else {
+                    dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
+                    setTimeout(() => {
+                        dispatch(actionToGetUserBetPredictionData(betting_active_users_id, false));
+                    }, 5000)
+                }
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }else{
+        dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
     }
 }
 
