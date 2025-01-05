@@ -221,20 +221,27 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
                     const whereCondition = `id = '${userId}'`;
                     let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(userTotalGameBalance),Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
-
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                        let aliasArray = ['$1','$2'];
-                        let columnArray = ["amount", "user_id"];
-                        let valuesArray = [percentageOfGame,userId];
-                        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
+                        let aliasArray = ['$1','$2','$3'];
+                        let columnArray = ["amount", "user_id","type"];
+                        let valuesArray = [amount,userId,'wallet_to_game_wallet_transfer'];
+                        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
                         insertCommonApiCall(insertData).then(()=>{
-                            aliasArray = ['$1','$2','$3'];
-                            columnArray = ["amount", "user_id","type"];
-                            valuesArray = [percentageOfGame,userId,'game_percentage_deduct'];
-                            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                            aliasArray = ['$1','$2'];
+                            columnArray = ["amount", "user_id"];
+                            valuesArray = [percentageOfGame,userId];
+                            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
                             insertCommonApiCall(insertData).then(()=>{
-                                resolve({status:1});
+                                aliasArray = ['$1','$2','$3'];
+                                columnArray = ["amount", "user_id","type"];
+                                valuesArray = [percentageOfGame,userId,'game_percentage_deduct'];
+                                insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+                                insertCommonApiCall(insertData).then(()=>{
+                                    resolve({status:1});
+                                })
                             })
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                         })
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                     })

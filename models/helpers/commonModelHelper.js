@@ -27,6 +27,40 @@ export async function deleteOldSessionFileFromSessionStore(oldSessionId) {
     let tableName = "sessions";
     await deleteCommonApiCall({condition, tableName})
 }
+
+export const bulkInsertCommonApiCall = (body) => {
+    const { column, valuesArray, tableName } = body;
+
+    return new Promise((resolve, reject) => {
+        // Prepare placeholders for multiple rows
+        const valuePlaceholders = valuesArray
+            .map((values, index) =>
+                `(${values.map((_, i) => `$${index * values.length + i + 1}`).join(", ")})`
+            )
+            .join(", ");
+
+        // Flatten the valuesArray for query binding
+        const flattenedValues = valuesArray.flat();
+
+        // Construct the query
+        const query = `
+            INSERT INTO ${tableName} (${column.toString()})
+            VALUES ${valuePlaceholders}
+            RETURNING id;
+        `;
+
+        // Execute the query
+        pool.query(query, flattenedValues, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result.rows); // Return all inserted IDs
+            }
+        });
+    });
+};
+
+
 export const insertCommonApiCall = (body) => {
     const {column,alias,tableName,values} = body;
     return new Promise(function(resolve, reject) {
@@ -71,6 +105,50 @@ export const updateCommonApiCall = (body) => {
     }
 }
 
+export const bulkUpdateCommonApiCall = (body) => {
+    const { updates, tableName, conditionColumn } = body;
+
+    try {
+        return new Promise((resolve, reject) => {
+            // Construct the CASE statement for each column to update
+            const columnsToUpdate = Object.keys(updates[0].set); // Get columns from the first update
+            const caseStatements = columnsToUpdate.map((column) => {
+                const cases = updates
+                    .map(
+                        (update) =>
+                            `WHEN ${conditionColumn} = '${update.conditionValue}' THEN '${update.set[column]}'`
+                    )
+                    .join(" ");
+                return `${column} = CASE ${cases} ELSE ${column} END`;
+            });
+
+            // Generate the WHERE clause for all rows to update
+            const whereConditions = updates
+                .map((update) => `'${update.conditionValue}'`)
+                .join(", ");
+
+            const query = `
+                UPDATE ${tableName}
+                SET ${caseStatements.join(", ")}
+                WHERE ${conditionColumn} IN (${whereConditions});
+            `;
+
+            // Execute the query
+            pool.query(query, [], (error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve({ success: 1 });
+                }
+            });
+        });
+    } catch (e) {
+        return Promise.reject(e);
+    }
+};
+
+
+
 export function storeNewSessionFileFromSessionStore(req,userSessionData) {
     if(userSessionData?.id) {
         req.session.userSessionData = userSessionData;
@@ -101,28 +179,101 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     //20250104100010878 25-01-04 20:07
     let userPayloadData = calculateUserBetAmount(allLiveUsersData);
 
-    userPayloadData?.map((userPredData)=>{
-        let aliasArray = ['$1','$2','$3','$4','$6'];
-        let columnArray = ["user_id", "min","betting_active_users_id","option_name","amount","bet_id"];
-        let valuesArray = [userPredData.user_id,userPredData?.min,userPredData?.betting_active_users_id,userPredData?.option_name,userPredData?.amount,userPredData?.bet_id];
-        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
-        insertCommonApiCall(insertData).then(()=>{})
-
-        ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-        let setData = `game_balance = $1`;
-        const whereCondition = `id = '${userId}'`;
-        let dataToSend = {column: setData, value: [Number(userPredData?.balance)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
-        updateCommonApiCall(dataToSend).then(()=>{
-            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-            aliasArray = ['$1','$2','$3'];
-            columnArray = ["amount", "user_id","type"];
-            valuesArray = [userPredData?.amount,userPredData?.user_id,'game_play_deduct'];
-            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
-            insertCommonApiCall(insertData).then(()=>{})
-            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-        })
-
+    let valuesArray = [];
+    let updatesArray = [];
+    let valuesArrayUserTransaction = [];
+    userPayloadData?.map((userPredData)=> {
+        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id]);
+        updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
+        valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
     })
+
+    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
+
+    bulkInsertCommonApiCall(insertData)
+        .then((ids) => {
+            console.log('Inserted IDs:', ids);
+
+            ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
+            setTimeout(() => {
+                // Prepare the update data
+                const setData = `status = $1`; // Update the status column to 0
+                const whereCondition = `id IN (${ids.join(",")})`; // Use the IN operator for the IDs
+                const dataToSend = {
+                    column: setData,
+                    value: [0], // Value to update (status = 0)
+                    whereCondition: whereCondition,
+                    tableName: 'bet_prediction_history',
+                };
+
+                // Perform the update
+                updateCommonApiCall(dataToSend)
+                    .then(() => {
+                        console.log('Status updated to 0 for IDs:', ids);
+                    })
+                    .catch((error) => {
+                        console.error('Error updating status:', error);
+                    });
+            }, 1000 * 60); // Delay of 1 minute
+
+
+            //////////// UPDATE USER GAME BALANCE ///////////
+            const updateData = {tableName: "app_user", conditionColumn: "id", updates: updatesArray,};
+            bulkUpdateCommonApiCall(updateData)
+                .then((response) => console.log("Bulk update successful:", response))
+                .catch((error) => console.error("Bulk update error:", error));
+            //////////// UPDATE USER GAME BALANCE ///////////
+
+            /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+            const insertUserTransData = {column: ["amount", "user_id","type"], valuesArray: valuesArrayUserTransaction, tableName: 'user_transaction_history'};
+            bulkInsertCommonApiCall(insertUserTransData)
+                .then(() => {})
+                .catch((error) => {console.error('Error:', error)});
+            /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+
+        }).catch((error) => {
+            console.error('Error:', error);
+    });
+
+
+    // userPayloadData?.map((userPredData)=>{
+    //     let aliasArray = ['$1','$2','$3','$4','$6'];
+    //     let columnArray = ["user_id", "min","betting_active_users_id","option_name","amount","bet_id"];
+    //     let valuesArray = [userPredData.user_id,userPredData?.min,userPredData?.betting_active_users_id,userPredData?.option_name,userPredData?.amount,userPredData?.bet_id];
+    //     let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'bet_prediction_history'};
+    //     console.log('insertData',insertData)
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //     insertCommonApiCall(insertData).then(()=>{
+    //
+    //         ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+    //         let setData = `game_balance = $1`;
+    //         const whereCondition = `id = '${userId}'`;
+    //         let dataToSend = {column: setData, value: [Number(userPredData?.balance)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+    //         updateCommonApiCall(dataToSend).then(()=>{
+    //             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+    //             aliasArray = ['$1','$2','$3'];
+    //             columnArray = ["amount", "user_id","type"];
+    //             valuesArray = [userPredData?.amount,userPredData?.user_id,'game_play_deduct'];
+    //             insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+    //             insertCommonApiCall(insertData).then(()=>{
+    //
+    //             })
+    //             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+    //         })
+    //
+    //
+    //     })
+    // })
+
+
+
 }
 
 export const actionToDeactivateSingleBetting = () => {
@@ -148,5 +299,5 @@ const actionToGetAllAliveUserDataFromBetLive = () => {
 const actionToStartUserAliveCheckTimer = () => {
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, 4 * 60 * 1000);  // Run every 5 minutes (10 * 60 * 1000 ms)
+    }, 2 * 60 * 1000);  // Run every 2 minutes (10 * 60 * 1000 ms)
 };
