@@ -42,7 +42,7 @@ export const insertCommonApiCall = (body) => {
 }
 export function deleteCommonApiCall({condition, tableName}) {
     return new Promise(function(resolve, reject) {
-        let deleteQuery = `DELETE FROM ${tableName} ${condition}`;
+        let deleteQuery = `DELETE FROM ${tableName} WHERE ${condition}`;
         pool.query(deleteQuery, (error) => {
             if (error) {
                 console.log('error in inserting session', error)
