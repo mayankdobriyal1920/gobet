@@ -191,7 +191,7 @@ export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => 
 
         // Check if the interval has reached 60 seconds
         if (secondCount >= 60) {
-            clearInterval(timeInterval); // Stop the interval
+            clearInterval(betStateTimeInterval); // Stop the interval
             dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
             /////// call set timer for waiting state ///////////
             dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id,0));
@@ -222,7 +222,7 @@ export const actionToStartTimeIntervalReadyStateTimer = (betting_active_users_id
 
         // Check if the interval has reached 120 seconds (2 minutes)
         if (secondCount >= 120) {
-            clearInterval(timeInterval); // Stop the interval
+            clearInterval(readyStateTimeInterval); // Stop the interval
         } else {
             // Dispatch the remaining seconds as a countdown
             dispatch({
