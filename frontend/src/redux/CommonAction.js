@@ -177,29 +177,37 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
 }
 
 let betStateTimeInterval = null;
+
 export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => async (dispatch) => {
+    // Capture the starting time
+    const startTime = new Date();
+
     // Start an interval to calculate the seconds difference
     betStateTimeInterval = setInterval(() => {
+        const currentTime = new Date();
+        // Calculate the elapsed time in seconds
+        const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+
         // Check if the interval has reached 60 seconds
-        if (new Date().getSeconds() >= 60) {
+        if (elapsedSeconds >= 60) {
             clearInterval(betStateTimeInterval); // Stop the interval
-            dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
-            /////// call set timer for waiting state ///////////
-            dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id,0));
-            /////// call set timer for waiting state ///////////
+            dispatch({ type: USER_BET_PREDICTION_STATUS_WAITING });
+            /////// call set timer for waiting state ///////
+            dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id, 0));
+            /////// call set timer for waiting state ///////
         } else {
             // Dispatch the remaining seconds as a countdown from 60
             dispatch({
                 type: USER_BET_PREDICTION_STATUS_TIMER,
-                payload: 60 - new Date().getSeconds(), // Countdown from 60 seconds
+                payload: 60 - elapsedSeconds, // Countdown from 60 seconds
             });
         }
     }, 1000); // Execute the interval every 1 second
-};
+}
 
 let readyStateTimeInterval = null
 
-export const actionToStartTimeIntervalReadyStateTimer = (betting_active_users_id) => async (dispatch, getState) => {
+export const actionToStartTimeIntervalReadyStateTimer = () => async (dispatch, getState) => {
     // Retrieve the previous date-time from the Redux state
     let prevDateTime = getState().userBetPredictionStatus.readyStateDateTime;
 
@@ -222,7 +230,7 @@ export const actionToStartTimeIntervalReadyStateTimer = (betting_active_users_id
             });
         }
     }, 1000); // Execute the interval every 1 second
-};
+}
 
 
 let getPredictionTimeOut = null;
