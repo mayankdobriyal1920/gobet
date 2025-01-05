@@ -328,5 +328,5 @@ const actionToGetAllAliveUserDataFromBetLive = () => {
 const actionToStartUserAliveCheckTimer = () => {
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, 2 * 60 * 1000);  // Run every 2 minutes (10 * 60 * 1000 ms)
+    }, 60 * 1000);  // Run every 2 minutes (10 * 60 * 1000 ms)
 };
