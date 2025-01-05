@@ -1,23 +1,20 @@
 
-function getNewMinuteBetId() {
-    // Convert both dateTime objects to timestamps
-    let dateTime1 = new Date('2025-01-04 20:07:00');
-    let dateTime2 = new Date();
+function generateTimeBasedId() {
+    const now = new Date();
 
-    // Calculate the difference in milliseconds and convert to minutes
-    const diffInMinutes = Math.floor((dateTime2.getTime() - dateTime1.getTime()) / (1000 * 60));
+    // Get components of the current date
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
+    const day = String(now.getDate()).padStart(2, '0'); // Pad day with leading zero
 
-    // Get current date components
-    const year = dateTime2.getFullYear();
-    const month = String(dateTime2.getMonth() + 1).padStart(2, '0');
-    const day = String(dateTime2.getDate()).padStart(2, '0');
+    // Calculate minutes since midnight
+    const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
 
-    let partNewNumber = 100010878 + diffInMinutes;
+    // Calculate the dynamic counter
+    const counter = 10000 + minutesSinceMidnight;
 
-    // Ensure partNewNumber has enough digits (e.g., pad it with leading zeros if needed)
-    partNewNumber = String(partNewNumber).padStart(11, '0');
-
-    return `${year}${month}${day}${partNewNumber}`;
+    // Combine components to form the ID
+    return `${year}${month}${day}1000${counter-329}`;
 }
 
 
@@ -137,7 +134,7 @@ function distributeBetAmount(members, distributionBetAmount) {
             option_name: 'SMALL',
             amount: smallRandomDivide[index],
             balance: member.balance - smallRandomDivide[index],
-            bet_id:getNewMinuteBetId(),
+            bet_id:generateTimeBasedId(),
         });
     });
 
@@ -149,7 +146,7 @@ function distributeBetAmount(members, distributionBetAmount) {
             option_name: 'BIG',
             amount: bigRandomDivide[index],
             balance: member.balance - smallRandomDivide[index],
-            bet_id:getNewMinuteBetId(),
+            bet_id:generateTimeBasedId(),
         });
     });
 
