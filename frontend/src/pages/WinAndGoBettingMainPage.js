@@ -13,7 +13,7 @@ import {_formatTimeMMSS} from "../redux/CommonHelper";
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
     const {gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
-    const {loading,status,prediction,timer} = useSelector((state) => state.userBetPredictionStatus);
+    const {loading,status,prediction,timer,readyState} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const dispatch = useDispatch();
     const {betting_active_users_id} = useParams();
@@ -58,13 +58,29 @@ export default function WinAndGoBettingMainPage() {
                     </React.Fragment>
                     :(status === 5) ?
                         <React.Fragment>
-                            <div className={"TimeLeft__C_bottom TimeLeft__C"}>
+                            <div className={"TimeLeft__C_bottom TimeLeft__C for_warning_message"}>
                                 <div className="TimeLeft__C-id">
                                     Sorry! We are unable to find any active betting data associated with this account.
                                     Please go back and re-enter the game.
+                                    <br/>
+                                    <br/>
+                                    Possible reasons for this issue:
+                                    <br/>
+                                    <br/>
+                                    1 - Game balance is too low to place a new prediction.
+                                    <br/>
+                                    2 - There are no active users online at the moment. Please try again after some
+                                    time.
+                                    <br/>
+                                    3 - The game session has expired. Please start a new session to continue.
+                                    <br/>
+                                    4 - No active bets available for your current status. Please check again later.
+                                    <br/>
+                                    5 - Technical issues on the server may be preventing predictions. Please try again
+                                    shortly.
                                 </div>
                             </div>
-                            <div className="serviceCenter-wrap-header">
+                            <div className="serviceCenter-wrap-header for_warning_message">
                                 <button onClick={() => goBack()}>
                                     <svg className="svg-icon icon-logout"
                                          fill="var(--main-color)"  version="1.1" id="Capa_1"
@@ -103,19 +119,27 @@ export default function WinAndGoBettingMainPage() {
                             </div>
                             <div className="Betting__C">
                                 {/*///////// WAITING MODE SECTION /////////*/}
-                                {(!status) ?
+                                {(status === 3) ?
                                     <div className="Betting__C-mark">
                                         <div>W</div>
                                         <div>A</div>
                                         <div>I</div>
                                         <div>T</div>
                                     </div>
-                                    :''
+                                    : (status === 2) ?
+                                        <div className="Betting__C-mark ready_state">
+                                            <div>{_formatTimeMMSS(readyState)[0]}</div>
+                                            <div>{_formatTimeMMSS(readyState)[1]}</div>
+                                            <div>{_formatTimeMMSS(readyState)[2]}</div>
+                                            <div>{_formatTimeMMSS(readyState)[3]}</div>
+                                            <div>{_formatTimeMMSS(readyState)[4]}</div>
+                                        </div>
+                                        : ''
                                 }
                                 {/*///////// WAITING MODE SECTION /////////*/}
                                 <div className={"Betting__C-numC"}>
                                     <div className="Betting__C-numC-head">
-                                        Bet Prediction Tip
+                                    Bet Prediction Tip
                                     </div>
                                     <div className={"GameList__C"}>
                                         <div className={"GameList__C-item active"}>

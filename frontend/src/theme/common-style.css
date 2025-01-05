@@ -1163,7 +1163,7 @@ ion-header {
 }
 .TimeLeft__C {
     width: calc(100% - .69333rem);
-    height: 2.66667rem;
+    height: fit-content;
     margin: .48rem auto 0;
     background: var(--ion-color-primary);
     color: var(--text_color_L4);
@@ -1349,4 +1349,12 @@ ion-header {
 .GameRecord__C-body>div {
     background: var(--bg_color_L2);
     color: var(--text_color_L1);
+}
+.TimeLeft__C_bottom.TimeLeft__C.for_warning_message {
+    height: fit-content!important;
+}
+
+.serviceCenter-wrap-header.for_warning_message {
+    padding: .3rem!important;
+    margin: 0.5rem 0!important;
 }

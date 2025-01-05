@@ -184,12 +184,12 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let updatesArray = [];
     let valuesArrayUserTransaction = [];
     userPayloadData?.map((userPredData)=> {
-        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1]);
+        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go']);
         updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
         valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
     })
 
-    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
+    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_type"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
 
     bulkInsertCommonApiCall(insertData)
         .then((ids) => {
