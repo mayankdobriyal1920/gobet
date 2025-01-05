@@ -223,7 +223,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                 //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
                 setData = `status = $1`; // Update the status column to 0
                 whereCondition = `id IN (${betActiveUserIds.join(",")})`; // Use the IN operator for the IDs
-                dataToSend = {column: setData, value: [2], whereCondition: whereCondition, tableName: 'betting_active_users',};
+                dataToSend = {column: setData, value: [4], whereCondition: whereCondition, tableName: 'betting_active_users'};
                 // Perform the update
                 updateCommonApiCall(dataToSend)
                     .then(() => {

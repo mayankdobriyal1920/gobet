@@ -74,7 +74,7 @@ export const userBetPredictionStatusReducer = (state = {}, action) => {
         case USER_BET_PREDICTION_STATUS_READY:
             return {loading:false,status: 2,prediction:state.prediction,readyState:120,readyStateDateTime:new Date(),timer:60,dateTime:state.dateTime};
         case USER_BET_PREDICTION_STATUS:
-            return {loading:false,status: 1,prediction:state.payload,timer:60,dateTime:new Date()};
+            return {loading:false,status: 1,prediction:action.payload,timer:60,dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS_READY_TIMER:
             return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,readyStateDateTime:state.readyStateDateTime,timer:60,readyState:action.payload};
         case USER_BET_PREDICTION_STATUS_TIMER:
