@@ -261,6 +261,8 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
                         /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 2){
+                        if(getPredictionTimeOut)
+                            clearInterval(getPredictionTimeOut);
                         if(!readyStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS_READY});
                             dispatch(actionToStartTimeIntervalReadyStateTimer(betting_active_users_id));
@@ -269,6 +271,8 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
                         /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 1) {
+                        if(readyStateTimeInterval)
+                            clearInterval(readyStateTimeInterval);
                         if(!betStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                             dispatch(actionToStartTimeIntervalOfUserTime(betting_active_users_id));
