@@ -177,20 +177,11 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
 }
 
 let betStateTimeInterval = null;
-export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => async (dispatch, getState) => {
-    // Retrieve the previous date-time from the Redux state
-    let prevDateTime = getState().userBetPredictionStatus.dateTime;
-
+export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => async (dispatch) => {
     // Start an interval to calculate the seconds difference
     betStateTimeInterval = setInterval(() => {
-        // Get the current time
-        let currentDateTime = new Date();
-
-        // Calculate the difference in seconds between the current and previous time
-        let secondCount = Math.floor((currentDateTime - new Date(prevDateTime)) / 1000);
-
         // Check if the interval has reached 60 seconds
-        if (secondCount >= 60) {
+        if (new Date().getSeconds() >= 60) {
             clearInterval(betStateTimeInterval); // Stop the interval
             dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
             /////// call set timer for waiting state ///////////
@@ -200,7 +191,7 @@ export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => 
             // Dispatch the remaining seconds as a countdown from 60
             dispatch({
                 type: USER_BET_PREDICTION_STATUS_TIMER,
-                payload: 60 - secondCount, // Countdown from 60 seconds
+                payload: 60 - new Date().getSeconds(), // Countdown from 60 seconds
             });
         }
     }, 1000); // Execute the interval every 1 second
@@ -270,8 +261,8 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
                         /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 1) {
-                        dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                         if(!betStateTimeInterval) {
+                            dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                             dispatch(actionToStartTimeIntervalOfUserTime(betting_active_users_id));
                         }
                         ///////// REMOVE TIME OUT TIMER ON FOUND STATE ///////////
