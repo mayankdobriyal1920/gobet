@@ -234,7 +234,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                         console.error('Error updating status:', error);
                     });
                 //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
-            }, (1000 * 60) - currentSecond); // Delay of 1 minute
+            }, (1000 * 60) - (currentSecond * 1000)); // Delay of 1 minute
 
 
             //////////// UPDATE USER GAME BALANCE ///////////
@@ -322,5 +322,5 @@ const actionToStartUserAliveCheckTimer = () => {
     let currentSecond = new Date().getSeconds();
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, (2 * 60 * 1000) - currentSecond);  // Run every 2 minutes (10 * 60 * 1000 ms)
+    }, (2 * 60 * 1000) - ((currentSecond * 1000)));  // Run every 2 minutes (10 * 60 * 1000 ms)
 };

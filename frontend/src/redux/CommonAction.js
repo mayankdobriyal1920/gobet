@@ -227,7 +227,7 @@ export const actionToStartTimeIntervalReadyStateTimer = (betting_active_users_id
 
 let getPredictionTimeOut = null;
 
-export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait = 5000) => async (dispatch) => {
+export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait = 1000) => async (dispatch) => {
     /////////// CHECK REGULAR FOR BET PROGRESS ////////
     getPredictionTimeOut = setTimeout(() => {
         dispatch(actionToGetUserBetPredictionData(betting_active_users_id, false));
