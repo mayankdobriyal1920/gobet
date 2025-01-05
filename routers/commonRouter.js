@@ -294,13 +294,13 @@ commonRouter.post(
 commonRouter.post(
     '/actionToGetUserBetPredictionDataApiCall',
     expressAsyncHandler(async (req, res) => {
-        if (req?.session?.userSessionData?.id) {
-            actionToGetUserBetPredictionDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+        if (req?.session?.userSessionData?.id && req.body.betting_active_users_id) {
+            actionToGetUserBetPredictionDataApiCall(req?.session?.userSessionData?.id,req.body.betting_active_users_id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{
             res.status(200).send({
-                success:0,
+                success:5,
             });
         }
     })

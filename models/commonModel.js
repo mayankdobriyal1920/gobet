@@ -166,11 +166,21 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     })
 }
 
-export const actionToGetUserBetPredictionDataApiCall = (userId) => {
+export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_users_id) => {
     return new Promise(function(resolve, reject) {
-        let predData = {success:0};
-        const query = `SELECT * from bet_prediction_history WHERE user_id = $1 AND status = $2 AND game_type = $3`;
-        pool.query(query,[userId,1,'win_go'], (error, results) => {
+        let predData = {success:5};
+        const query = `SELECT
+                           bph.id as id,
+                           bph.amount as amount,
+                           bph.bet_id as bet_id,
+                           bph.created_at as created_at,
+                           bph.option_name as option_name,
+                           bph.min as min,
+                           bau.status as status
+                       FROM bet_prediction_history bph 
+                       INNER JOIN betting_active_users bau ON bph.betting_active_users_id = bau.id
+                       WHERE bph.user_id = $1 AND bph.status = $2 AND bph.game_type = $3 AND bph.betting_active_users_id = $4`;
+        pool.query(query,[userId,1,'win_go',betting_active_users_id], (error, results) => {
             if (error) {
                 reject(error)
             }
@@ -254,13 +264,13 @@ export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         let aliasArray = ['$1','$2'];
         let columnArray = ["user_id", "status"];
-        let valuesArray = [userId,1];
+        let valuesArray = [userId,3]; // 3 = WAIT
         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
-        insertCommonApiCall(insertData).then(()=>{
+        insertCommonApiCall(insertData).then((id)=>{
             ///////// BETTING DISTRIBUTION FUNCTION ////////
             actionToGetAliveUserAndStartTimerOnIt(userId);
             ///////// BETTING DISTRIBUTION FUNCTION ////////
-            resolve({success:1});
+            resolve({success:1,betting_active_users_id:id});
         })
     })
 }

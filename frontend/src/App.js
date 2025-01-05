@@ -54,7 +54,7 @@ const AppEnterMainPage = () => {
         <IonReactRouter>
             <IonRouterOutlet>
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
-                <Route path="/win-go-betting" component={WinAndGoBettingMainPage}/>
+                <Route exact={true} path="/win-go-betting/:betting_active_users_id" component={WinAndGoBettingMainPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

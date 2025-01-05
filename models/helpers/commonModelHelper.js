@@ -62,18 +62,19 @@ export const bulkInsertCommonApiCall = (body) => {
 
 
 export const insertCommonApiCall = (body) => {
-    const {column,alias,tableName,values} = body;
-    return new Promise(function(resolve, reject) {
-        const query =`INSERT INTO ${tableName} (${column.toString()}) VALUES (${alias.toString()})`;
-        pool.query(query,values, (error) => {
+    const { column, alias, tableName, values } = body;
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO ${tableName} (${column.toString()}) VALUES (${alias.toString()}) RETURNING id`;
+        pool.query(query, values, (error, result) => {
             if (error) {
-                reject(error)
+                reject(error);
+            } else {
+                resolve(result.rows[0].id); // Return the inserted row's ID
             }
-            let data = {success:1};
-            resolve(data);
-        })
-    })
-}
+        });
+    });
+};
+
 export function deleteCommonApiCall({condition, tableName}) {
     return new Promise(function(resolve, reject) {
         let deleteQuery = `DELETE FROM ${tableName} WHERE ${condition}`;
@@ -164,8 +165,8 @@ export function storeNewSessionFileFromSessionStore(req,userSessionData) {
 
 export const actionToGetAliveUserAndStartTimerOnIt = () => {
     // Query to check if there are other active users
-    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = $1`;
-    pool.query(getAliveUsersQuery, [1], (error, results) => {
+    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = $1 OR status = $2`;
+    pool.query(getAliveUsersQuery, [2,3], (error, results) => {
         // If there are other alive users, trigger the function
         if (results?.rows?.length === 1) {
             // More than 1 alive user, trigger the function
@@ -183,22 +184,22 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let updatesArray = [];
     let valuesArrayUserTransaction = [];
     userPayloadData?.map((userPredData)=> {
-        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id]);
+        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1]);
         updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
         valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
     })
 
-    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
+    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
 
     bulkInsertCommonApiCall(insertData)
         .then((ids) => {
+            let idInJoin = ids.map((uid)=> uid.id);
             console.log('Inserted IDs:', ids);
-
             ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
             setTimeout(() => {
                 // Prepare the update data
                 const setData = `status = $1`; // Update the status column to 0
-                const whereCondition = `id IN (${ids.join(",")})`; // Use the IN operator for the IDs
+                const whereCondition = `id IN (${idInJoin.join(",")})`; // Use the IN operator for the IDs
                 const dataToSend = {
                     column: setData,
                     value: [0], // Value to update (status = 0)
@@ -213,7 +214,10 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                     })
                     .catch((error) => {
                         console.error('Error updating status:', error);
-                    });
+                });
+
+                //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+                //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
             }, 1000 * 60); // Delay of 1 minute
 
 
@@ -278,13 +282,13 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
 
 export const actionToDeactivateSingleBetting = () => {
     let setData = `status = $1`;
-    const whereCondition = `status = 1`;
-    let dataToSend = {column: setData, value: [0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+    const whereCondition = `status = 3`;
+    let dataToSend = {column: setData, value: [4], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
     updateCommonApiCall(dataToSend).then(()=>{})
 }
 
 const actionToGetAllAliveUserDataFromBetLive = () => {
-    pool.query(getAliveUsersQuery(), [1], (error, results) => {
+    pool.query(getAliveUsersQuery(), [2,3], (error, results) => {
         // If there are other alive users, trigger the function
         if (results?.rows?.length > 1) {
             // More than 1 alive user, trigger the function

@@ -15,7 +15,7 @@ import {
     USER_BET_PREDICTION_STATUS_REQUEST,
     USER_BET_PREDICTION_STATUS_TIMER,
     USER_BET_PREDICTION_HISTORY_REQUEST,
-    USER_BET_PREDICTION_HISTORY_SUCCESS
+    USER_BET_PREDICTION_HISTORY_SUCCESS, USER_BET_PREDICTION_STATUS_LOADING_REQUEST, USER_BET_PREDICTION_STATUS_EXPIRED
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -199,16 +199,22 @@ export const actionToStartTimeIntervalOfUserTime = () => async (dispatch, getSta
     }, 1000); // Execute the interval every 1 second
 };
 
-export const actionToGetUserBetPredictionData = () => async (dispatch) => {
-    dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
+export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
+
+    if(loading){
+        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+    }
     try {
-        api.post(`actionToGetUserBetPredictionDataApiCall`, {}).then(responseData => {
-            if(responseData?.data?.success) {
+        api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
+            if(responseData?.data?.success === 5) {
+                dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
+            }else if(responseData?.data?.success === 1) {
                 dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                 dispatch(actionToStartTimeIntervalOfUserTime());
             }else{
+                dispatch({type: USER_BET_PREDICTION_STATUS_REQUEST});
                 setTimeout(()=>{
-                    dispatch(actionToGetUserBetPredictionData());
+                    dispatch(actionToGetUserBetPredictionData(betting_active_users_id,false));
                 },5000)
             }
         })
@@ -219,10 +225,10 @@ export const actionToGetUserBetPredictionData = () => async (dispatch) => {
 
 export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => async (dispatch) => {
     try {
-        api.post(`actionToUpdateUserAliveForGameApiCall`, {}).then(() => {
+        api.post(`actionToUpdateUserAliveForGameApiCall`, {}).then((responseData) => {
             if(callFunctionToEnterInGame) {
                 dispatch(actionToGetUserWalletAndGameBalance());
-                callFunctionToEnterInGame();
+                callFunctionToEnterInGame(responseData?.data?.betting_active_users_id);
             }
         })
     } catch (error) {

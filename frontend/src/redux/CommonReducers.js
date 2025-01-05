@@ -1,6 +1,6 @@
 import {
     CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_SUCCESS,
-    USER_BET_PREDICTION_STATUS,
+    USER_BET_PREDICTION_STATUS, USER_BET_PREDICTION_STATUS_EXPIRED, USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
     USER_BET_PREDICTION_STATUS_REQUEST,
     USER_BET_PREDICTION_STATUS_TIMER,
     USER_GET_OTP_REQUEST_FAIL,
@@ -65,12 +65,16 @@ export const userBetPredictionHistoryReducer = (state = {}, action) => {
 };
 export const userBetPredictionStatusReducer = (state = {}, action) => {
     switch (action.type) {
+        case USER_BET_PREDICTION_STATUS_LOADING_REQUEST:
+            return {loading:true,status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
+        case USER_BET_PREDICTION_STATUS_EXPIRED:
+            return {loading:false,status: 5,prediction:state.prediction,timer:60,dateTime:state.dateTime};
         case USER_BET_PREDICTION_STATUS_REQUEST:
-            return {status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
+            return {loading:false,status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
         case USER_BET_PREDICTION_STATUS:
-            return {status: 1,prediction:state.payload,timer:59,dateTime:new Date()};
+            return {loading:false,status: 1,prediction:state.payload,timer:59,dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS_TIMER:
-            return {status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
+            return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
         default:
             return state;
     }

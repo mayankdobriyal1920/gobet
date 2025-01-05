@@ -17,8 +17,8 @@ export default function HomePage() {
     const goToPage = (page)=>{
         history.push(page);
     }
-    const callFunctionToEnterInGame = ()=>{
-        goToPage('/win-go-betting');
+    const callFunctionToEnterInGame = (betting_active_users_id)=>{
+        goToPage(`/win-go-betting/${betting_active_users_id}`);
         setUserEnterLoading(false);
     }
     const callFunctionToDeductBalanceAndEnterInGame = ()=>{
