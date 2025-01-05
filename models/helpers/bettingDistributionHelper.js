@@ -14,7 +14,7 @@ function generateTimeBasedId() {
     const counter = 10000 + minutesSinceMidnight;
 
     // Combine components to form the ID
-    return `${year}${month}${day}1000${counter}`;
+    return `${year}${month}${day}1000${counter+1}`;
 }
 
 
