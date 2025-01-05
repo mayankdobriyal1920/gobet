@@ -199,6 +199,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
         .then((ids) => {
             let idInJoin = ids.map((uid)=> uid.id);
             console.log('Inserted IDs:', ids);
+            let currentSecond = new Date().getSeconds();
             ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
             setTimeout(() => {
                 // Prepare the update data
@@ -233,8 +234,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                         console.error('Error updating status:', error);
                     });
                 //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
-
-            }, 1000 * 60); // Delay of 1 minute
+            }, (1000 * 60) - currentSecond); // Delay of 1 minute
 
 
             //////////// UPDATE USER GAME BALANCE ///////////
@@ -271,13 +271,6 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     //     let valuesArray = [userPredData.user_id,userPredData?.min,userPredData?.betting_active_users_id,userPredData?.option_name,userPredData?.amount,userPredData?.bet_id];
     //     let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'bet_prediction_history'};
     //     console.log('insertData',insertData)
-    //
-    //
-    //
-    //
-    //
-    //
-    //
     //
     //     insertCommonApiCall(insertData).then(()=>{
     //
@@ -326,7 +319,8 @@ const actionToGetAllAliveUserDataFromBetLive = () => {
 
 // Function to start the timer when the first user becomes active
 const actionToStartUserAliveCheckTimer = () => {
+    let currentSecond = new Date().getSeconds();
     setTimeout(() => {
         actionToGetAllAliveUserDataFromBetLive();
-    }, 60 * 1000);  // Run every 2 minutes (10 * 60 * 1000 ms)
+    }, (2 * 60 * 1000) - currentSecond);  // Run every 2 minutes (10 * 60 * 1000 ms)
 };
