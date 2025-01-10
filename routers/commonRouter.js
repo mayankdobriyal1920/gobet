@@ -12,7 +12,7 @@ import {
     actionToVerifyLoginUserOtpApiCall,
     actionUpdateAvatarApiCall,
     actionUpdatePassCodeApiCall,
-    actionValidatePassCodeApiCall
+    actionValidatePassCodeApiCall, actionAddMoneyToGameWalletApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -290,6 +290,24 @@ commonRouter.post(
         }
     })
 );
+
+commonRouter.post(
+    '/actionAddMoneyToGameWalletApiCall',
+    expressAsyncHandler(async (req, res) => {
+        const amount = req.body.amount;
+        if (req?.session?.userSessionData?.id) {
+            actionAddMoneyToGameWalletApiCall(req?.session?.userSessionData?.id, amount).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
 
 commonRouter.post(
     '/actionToGetUserBetPredictionDataApiCall',

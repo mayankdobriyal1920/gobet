@@ -7,6 +7,7 @@ import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
 import {actionToUpdateUserAliveForGame} from "../redux/CommonAction";
+import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
 
 export default function HomePage() {
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
@@ -70,9 +71,7 @@ export default function HomePage() {
                             </svg>
                             <div>Betting balance</div>
                         </div>
-                        <div className="Wallet__C-balance-l3">
-                            <div>Add Money</div>
-                        </div>
+                        <AddMoneyToGameWalletModal/>
                     </div>
                 </div>
                 <div className="getbet__container_main_body">

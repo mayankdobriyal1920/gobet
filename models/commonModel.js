@@ -166,6 +166,27 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     })
 }
 
+export const actionAddMoneyToGameWalletApiCall = (userId, amount) => {
+    return new Promise(function(resolve, reject) {
+        const query = `update app_user set wallet_balance = wallet_balance - $2, game_balance = game_balance + $2 WHERE id = $1`;
+        pool.query(query,[userId, amount], (error, results) => {
+            if (error) {
+                console.log(error);
+                reject(error)
+            }
+            let responseToSend = {
+                status:'failed'
+            }
+            if(results){
+                responseToSend = {
+                    status:'success'
+                }
+            }
+            resolve(responseToSend);
+        })
+    })
+}
+
 export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_users_id) => {
     return new Promise(function(resolve, reject) {
         let predData = {success:5};
