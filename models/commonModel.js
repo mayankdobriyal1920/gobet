@@ -166,27 +166,6 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     })
 }
 
-export const actionAddMoneyToGameWalletApiCall = (userId, amount) => {
-    return new Promise(function(resolve, reject) {
-        const query = `update app_user set wallet_balance = wallet_balance - $2, game_balance = game_balance + $2 WHERE id = $1`;
-        pool.query(query,[userId, amount], (error, results) => {
-            if (error) {
-                console.log(error);
-                reject(error)
-            }
-            let responseToSend = {
-                status:'failed'
-            }
-            if(results){
-                responseToSend = {
-                    status:'success'
-                }
-            }
-            resolve(responseToSend);
-        })
-    })
-}
-
 export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_users_id) => {
     return new Promise(function(resolve, reject) {
         let predData = {success:5};
@@ -247,7 +226,7 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
                     ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
                     let userGameBalance = results?.rows[0]?.game_balance;
                     let percentageOfGame = Math.round(amount / 100);
-                    let userTotalGameBalance = userGameBalance - percentageOfGame;
+                    let userTotalGameBalance = amount - percentageOfGame;
                     ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
                     let setData = `game_balance = $1,wallet_balance = $2`;
                     const whereCondition = `id = '${userId}'`;

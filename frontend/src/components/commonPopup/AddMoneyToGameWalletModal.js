@@ -1,5 +1,5 @@
-import React, {useState, useRef} from 'react';
-import {IonModal, IonButton, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel, IonInput} from '@ionic/react';
+import React, {useState} from 'react';
+import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '@ionic/react';
 import {useDispatch, useSelector} from "react-redux";
 import {actionAddMoneyToGameWallet} from "../../redux/CommonAction";
 
@@ -53,26 +53,19 @@ const AddMoneyToGameWalletModal = () => {
             </div>
             <IonModal
                 className="add-money-to-game-wallet-modal"
-                //ref={modalRef}
                 isOpen={isOpen}
                 onDidDismiss={handleCloseModal}
                 initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Add money to game wallet</h2>
+                        <h2>Add Money To Game Wallet</h2>
                     </div>
                     <IonGrid>
                         <IonRow>
                             <IonCol size="12">
-                                {/* Input field for transfer amount */}
                                 <IonItem>
                                     <IonLabel position="stacked" className="enter_amount_label">Enter Amount</IonLabel>
-                                    {/*<IonInput
-                                        placeholder="Enter amount"
-                                        type="number"
-                                        className="add-money-input"
-                                    />*/}
-                                    <input className={"form_input_section input"}
+                                    <input className={"add-money-input input"}
                                            onChange={(e)=>setAmount(e.target.value)}
                                            value={amount}
                                            placeholder={"Enter Amount"} type={"text"} required={true}/>
@@ -82,10 +75,10 @@ const AddMoneyToGameWalletModal = () => {
                         </IonRow>
                         <IonRow>
                             <IonCol size="12">
-                                {/* Add a button for submission */}
-                                <IonButton expand="block" className="submit-transfer-btn" onClick={() => addMoneyToGameWalletAction()}>
+                                <button onClick={addMoneyToGameWalletAction} type={"button"}
+                                        className={"submit-transfer-btn"}>
                                     Submit
-                                </IonButton>
+                                </button>
                             </IonCol>
                         </IonRow>
                     </IonGrid>

@@ -167,7 +167,7 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
 
 export const actionAddMoneyToGameWallet = (amount) => async (dispatch) => {
     try {
-        api.post(`actionAddMoneyToGameWalletApiCall`, {amount}).then(responseData => {
+        api.post(`actionToTransferAmountFromUserMainWalletToGameWalletApiCall`, {amount}).then(responseData => {
             dispatch(actionToGetUserWalletAndGameBalance());
         })
     } catch (error) {
