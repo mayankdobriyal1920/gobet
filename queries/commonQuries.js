@@ -60,6 +60,13 @@ export const updateUserAvatarQuery = () => {
     `;
 };
 
+export const updateUserUserNameQuery = () => {
+    return `
+        UPDATE app_user set name = $1
+        WHERE id = $2;
+    `;
+};
+
 export const getUserByIdQuery = () => {
     return `
         SELECT

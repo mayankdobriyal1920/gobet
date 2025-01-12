@@ -12,7 +12,7 @@ import {
     actionToVerifyLoginUserOtpApiCall,
     actionUpdateAvatarApiCall,
     actionUpdatePassCodeApiCall,
-    actionValidatePassCodeApiCall
+    actionValidatePassCodeApiCall, actionUpdateUserNameApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -375,6 +375,38 @@ commonRouter.post(
             }).catch(error => {
             res.status(500).send(error);
         })
+    })
+);
+
+
+commonRouter.post(
+    '/actionUpdateNameApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            const userId = req?.session?.userSessionData?.id;
+            actionUpdateUserNameApiCall(req.body.name, userId)
+                .then(responseData => {
+                    if (responseData?.status && responseData?.status === 'success') {
+                        actionGetUserByIdApiCall(userId)
+                            .then(user => {
+                                res.status(200).send({
+                                    success: 1,
+                                    userData: user,
+                                    message: 'Name updated successfully',
+                                });
+                            }).catch(error => {
+                            res.status(500).send(error);
+                        })
+                    }
+                }).catch(error => {
+                res.status(500).send(error);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
     })
 );
 

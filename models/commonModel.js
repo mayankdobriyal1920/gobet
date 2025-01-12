@@ -4,7 +4,7 @@ import {
     CheckMobNumberAlreadyExistQuery, getUserByIdQuery,
     isPassCodeValidQuery,
     loginUserQuery,
-    signupQuery, updatePassCodeQuery, updateUserAvatarQuery
+    signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery
 } from "../queries/commonQuries.js";
 import {
     actionToGetAliveUserAndStartTimerOnIt,
@@ -130,6 +130,28 @@ export const actionUpdateAvatarApiCall = (body) => {
         let userData = {};
         const query = updateUserAvatarQuery();
         pool.query(query,[avatar, userId], (error, results) => {
+            if (error) {
+                console.log(error);
+                reject(error)
+            }
+            let responseToSend = {
+                status:'failed'
+            }
+            if(results){
+                responseToSend = {
+                    status:'success'
+                }
+            }
+            resolve(responseToSend);
+        })
+    })
+}
+
+export const actionUpdateUserNameApiCall = (name, userId) => {
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const query = updateUserUserNameQuery();
+        pool.query(query,[name, userId], (error, results) => {
             if (error) {
                 console.log(error);
                 reject(error)

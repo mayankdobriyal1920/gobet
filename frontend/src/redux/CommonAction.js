@@ -154,6 +154,18 @@ export const actionUpdateUserAvatar = (userId, avatar) => async (dispatch) => {
     }
 }
 
+export const actionUpdateUserName = (name) => async (dispatch) => {
+    try {
+        api.post(`actionUpdateNameApiCall`, {name}).then(responseData => {
+            if(responseData?.data?.success){
+                dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
     dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
     try {

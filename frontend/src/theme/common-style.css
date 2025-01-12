@@ -217,6 +217,25 @@ ion-header {
     color: #fff;
 }
 
+.userInfo__container-content-nickname_edit{
+    display: flex;
+    align-items:center;
+    gap:0.2rem;
+}
+
+.userInfo__container-content-nickname_input{
+    font-size:0.4rem;
+    padding: 0.1rem;
+    color:var(--text_color_L1);
+}
+
+.userInfo__container-content-nickname_edit_icon{
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.4rem;
+}
+
 .userInfo__container-content-logintime {
     font-size: .29rem;
 }

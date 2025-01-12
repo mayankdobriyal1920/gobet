@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToLogoutUserSession} from "../redux/CommonAction";
+import {actionToLogoutUserSession, actionUpdateUserName} from "../redux/CommonAction";
 import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 
 export default function AccountPage() {
@@ -10,12 +10,24 @@ export default function AccountPage() {
     const [userLogoutLoading,setUserLogoutLoading] = useState(false);
     const [userLogoutAlertConfirm,setUserLogoutAlertConfirm] = useState(false);
     const dispatch = useDispatch();
+    const [isEditing, setIsEditing] = useState(false);
+    const [tempName, setTempName] = useState(userInfo?.name);
 
     const callFunctionToLogoutUser = ()=>{
         setUserLogoutLoading(true);
         setUserLogoutAlertConfirm(false);
         dispatch(actionToLogoutUserSession(setUserLogoutLoading));
     }
+
+    const handleEdit = () => {
+        setTempName(userInfo?.name);
+        setIsEditing(true);
+    };
+
+    const handleBlur = () => {
+        setIsEditing(false);
+        dispatch(actionUpdateUserName(tempName));
+    };
 
     return (
         <IonPage>
@@ -31,7 +43,28 @@ export default function AccountPage() {
                         </div>
                         <div className="userInfo__container-content__name">
                             <div className="userInfo__container-content-nickname">
-                                <h3>{userInfo?.name}</h3>
+                                <div className="userInfo__container-content-nickname_edit">
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={tempName}
+                                            onChange={(e) => setTempName(e.target.value)}
+                                            onBlur={handleBlur}
+                                            autoFocus
+                                            className="userInfo__container-content-nickname_input"
+                                        />
+                                    ) : (
+                                        <>
+                                            <h3>{userInfo?.name}</h3>
+                                            <button
+                                                onClick={handleEdit}
+                                                className="userInfo__container-content-nickname_edit_icon"
+                                                aria-label="Edit name">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{cursor: "pointer"}}><path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm14.81-10.64c.2-.2.2-.51 0-.71l-2.83-2.83a.5.5 0 0 0-.71 0l-1.06 1.06 3.54 3.54 1.06-1.06z"/></svg>
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                             <div className="userInfo__container-content-uid">
                                 <span>UID</span><span>&nbsp;-&nbsp;</span><span>{userInfo?.id}</span>
