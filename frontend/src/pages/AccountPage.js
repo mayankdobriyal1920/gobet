@@ -3,6 +3,7 @@ import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
 import {actionToLogoutUserSession, actionUpdateUserName} from "../redux/CommonAction";
 import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
+import {useHistory} from "react-router";
 
 export default function AccountPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
@@ -12,6 +13,8 @@ export default function AccountPage() {
     const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
     const [tempName, setTempName] = useState(userInfo?.name);
+
+    const history = useHistory();
 
     const callFunctionToLogoutUser = ()=>{
         setUserLogoutLoading(true);
@@ -28,6 +31,10 @@ export default function AccountPage() {
         setIsEditing(false);
         dispatch(actionUpdateUserName(tempName));
     };
+
+    const goToPage = (page)=>{
+        history.push(page);
+    }
 
     return (
         <IonPage>
@@ -163,7 +170,7 @@ export default function AccountPage() {
                                 <div className="serviceCenter__container"><h1
                                 >Service center</h1>
                                     <div className="serviceCenter__container-items">
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/setting')}>
                                             <svg className="svg-icon icon-settingCenter" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
                                                 <path opacity="0.4"
@@ -173,7 +180,8 @@ export default function AccountPage() {
                                                     d="M30 38.125C32.1549 38.125 34.2215 37.269 35.7452 35.7452C37.269 34.2215 38.125 32.1549 38.125 30C38.125 27.8451 37.269 25.7785 35.7452 24.2548C34.2215 22.731 32.1549 21.875 30 21.875C27.8451 21.875 25.7785 22.731 24.2548 24.2548C22.731 25.7785 21.875 27.8451 21.875 30C21.875 32.1549 22.731 34.2215 24.2548 35.7452C25.7785 37.269 27.8451 38.125 30 38.125Z"
                                                     fill="var(--main-color)"></path>
                                             </svg>
-                                            <span>Settings</span></div>
+                                            <span>Settings</span>
+                                        </div>
                                         <div className="serviceCenter__container-items__item">
                                             <svg className="svg-icon icon-feedback" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
