@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {IonAlert, IonContent, IonHeader, IonIcon, IonLoading, IonPage} from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToLogoutUserSession, actionUpdateUserName} from "../redux/CommonAction";
-import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 import {arrowBack} from "ionicons/icons";
+import {useHistory} from "react-router";
 
 export default function SettingPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const history = useHistory();
     const goBack = ()=>{
         history.goBack();
     }
