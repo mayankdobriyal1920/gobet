@@ -73,7 +73,6 @@ export function divideAmount(amount, parts) {
 }
 
 function distributeBetAmount(members, distributionBetAmount) {
-    const totalMembers = members.length;
 
     // Sort members by balance
     members.sort((a, b) => a.balance - b.balance);
