@@ -58,7 +58,7 @@ const AddMoneyToGameWalletModal = () => {
                 initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Add Money To Game Wallet</h2>
+                        <h2>Add money to game wallet</h2>
                     </div>
                     <IonGrid>
                         <IonRow>

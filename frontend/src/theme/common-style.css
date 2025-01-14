@@ -1392,7 +1392,7 @@ ion-header {
 }
 
 .add-money-to-game-wallet-modal .enter_amount_label {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
     font-weight: 500;
     color: #555;
     display: block;
@@ -1405,9 +1405,9 @@ ion-header {
     border-radius: .26667rem;
     color: var(--theme-text-color);
     height: 50px;
-    font-size: .5rem;
+    font-size: .4rem;
     width: 100%;
-    margin-top: 10px;
+    margin-top: .2rem;
 }
 
 .add-money-to-game-wallet-modal .submit-transfer-btn {
