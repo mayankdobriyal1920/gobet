@@ -1,6 +1,6 @@
-import React, {useState} from "react";
-import {IonAlert, IonContent, IonHeader, IonIcon, IonLoading, IonPage} from "@ionic/react";
-import {useDispatch, useSelector} from "react-redux";
+import React from "react";
+import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
+import {useSelector} from "react-redux";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
 

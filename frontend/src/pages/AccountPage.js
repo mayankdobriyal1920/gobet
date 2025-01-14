@@ -106,7 +106,7 @@ export default function AccountPage() {
                         </div>
                         <div className="financialServices__container">
                             <div className="financialServices__container-box">
-                                <div>
+                                <div onClick={()=>goToPage('/game-history')}>
                                     <svg className="svg-icon icon-betHistory" viewBox="0 0 80 80" fill="none"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -136,7 +136,7 @@ export default function AccountPage() {
                                         <h3>Game History</h3><span>My game history</span>
                                     </div>
                                 </div>
-                                <div>
+                                <div onClick={()=>goToPage('/money-transaction')}>
                                     <svg className="svg-icon icon-tradeHistory" viewBox="0 0 80 80" fill="none"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -182,7 +182,7 @@ export default function AccountPage() {
                                             </svg>
                                             <span>Settings</span>
                                         </div>
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/coming-soon')}>
                                             <svg className="svg-icon icon-feedback" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
                                                 <path opacity="0.4"
@@ -193,7 +193,7 @@ export default function AccountPage() {
                                                     fill="var(--main-color)"></path>
                                             </svg>
                                             <span>Feedback</span></div>
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/coming-soon')}>
                                             <svg className="svg-icon icon-notificationCenter" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
                                                 <path opacity="0.4"
@@ -204,7 +204,7 @@ export default function AccountPage() {
                                                     fill="var(--main-color)"></path>
                                             </svg>
                                             <span>Notification</span></div>
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/coming-soon')}>
                                             <svg className="svg-icon icon-serverTicket" viewBox="0 0 52 52" fill="none"
                                                  xmlns="http://www.w3.org/2000/svg">
                                                 <g id="Group 1420069177">
@@ -226,7 +226,7 @@ export default function AccountPage() {
                                             <span
                                             >Customer Service</span>
                                         </div>
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/coming-soon')}>
                                             <svg className="svg-icon icon-guide" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
                                                 <path opacity="0.4"
@@ -239,7 +239,7 @@ export default function AccountPage() {
                                             <span
                                             >{`Beginner's Guide`}</span>
                                         </div>
-                                        <div className="serviceCenter__container-items__item">
+                                        <div className="serviceCenter__container-items__item" onClick={()=>goToPage('/coming-soon')}>
                                             <svg className="svg-icon icon-about" xmlns="http://www.w3.org/2000/svg"
                                                  viewBox="0 0 60 60" fill="none">
                                                 <path

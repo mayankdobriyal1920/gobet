@@ -30,6 +30,9 @@ import MainAppTabsRoutePage from "./pages/MainAppTabsRoutePage";
 import SignupPage from "./pages/SignupPage";
 import WinAndGoBettingMainPage from "./pages/WinAndGoBettingMainPage";
 import SettingPage from "./pages/SettingPage";
+import CommingSoonPage from "./pages/CommingSoonPage";
+import GameTransactionPage from "./pages/GameTransactionPage";
+import MoneyTransactionPage from "./pages/MoneyTransactionPage";
 
 setupIonicReact();
 
@@ -57,6 +60,9 @@ const AppEnterMainPage = () => {
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
                 <Route exact={true} path="/win-go-betting/:betting_active_users_id" component={WinAndGoBettingMainPage}/>
                 <Route exact={true} path="/setting" component={SettingPage}/>
+                <Route exact={true} path="/game-history" component={GameTransactionPage}/>
+                <Route exact={true} path="/money-transaction" component={MoneyTransactionPage}/>
+                <Route exact={true} path="/coming-soon" component={CommingSoonPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

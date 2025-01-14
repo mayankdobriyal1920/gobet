@@ -1688,3 +1688,125 @@ figure.icon {
     padding: .34667rem .28rem;
     margin-bottom: .4rem;
 }
+.bet-container .tabs {
+    background: var(--bg_color_L1);
+}
+.fun-tabs {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    background: var(--bg_color_L1);
+}
+.bet-container-searchBar {
+    margin-top: -.13333rem;
+    padding-bottom: .24rem;
+}
+
+.ar-searchbar {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    gap: .29333rem;
+    width: 100%;
+    font-size: .37333rem;
+    margin-top: .26667rem;
+    margin-bottom: .21333rem;
+}
+
+.ar-searchbar__selector {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+;
+    width: 4.53333rem;
+    height: 1.06667rem !important;
+}
+.ar-searchbar__selector {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+;
+    width: 4.53333rem;
+    height: 1.06667rem;
+    color: var(--text_color_L2);
+}
+.ar-searchbar__selector div {
+    line-height: 1.06667rem;
+}
+.ar-searchbar__selector>div:first-of-type {
+    position: relative;
+    padding: 0 .26667rem;
+    z-index: 10;
+}
+.ar-searchbar__selector>div {
+    width: 100%;
+    line-height: 1.06667rem;
+    border-radius: .13333rem;
+    background: var(--bg_color_L2);
+}
+.ar-searchbar__selector>div:first-of-type svg {
+    position: absolute;
+    top: 50%;
+    right: .21333rem;
+}
+
+.infiniteScroll {
+    min-height: 2.66667rem;
+    border-radius: .16rem;
+}
+
+.infiniteScroll__loading {
+    width: 100%;
+    min-height: 1.4rem;
+    margin-top: auto;
+    padding-bottom: .4rem;
+    color: var(--text_color_L1);
+    font-size: .37333rem;
+    text-align: center;
+}
+.infiniteScroll__loading .empty {
+    margin-top: .53333rem;
+}
+.empty__container {
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+.empty__container svg {
+    opacity: .2;
+}
+
+.empty__container svg[data-v-f84b843f] {
+    width: 5.17333rem;
+    height: 3.02667rem;
+    margin-top: .4rem;
+    margin-bottom: .24667rem;
+}
+.empty__container p {
+    color: var(--text_color_L3);
+    font-size: .34667rem;
+}
+.svg-icon {
+    width: 8em;
+    height: 8em;
+    vertical-align: middle;
+}

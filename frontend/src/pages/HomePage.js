@@ -85,11 +85,11 @@ export default function HomePage() {
                             <img className="gameImg"
                                  src={wingoGame}/>
                         </div>
-                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
+                        <div onClick={()=>goToPage('/coming-soon')} className="item">
                             <img className="gameImg"
                                  src={aviatorGame}/>
                         </div>
-                        <div onClick={()=>goToPage('/win-go-betting')} className="item">
+                        <div onClick={()=>goToPage('/coming-soon')} className="item">
                             <img className="gameImg"
                                  src={limboGame}/>
                         </div>
