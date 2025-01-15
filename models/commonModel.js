@@ -4,7 +4,7 @@ import {
     CheckMobNumberAlreadyExistQuery, getUserByIdQuery,
     isPassCodeValidQuery,
     loginUserQuery,
-    signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery
+    signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery, userProfileDataQuery
 } from "../queries/commonQuries.js";
 import {
     actionToGetAliveUserAndStartTimerOnIt,
@@ -176,6 +176,22 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
             game_balance:0
         };
         const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        pool.query(query,[userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                userData = results?.rows[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const query = userProfileDataQuery();
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)

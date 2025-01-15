@@ -12,7 +12,7 @@ import {
     actionToVerifyLoginUserOtpApiCall,
     actionUpdateAvatarApiCall,
     actionUpdatePassCodeApiCall,
-    actionValidatePassCodeApiCall, actionUpdateUserNameApiCall
+    actionValidatePassCodeApiCall, actionUpdateUserNameApiCall, actionToGetCurrentUserProfileDataApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -245,11 +245,31 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         // Check if the session exists and the user is logged in
         if (req?.session?.userSessionData?.id) {
+            actionToGetCurrentUserProfileDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send({
+                    success: true,
+                    userData:responseData,
+                    message: 'Session data retrieved successfully',
+                });
+            })
+        } else {
+            // If no session found, return unauthorized response
             res.status(200).send({
-                success: true,
-                userData:req?.session?.userSessionData,
-                message: 'Session data retrieved successfully',
+                success: false,
+                message: 'No active session found. User is not logged in.',
             });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetCurrentUserProfileDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        // Check if the session exists and the user is logged in
+        if (req?.session?.userSessionData?.id) {
+            actionToGetCurrentUserProfileDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
         } else {
             // If no session found, return unauthorized response
             res.status(200).send({
