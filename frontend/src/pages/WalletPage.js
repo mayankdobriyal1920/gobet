@@ -1,22 +1,27 @@
 import React, {useEffect, useState} from "react";
 import {IonContent, IonPage} from "@ionic/react";
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import "./Home.css";
 import withdrawHistory from "../theme/img/withdrawHistory.png";
 import rechargeHistory from "../theme/img/rechargeHistory.png";
 import widthdrawBlue from "../theme/img/widthdrawBlue.png";
 import rechargeIcon from "../theme/img/rechargeIcon.png";
+import {actionTransferMoneyToMainWallet} from "../redux/CommonAction";
 
 export default function WalletPage() {
     const [totalWalletBalancePercentage,setTotalWalletBalancePercentage] = useState(0);
     const [totalGameBalancePercentage,setTotalGameBalancePercentage] = useState(0);
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
-
+    const dispatch = useDispatch();
     useEffect(() => {
         let totalBalance = Number(walletBalance)+Number(gameBalance);
         setTotalWalletBalancePercentage(Math.round(walletBalance * 100 / totalBalance));
         setTotalGameBalancePercentage(Math.round(gameBalance * 100 / totalBalance));
     }, [walletBalance,gameBalance]);
+
+    const addMoneyToGameWalletAction = () => {
+        dispatch(actionTransferMoneyToMainWallet());
+    };
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -70,7 +75,7 @@ export default function WalletPage() {
                                 <h3 >₹{gameBalance ? gameBalance : 0.00}</h3><span >Game wallet</span></div>
                         </div>
                         <div  className="recycleBtnD">
-                            <button  className="recycleBtn">Main wallet transfer</button>
+                            <button onClick={addMoneyToGameWalletAction} className="recycleBtn">Main wallet transfer</button>
                         </div>
                         <div  className="userDetail">
                             <div>

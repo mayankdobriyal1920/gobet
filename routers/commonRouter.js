@@ -8,11 +8,15 @@ import {
     actionToGetUserBetPredictionHistoryApiCall,
     actionToGetUserWalletAndGameBalanceApiCall,
     actionToLoginUserAndSendOtpApiCall,
-    actionToSendOtpApiCall, actionToTransferAmountFromUserMainWalletToGameWalletApiCall,
+    actionToSendOtpApiCall,
+    actionToTransferAmountFromUserMainWalletToGameWalletApiCall,
     actionToVerifyLoginUserOtpApiCall,
     actionUpdateAvatarApiCall,
     actionUpdatePassCodeApiCall,
-    actionValidatePassCodeApiCall, actionUpdateUserNameApiCall, actionToGetCurrentUserProfileDataApiCall
+    actionValidatePassCodeApiCall,
+    actionUpdateUserNameApiCall,
+    actionToGetCurrentUserProfileDataApiCall,
+    actionTransferMoneyToMainWalletApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -361,6 +365,22 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToTransferAmountFromUserMainWalletToGameWalletApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionTransferMoneyToMainWalletApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionTransferMoneyToMainWalletApiCall(req?.session?.userSessionData?.id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

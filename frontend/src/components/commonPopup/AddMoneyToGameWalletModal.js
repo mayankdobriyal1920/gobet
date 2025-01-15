@@ -52,7 +52,7 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
             </div>
             <IonModal
                 className="add-money-to-game-wallet-modal"
-                isAddMoneyOpen={isAddMoneyOpen}
+                isOpen={isAddMoneyOpen}
                 onDidDismiss={handleCloseModal}
                 initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
                 <IonContent className="ion-padding">
@@ -63,7 +63,7 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
                         <IonRow>
                             <IonCol size="12">
                                 <IonItem>
-                                    <IonLabel position="stacked" className="enter_amount_label">Enter Amount</IonLabel>
+                                    <IonLabel position="stacked" className="enter_amount_label">Amount</IonLabel>
                                     <input className={"add-money-input input"}
                                            onChange={(e)=>setAmount(e.target.value)}
                                            value={amount}

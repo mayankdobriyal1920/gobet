@@ -187,6 +187,16 @@ export const actionAddMoneyToGameWallet = (amount) => async (dispatch) => {
     }
 }
 
+export const actionTransferMoneyToMainWallet = () => async (dispatch) => {
+    try {
+        api.post(`actionTransferMoneyToMainWalletApiCall`, {}).then(responseData => {
+            dispatch(actionToGetUserWalletAndGameBalance());
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
     dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
     try {

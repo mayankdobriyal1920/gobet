@@ -338,3 +338,31 @@ export const actionGetUserByIdApiCall = (body) => {
         })
     })
 }
+
+export const actionTransferMoneyToMainWalletApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        pool.query(query, [userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if (results?.rows?.length) {
+                let userGameBalance = results?.rows[0]?.game_balance;
+                let userWalletBalance = results?.rows[0]?.wallet_balance;
+
+                if(Number(userGameBalance) < 1){
+                    resolve({status:0,error:'Game wallet does not has any balance'});
+                }else{
+                    let userNewWalletBalance = Number(userWalletBalance) + Number(userGameBalance);
+                    ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+                    let setData = `game_balance = $1,wallet_balance = $2`;
+                    const whereCondition = `id = '${userId}'`;
+                    let dataToSend = {column: setData, value: [0, userNewWalletBalance], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    updateCommonApiCall(dataToSend).then(()=>{
+                        resolve({status:1});
+                    })
+                }
+            }
+        })
+    })
+}
