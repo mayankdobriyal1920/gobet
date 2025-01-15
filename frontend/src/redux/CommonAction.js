@@ -260,13 +260,30 @@ let getPredictionTimeOut = null;
 export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait = 1000) => async (dispatch) => {
     /////////// CHECK REGULAR FOR BET PROGRESS ////////
     getPredictionTimeOut = setTimeout(() => {
-        dispatch(actionToGetUserBetPredictionData(betting_active_users_id, false));
+        dispatch(actionToGetUserBetPredictionData(betting_active_users_id));
     },wait)
     /////////// CHECK REGULAR FOR BET PROGRESS ////////
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
 
+
+    function clearAllTimeOut(){
+        if(getPredictionTimeOut) {
+            clearTimeout(getPredictionTimeOut);
+            getPredictionTimeOut = null
+        }
+        if(readyStateTimeInterval) {
+            clearInterval(readyStateTimeInterval);
+            readyStateTimeInterval = null;
+        }
+        if(betStateTimeInterval) {
+            clearInterval(betStateTimeInterval);
+            betStateTimeInterval = null;
+        }
+    }
+
     if(loading){
+        clearAllTimeOut();
         dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
     }
 
@@ -274,17 +291,20 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
         try {
             api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
                 if (responseData?.data?.success === 5) {
+                    clearAllTimeOut();
                     dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
                 } else if (responseData?.data?.success === 1) {
-
                     if(responseData?.data.prediction?.status === 3){
+                        clearAllTimeOut();
                         dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
                         /////// call set timer for waiting state ///////////
                         dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
                         /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 2){
-                        if(getPredictionTimeOut)
-                            clearInterval(getPredictionTimeOut);
+                        if(betStateTimeInterval) {
+                            clearInterval(betStateTimeInterval);
+                            betStateTimeInterval = null;
+                        }
                         if(!readyStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS_READY});
                             dispatch(actionToStartTimeIntervalReadyStateTimer(betting_active_users_id));
@@ -293,8 +313,10 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
                         /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 1) {
-                        if(readyStateTimeInterval)
+                        if(readyStateTimeInterval) {
                             clearInterval(readyStateTimeInterval);
+                            readyStateTimeInterval = null;
+                        }
                         if(!betStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                             dispatch(actionToStartTimeIntervalOfUserTime(betting_active_users_id));
@@ -302,13 +324,12 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         ///////// REMOVE TIME OUT TIMER ON FOUND STATE ///////////
                         if(getPredictionTimeOut){
                             clearTimeout(getPredictionTimeOut);
+                            getPredictionTimeOut = null;
                         }
                         ///////// REMOVE TIME OUT TIMER ON FOUND STATE ///////////
                     }else if(responseData?.data.prediction?.status === 0 || responseData?.data.prediction?.status === 4) {
-                          if(getPredictionTimeOut){
-                              clearTimeout(getPredictionTimeOut);
-                          }
-                          dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
+                        clearAllTimeOut();
+                        dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
                     }
 
                 }
@@ -317,6 +338,7 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
             console.log(error);
         }
     }else{
+        clearAllTimeOut();
         dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
     }
 }

@@ -13,14 +13,23 @@ export default function HomePage() {
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const history = useHistory();
     const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
+    const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
     const [userEnterLoading,setUserEnterLoading] = useState(false);
     const dispatch = useDispatch();
+    const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
     const goToPage = (page)=>{
         history.push(page);
     }
     const callFunctionToEnterInGame = (betting_active_users_id)=>{
         goToPage(`/win-go-betting/${betting_active_users_id}`);
         setUserEnterLoading(false);
+    }
+    const callFunctionToSetUserEnterInGameConfirm = ()=>{
+        if(gameBalance >= 100) {
+            setUserEnterInGameConfirm(true);
+        }else{
+            setLowBalanceAlert(true)
+        }
     }
     const callFunctionToDeductBalanceAndEnterInGame = ()=>{
         setUserEnterLoading(true);
@@ -71,7 +80,7 @@ export default function HomePage() {
                             </svg>
                             <div>Betting balance</div>
                         </div>
-                        <AddMoneyToGameWalletModal/>
+                        <AddMoneyToGameWalletModal setIsAddMoneyOpen={setIsAddMoneyOpen} isAddMoneyOpen={isAddMoneyOpen}/>
                     </div>
                 </div>
                 <div className="getbet__container_main_body">
@@ -81,7 +90,7 @@ export default function HomePage() {
                         </div>
                     </div>
                     <div className="getbet__container allGame">
-                        <div onClick={()=>setUserEnterInGameConfirm(true)} className="item">
+                        <div onClick={()=>callFunctionToSetUserEnterInGameConfirm(true)} className="item">
                             <img className="gameImg"
                                  src={wingoGame}/>
                         </div>
@@ -134,6 +143,30 @@ export default function HomePage() {
                     },
                 ]}
                 onDidDismiss={() => setUserEnterInGameConfirm(false)}
+            />
+
+            <IonAlert
+                header="Sorry!!"
+                message="You should have minimum 100 game balance to enter into the game."
+                isOpen={lowBalanceAlert}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            setLowBalanceAlert(false);
+                        },
+                    },
+                    {
+                        text: 'Add Money',
+                        role: 'confirm',
+                        handler: () => {
+                            setIsAddMoneyOpen(true)
+                        },
+                    },
+                ]}
+                onDidDismiss={() => setLowBalanceAlert(false)}
             />
             <IonLoading isOpen={userEnterLoading} message={"Entering in game..."}/>
         </IonPage>

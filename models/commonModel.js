@@ -285,15 +285,22 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
 }
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
-        let aliasArray = ['$1','$2'];
-        let columnArray = ["user_id", "status"];
-        let valuesArray = [userId,2]; // 3 = WAIT
-        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
-        insertCommonApiCall(insertData).then((id)=>{
-            ///////// BETTING DISTRIBUTION FUNCTION ////////
-            actionToGetAliveUserAndStartTimerOnIt(userId);
-            ///////// BETTING DISTRIBUTION FUNCTION ////////
-            resolve({success:1,betting_active_users_id:id});
+        const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';
+        pool.query(query,[userId,2], (error, results) => {
+            if(results?.rows?.length){
+                resolve({success:1,betting_active_users_id:results?.rows[0]?.id});
+            }else{
+                let aliasArray = ['$1','$2'];
+                let columnArray = ["user_id", "status"];
+                let valuesArray = [userId,2]; // 3 = WAIT
+                let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
+                insertCommonApiCall(insertData).then((id)=>{
+                    ///////// BETTING DISTRIBUTION FUNCTION ////////
+                    actionToGetAliveUserAndStartTimerOnIt(userId);
+                    ///////// BETTING DISTRIBUTION FUNCTION ////////
+                    resolve({success:1,betting_active_users_id:id});
+                })
+            }
         })
     })
 }

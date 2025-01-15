@@ -3,22 +3,21 @@ import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '
 import {useDispatch, useSelector} from "react-redux";
 import {actionAddMoneyToGameWallet} from "../../redux/CommonAction";
 
-const AddMoneyToGameWalletModal = () => {
-    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
-    const [isOpen, setIsOpen] = useState(false);
+const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
+    const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [amount, setAmount] = useState('');
     const [amountError,setAmountError] = useState(false);
     const [amountErrorMessage,setAmountErrorMessage] = useState('');
     const dispatch = useDispatch();
     const handleCloseModal = () => {
-        setIsOpen(false); // Close the modal
+        setIsAddMoneyOpen(false); // Close the modal
     };
 
     const openModal = () =>{
         setAmountErrorMessage('');
         setAmountError(false);
         setAmount('');
-        setIsOpen(true);
+        setIsAddMoneyOpen(true);
     }
 
     const validateAmount = () =>{
@@ -41,7 +40,7 @@ const AddMoneyToGameWalletModal = () => {
     const addMoneyToGameWalletAction = () => {
         const isAmountValid = validateAmount();
         if (isAmountValid){
-            setIsOpen(false);
+            setIsAddMoneyOpen(false);
             dispatch(actionAddMoneyToGameWallet(amount));
         }
     };
@@ -53,7 +52,7 @@ const AddMoneyToGameWalletModal = () => {
             </div>
             <IonModal
                 className="add-money-to-game-wallet-modal"
-                isOpen={isOpen}
+                isAddMoneyOpen={isAddMoneyOpen}
                 onDidDismiss={handleCloseModal}
                 initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
                 <IonContent className="ion-padding">

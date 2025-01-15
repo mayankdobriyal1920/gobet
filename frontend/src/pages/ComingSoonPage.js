@@ -3,7 +3,7 @@ import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
 
-export default function CommingSoonPage() {
+export default function ComingSoonPage() {
     const history = useHistory();
     const goBack = ()=>{
         history.goBack();

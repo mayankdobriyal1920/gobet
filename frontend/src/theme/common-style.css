@@ -1392,10 +1392,10 @@ ion-header {
 }
 
 .add-money-to-game-wallet-modal .enter_amount_label {
-    font-size: 0.5rem;
-    font-weight: 500;
-    color: #555;
-    display: block;
+    font-size: 0.5rem!important;
+    font-weight: 500!important;
+    color: #555!important;
+    display: block!important;
 }
 
 .add-money-to-game-wallet-modal .add-money-input {
