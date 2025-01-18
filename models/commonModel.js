@@ -402,16 +402,16 @@ export const actionToGenerateDepositRequestApiCall = (userId,body) => {
 export const actionToGetWithdrawalRequestHistoryDataApiCall = (userId,body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
-        let userData = {};
+        let responseData = [];
         const {query,values} = getWithdrawalHistoryQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
             }
             if(results?.rows?.length){
-                userData = results?.rows;
+                responseData = results?.rows;
             }
-            resolve(userData);
+            resolve(responseData);
         })
     })
 }
