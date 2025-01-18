@@ -16,6 +16,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "@vonage/server-sdk": "^3.19.3",
     "connect-pg-simple": "^10.0.0",
     "connect-redis": "^8.0.1",
     "cors": "^2.8.5",

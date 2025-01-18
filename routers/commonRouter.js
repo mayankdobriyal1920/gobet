@@ -22,8 +22,13 @@ import {
     createNewSessionWithUserDataAndRole,
     deleteOldSessionFileFromSessionStore
 } from "../models/helpers/commonModelHelper.js";
-const otpFilePath = './data.json'; // Path to your JSON file
-import fs from 'fs';
+import { Vonage } from '@vonage/server-sdk';
+
+
+const vonage = new Vonage({
+    apiKey: "93669403",
+    apiSecret: "47hxkbdWHmxyaGFv"
+})
 const commonRouter = express.Router();
 let storeUserPhoneOtbObj = {};
 
@@ -98,7 +103,21 @@ commonRouter.post(
                     res.status(200).send(responseToSend);
                 }else{
                     const otp = Math.floor(1000 + Math.random() * 9000);
+
                     console.log(otp);
+
+                    const from = "Get Bet"
+                    const to = `91${phone}`
+                    const text = 'Your otp to log in get bet app is '+otp;
+
+                    async function sendSMS() {
+                        await vonage.sms.send({to, from, text})
+                            .then(resp => { console.log('Message sent successfully'); console.log(resp); })
+                            .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+                    }
+
+                    sendSMS();
+
                     storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {
                         success:1,
