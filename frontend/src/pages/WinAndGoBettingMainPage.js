@@ -1,13 +1,11 @@
 import React, {useEffect} from "react";
-import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
-import {arrowBack} from "ionicons/icons";
+import {IonContent, IonHeader, IonPage} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {actionToGetUserBetPredictionData, actionToGetUserBetPredictionHistory} from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
 import LineLoaderComponent from "../components/LineLoaderComponent";
-import TimeLeftComponent from "../components/TimeLeftComponent";
 import {_formatTimeMMSS} from "../redux/CommonHelper";
 
 export default function WinAndGoBettingMainPage() {
@@ -22,7 +20,7 @@ export default function WinAndGoBettingMainPage() {
     }
 
     useEffect(() => {
-        dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
+        dispatch(actionToGetUserBetPredictionData(Number(betting_active_users_id),true));
         dispatch(actionToGetUserBetPredictionHistory());
     }, [betting_active_users_id]);
 
@@ -33,9 +31,9 @@ export default function WinAndGoBettingMainPage() {
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
-                                <div onClick={goBack} className="navbar__content-left">
-                                    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />
-                                </div>
+                                {/*<div onClick={goBack} className="navbar__content-left">*/}
+                                {/*    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />*/}
+                                {/*</div>*/}
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
                                         <span>Win Go</span>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {IonContent, IonPage} from "@ionic/react";
+import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
 import {useSelector, useDispatch} from "react-redux";
 import "./Home.css";
 import withdrawHistory from "../theme/img/withdrawHistory.png";
@@ -7,10 +7,15 @@ import rechargeHistory from "../theme/img/rechargeHistory.png";
 import widthdrawBlue from "../theme/img/widthdrawBlue.png";
 import rechargeIcon from "../theme/img/rechargeIcon.png";
 import {actionTransferMoneyToMainWallet} from "../redux/CommonAction";
+import WithdrawalPopupComponent from "../components/commonPopup/WithdrawalPopupComponent";
 
 export default function WalletPage() {
     const [totalWalletBalancePercentage,setTotalWalletBalancePercentage] = useState(0);
     const [totalGameBalancePercentage,setTotalGameBalancePercentage] = useState(0);
+    const [walletTransferLoader,setWalletTransferLoader] = useState(false);
+    const [loadingWithdrawalAmountSuccess,setLoadingWithdrawalAmountSuccess] = useState(false);
+    const [isWithdrawalPopupOpen,setIsWithdrawalPopupOpen] = useState(false);
+    const [showSuccessAlertToWithdrawalRequest,setShowSuccessAlertToWithdrawalRequest] = useState(false);
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const dispatch = useDispatch();
     useEffect(() => {
@@ -20,7 +25,8 @@ export default function WalletPage() {
     }, [walletBalance,gameBalance]);
 
     const addMoneyToGameWalletAction = () => {
-        dispatch(actionTransferMoneyToMainWallet());
+        setWalletTransferLoader(true);
+        dispatch(actionTransferMoneyToMainWallet(setWalletTransferLoader));
     };
 
     return (
@@ -85,7 +91,7 @@ export default function WalletPage() {
                                 <span >Deposit</span>
                             </div>
                             <div>
-                                <div className="imgD">
+                                <div onClick={()=>setIsWithdrawalPopupOpen(true)} className="imgD">
                                     <img src={widthdrawBlue}/>
                                 </div>
                                 <span>Withdraw</span>
@@ -107,6 +113,24 @@ export default function WalletPage() {
                 </div>
                 </div>
             </IonContent>
+            <IonAlert
+                header="Withdrawal Success!!"
+                message="We have initiated your withdrawal request and will transfer amount to your bank account shortly"
+                isOpen={showSuccessAlertToWithdrawalRequest}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Okay',
+                        role: 'confirm',
+                        handler: () => {
+                            setShowSuccessAlertToWithdrawalRequest(false)
+                        },
+                    },
+                ]}
+                onDidDismiss={() => setShowSuccessAlertToWithdrawalRequest(false)}
+            />
+            <IonLoading isOpen={walletTransferLoader || loadingWithdrawalAmountSuccess} message={"Please wait..."}/>
+            <WithdrawalPopupComponent setShowSuccessAlertToWithdrawalRequest={setShowSuccessAlertToWithdrawalRequest} setLoadingWithdrawalAmountSuccess={setLoadingWithdrawalAmountSuccess} setIsWithdrawalPopupOpen={setIsWithdrawalPopupOpen} isWithdrawalPopupOpen={isWithdrawalPopupOpen}/>
         </IonPage>
     )
 }

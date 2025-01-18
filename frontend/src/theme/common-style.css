@@ -1402,10 +1402,10 @@ ion-header {
     padding-left: 10px;
     background: var(--theme-background-secondry-color);
     border: 1px solid var(--theme-primary-button-color);
-    border-radius: .26667rem;
+    border-radius: .1rem;
     color: var(--theme-text-color);
     height: 50px;
-    font-size: .4rem;
+    font-size: .37rem;
     width: 100%;
     margin-top: .2rem;
 }

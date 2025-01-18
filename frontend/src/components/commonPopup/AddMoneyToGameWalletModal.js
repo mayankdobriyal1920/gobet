@@ -3,7 +3,7 @@ import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '
 import {useDispatch, useSelector} from "react-redux";
 import {actionAddMoneyToGameWallet} from "../../redux/CommonAction";
 
-const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
+const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingAddAmountSuccess}) => {
     const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [amount, setAmount] = useState('');
     const [amountError,setAmountError] = useState(false);
@@ -40,8 +40,9 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
     const addMoneyToGameWalletAction = () => {
         const isAmountValid = validateAmount();
         if (isAmountValid){
+            setLoadingAddAmountSuccess(true);
             setIsAddMoneyOpen(false);
-            dispatch(actionAddMoneyToGameWallet(amount));
+            dispatch(actionAddMoneyToGameWallet(amount,setLoadingAddAmountSuccess));
         }
     };
 
@@ -63,7 +64,7 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen}) => {
                         <IonRow>
                             <IonCol size="12">
                                 <IonItem>
-                                    <IonLabel position="stacked" className="enter_amount_label">Amount</IonLabel>
+                                    <IonLabel position="stacked" className="enter_amount_label">Game Amount</IonLabel>
                                     <input className={"add-money-input input"}
                                            onChange={(e)=>setAmount(e.target.value)}
                                            value={amount}

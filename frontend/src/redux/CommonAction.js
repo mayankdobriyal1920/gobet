@@ -167,7 +167,7 @@ export const actionUpdateUserName = (name) => async (dispatch) => {
 }
 
 export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
-    dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
+    //dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
             dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData.data}});
@@ -177,20 +177,40 @@ export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
     }
 }
 
-export const actionAddMoneyToGameWallet = (amount) => async (dispatch) => {
+export const actionAddMoneyToGameWallet = (amount,setLoadingAddAmountSuccess) => async (dispatch) => {
     try {
         api.post(`actionToTransferAmountFromUserMainWalletToGameWalletApiCall`, {amount}).then(responseData => {
             dispatch(actionToGetUserWalletAndGameBalance());
+            setTimeout(()=>{
+                setLoadingAddAmountSuccess(false);
+            },1000)
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-export const actionTransferMoneyToMainWallet = () => async (dispatch) => {
+export const actionToGenerateWithdrawalRequestAndDeductAmount = (amount,setLoadingWithdrawalAmountSuccess,setShowSuccessAlertToWithdrawalRequest) => async (dispatch) => {
+    try {
+        api.post(`actionToGenerateWithdrawalRequestAndDeductAmountApiCall`, {amount}).then(responseData => {
+            dispatch(actionToGetUserWalletAndGameBalance());
+            setTimeout(()=>{
+                setLoadingWithdrawalAmountSuccess(false);
+                setShowSuccessAlertToWithdrawalRequest(true);
+            },1000)
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionTransferMoneyToMainWallet = (setWalletTransferLoader) => async (dispatch) => {
     try {
         api.post(`actionTransferMoneyToMainWalletApiCall`, {}).then(responseData => {
             dispatch(actionToGetUserWalletAndGameBalance());
+            setTimeout(()=>{
+                setWalletTransferLoader(false);
+            },1000)
         })
     } catch (error) {
         console.log(error);
@@ -275,7 +295,7 @@ export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait 
     /////////// CHECK REGULAR FOR BET PROGRESS ////////
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
-
+console.log('actionToGetUserBetPredictionData',betting_active_users_id)
 
     function clearAllTimeOut(){
         if(getPredictionTimeOut) {

@@ -17,6 +17,7 @@ export default function HomePage() {
     const [userEnterLoading,setUserEnterLoading] = useState(false);
     const dispatch = useDispatch();
     const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
+    const [loadingAddAmountSuccess, setLoadingAddAmountSuccess] = useState(false);
     const goToPage = (page)=>{
         history.push(page);
     }
@@ -80,7 +81,7 @@ export default function HomePage() {
                             </svg>
                             <div>Betting balance</div>
                         </div>
-                        <AddMoneyToGameWalletModal setIsAddMoneyOpen={setIsAddMoneyOpen} isAddMoneyOpen={isAddMoneyOpen}/>
+                        <AddMoneyToGameWalletModal setLoadingAddAmountSuccess={setLoadingAddAmountSuccess} setIsAddMoneyOpen={setIsAddMoneyOpen} isAddMoneyOpen={isAddMoneyOpen}/>
                     </div>
                 </div>
                 <div className="getbet__container_main_body">
@@ -168,7 +169,7 @@ export default function HomePage() {
                 ]}
                 onDidDismiss={() => setLowBalanceAlert(false)}
             />
-            <IonLoading isOpen={userEnterLoading} message={"Entering in game..."}/>
+            <IonLoading isOpen={userEnterLoading || loadingAddAmountSuccess} message={"Please wait..."}/>
         </IonPage>
     )
 }

@@ -299,6 +299,42 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
         })
     })
 }
+
+
+export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,body) => {
+    const {amount} = body;
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT wallet_balance,sub_admin from app_user WHERE id = $1`;
+        pool.query(query, [userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if (results?.rows?.length) {
+                let userWalletBalance = results?.rows[0]?.wallet_balance;
+                let userSubAdminId = results?.rows[0]?.sub_admin;
+
+                if(Number(amount) > Number(userWalletBalance)){
+                    resolve({status:0,error:'Given amount is greater then wallet balance'});
+                }else{
+                    let setData = `wallet_balance = $2`;
+                    const whereCondition = `id = '${userId}'`;
+                    let dataToSend = {column: setData, value: [Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    updateCommonApiCall(dataToSend).then(()=>{
+                        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                        let aliasArray = ['$1','$2','$3'];
+                        let columnArray = ["amount", "user_id","sub_admin_id","status"];
+                        let valuesArray = [amount,userId,userSubAdminId,0];
+                        let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'withdrawal_history'};
+                        insertCommonApiCall(insertData).then(()=>{
+                            resolve({status:1});
+                        })
+                        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                    })
+                }
+            }
+        })
+    })
+}
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';
