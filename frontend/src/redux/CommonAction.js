@@ -204,6 +204,19 @@ export const actionToGenerateWithdrawalRequestAndDeductAmount = (amount,setLoadi
     }
 }
 
+export const actionToGenerateDepositRequest = (amount,setLoadingDepositAmountSuccess,setShowSuccessAlertToDepositRequest) => async (dispatch) => {
+    try {
+        api.post(`actionToGenerateDepositRequestApiCall`, {amount}).then(responseData => {
+            setTimeout(()=>{
+                setLoadingDepositAmountSuccess(false);
+                setShowSuccessAlertToDepositRequest(true);
+            },1000)
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionTransferMoneyToMainWallet = (setWalletTransferLoader) => async (dispatch) => {
     try {
         api.post(`actionTransferMoneyToMainWalletApiCall`, {}).then(responseData => {

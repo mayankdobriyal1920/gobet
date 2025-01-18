@@ -335,6 +335,32 @@ export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,b
         })
     })
 }
+
+export const actionToGenerateDepositRequestApiCall = (userId,body) => {
+    const {amount} = body;
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT sub_admin from app_user WHERE id = $1`;
+        pool.query(query, [userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if (results?.rows?.length) {
+                let userSubAdminId = results?.rows[0]?.sub_admin;
+
+                ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                let aliasArray = ['$1','$2','$3','$4'];
+                let columnArray = ["amount", "user_id","sub_admin_id","status"];
+                let valuesArray = [amount,userId,userSubAdminId,0];
+                let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'deposit_history'};
+                insertCommonApiCall(insertData).then(()=>{
+                    resolve({status:1});
+                })
+                ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+            }
+        })
+    })
+}
+
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';

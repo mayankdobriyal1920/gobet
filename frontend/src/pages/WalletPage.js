@@ -8,6 +8,7 @@ import widthdrawBlue from "../theme/img/widthdrawBlue.png";
 import rechargeIcon from "../theme/img/rechargeIcon.png";
 import {actionTransferMoneyToMainWallet} from "../redux/CommonAction";
 import WithdrawalPopupComponent from "../components/commonPopup/WithdrawalPopupComponent";
+import DepositPopupComponent from "../components/commonPopup/DepositPopupComponent";
 
 export default function WalletPage() {
     const [totalWalletBalancePercentage,setTotalWalletBalancePercentage] = useState(0);
@@ -16,12 +17,21 @@ export default function WalletPage() {
     const [loadingWithdrawalAmountSuccess,setLoadingWithdrawalAmountSuccess] = useState(false);
     const [isWithdrawalPopupOpen,setIsWithdrawalPopupOpen] = useState(false);
     const [showSuccessAlertToWithdrawalRequest,setShowSuccessAlertToWithdrawalRequest] = useState(false);
+
+
+    const [loadingDepositAmountSuccess,setLoadingDepositAmountSuccess] = useState(false);
+    const [isDepositPopupOpen,setIsDepositPopupOpen] = useState(false);
+    const [showSuccessAlertToDepositRequest,setShowSuccessAlertToDepositRequest] = useState(false);
+
+
     const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const dispatch = useDispatch();
     useEffect(() => {
         let totalBalance = Number(walletBalance)+Number(gameBalance);
-        setTotalWalletBalancePercentage(Math.round(walletBalance * 100 / totalBalance));
-        setTotalGameBalancePercentage(Math.round(gameBalance * 100 / totalBalance));
+        if(totalBalance) {
+            setTotalWalletBalancePercentage(Math.round(walletBalance * 100 / totalBalance));
+            setTotalGameBalancePercentage(Math.round(gameBalance * 100 / totalBalance));
+        }
     }, [walletBalance,gameBalance]);
 
     const addMoneyToGameWalletAction = () => {
@@ -131,6 +141,7 @@ export default function WalletPage() {
             />
             <IonLoading isOpen={walletTransferLoader || loadingWithdrawalAmountSuccess} message={"Please wait..."}/>
             <WithdrawalPopupComponent setShowSuccessAlertToWithdrawalRequest={setShowSuccessAlertToWithdrawalRequest} setLoadingWithdrawalAmountSuccess={setLoadingWithdrawalAmountSuccess} setIsWithdrawalPopupOpen={setIsWithdrawalPopupOpen} isWithdrawalPopupOpen={isWithdrawalPopupOpen}/>
+            <DepositPopupComponent setShowSuccessAlertToDepositRequest={setShowSuccessAlertToDepositRequest} setLoadingDepositAmountSuccess={setLoadingDepositAmountSuccess} setIsDepositPopupOpen={setIsDepositPopupOpen} isDepositPopupOpen={isDepositPopupOpen}/>
         </IonPage>
     )
 }

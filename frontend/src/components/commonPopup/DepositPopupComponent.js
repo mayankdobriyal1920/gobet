@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '@ionic/react';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGenerateWithdrawalRequestAndDeductAmount} from "../../redux/CommonAction";
+import {
+    actionToGenerateDepositRequest,
+} from "../../redux/CommonAction";
 
-const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWithdrawalPopupOpen,setIsWithdrawalPopupOpen,setLoadingWithdrawalAmountSuccess}) => {
+const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPopupOpen,setIsDepositPopupOpen,setLoadingDepositAmountSuccess}) => {
     const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [amount, setAmount] = useState('');
     const [amountError,setAmountError] = useState(false);
     const [amountErrorMessage,setAmountErrorMessage] = useState('');
     const dispatch = useDispatch();
     const handleCloseModal = () => {
-        setIsWithdrawalPopupOpen(false); // Close the modal
+        setIsDepositPopupOpen(false); // Close the modal
     };
 
     const validateAmount = () =>{
@@ -22,20 +24,20 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
             setAmountError(true);
             setAmountErrorMessage('Please enter amount');
         }
-        if (amount > walletBalance){
+        if (amount > 100000000){
             isFormValid = false;
             setAmountError(true);
-            setAmountErrorMessage('Amount is greater than wallet balance');
+            setAmountErrorMessage('Amount is greater 100000000');
         }
         return isFormValid;
     }
 
-    const callWithdrawalRequest = () => {
+    const callDepositRequest = () => {
         const isAmountValid = validateAmount();
         if (isAmountValid){
-            setLoadingWithdrawalAmountSuccess(true);
-            setIsWithdrawalPopupOpen(false);
-            dispatch(actionToGenerateWithdrawalRequestAndDeductAmount(amount,setLoadingWithdrawalAmountSuccess,setShowSuccessAlertToWithdrawalRequest));
+            setLoadingDepositAmountSuccess(true);
+            setIsDepositPopupOpen(false);
+            dispatch(actionToGenerateDepositRequest(amount,setLoadingDepositAmountSuccess,setShowSuccessAlertToDepositRequest));
         }
     };
 
@@ -43,23 +45,23 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
         setAmount('');
         setAmountError(false);
         setAmountErrorMessage('');
-    }, [isWithdrawalPopupOpen]);
+    }, [isDepositPopupOpen]);
 
     return (
         <IonModal
             className="add-money-to-game-wallet-modal"
-            isOpen={isWithdrawalPopupOpen}
+            isOpen={isDepositPopupOpen}
             onDidDismiss={handleCloseModal}
             initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
             <IonContent className="ion-padding">
                 <div className="add_money_game_wallet_heading">
-                    <h2>Withdrawal request</h2>
+                    <h2>Deposit request</h2>
                 </div>
                 <IonGrid>
                     <IonRow>
                         <IonCol size="12">
                             <IonItem>
-                                <IonLabel position="stacked" className="enter_amount_label">Withdrawal Amount</IonLabel>
+                                <IonLabel position="stacked" className="enter_amount_label">Deposit Amount</IonLabel>
                                 <input className={"add-money-input input"}
                                        onChange={(e)=>setAmount(e.target.value)}
                                        value={amount}
@@ -70,7 +72,7 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
                     </IonRow>
                     <IonRow>
                         <IonCol size="12">
-                            <button onClick={callWithdrawalRequest} type={"button"}
+                            <button onClick={callDepositRequest} type={"button"}
                                     className={"submit-transfer-btn"}>
                                 Submit
                             </button>
@@ -82,4 +84,4 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
     );
 };
 
-export default WithdrawalPopupComponent;
+export default DepositPopupComponent;
