@@ -73,6 +73,17 @@ commonRouter.post(
                 }else{
                     const otp = Math.floor(1000 + Math.random() * 9000);
                     console.log(otp);
+
+                    //////// SEND OTP TO SMS ////////
+                    const from = "Get Bet"
+                    const to = `91${phone}`
+                    const text = 'Your otp to log in get bet app is '+otp;
+
+                    vonage.sms.send({to, from, text})
+                        .then(resp => { console.log('Message sent successfully'); console.log(resp); })
+                        .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+                    //////// SEND OTP TO SMS ////////
+
                     storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {
                         success:1,
@@ -106,17 +117,15 @@ commonRouter.post(
 
                     console.log(otp);
 
+                    //////// SEND OTP TO SMS ////////
                     const from = "Get Bet"
                     const to = `91${phone}`
                     const text = 'Your otp to log in get bet app is '+otp;
 
-                    async function sendSMS() {
-                        await vonage.sms.send({to, from, text})
-                            .then(resp => { console.log('Message sent successfully'); console.log(resp); })
-                            .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
-                    }
-
-                    sendSMS();
+                    vonage.sms.send({to, from, text})
+                        .then(resp => { console.log('Message sent successfully'); console.log(resp); })
+                        .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+                    //////// SEND OTP TO SMS ////////
 
                     storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {
