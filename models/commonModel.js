@@ -321,7 +321,7 @@ export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,b
                     let dataToSend = {column: setData, value: [Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                        let aliasArray = ['$1','$2','$3'];
+                        let aliasArray = ['$1','$2','$3','$4'];
                         let columnArray = ["amount", "user_id","sub_admin_id","status"];
                         let valuesArray = [amount,userId,userSubAdminId,0];
                         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'withdrawal_history'};
