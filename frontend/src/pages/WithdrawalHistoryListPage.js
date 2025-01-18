@@ -45,6 +45,7 @@ export default function WithdrawalHistoryListPage() {
     const callFunctionClearToAddFilterAndGetData = ()=>{
         setStatusTypeFilter('All');
         setDateTypeFilter(null);
+        callFunctionToAddFilterAndGetData('All',null)
     }
 
     const callFunctionToAddFilterAndGetData = (typeFilter,dateFilter)=>{
