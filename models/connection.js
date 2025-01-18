@@ -6,9 +6,9 @@ dotenv.config();
 const dbConfig =
     process.env.NODE_ENV === 'PRODUCTION' ?
     {
-        host: 'db.uupimsesrmizjiwvoiit.supabase.co',
-        port: 5432,
-        user: 'postgres', // PostgreSQL uses 'user' instead of 'username'
+        host: 'aws-0-ap-south-1.pooler.supabase.com',
+        port: 6543,
+        user: 'postgres.uupimsesrmizjiwvoiit', // PostgreSQL uses 'user' instead of 'username'
         password: '2!@32Ar*tHb2JQ2',
         database: 'postgres',
         max: 10, // Maximum number of connections in the pool
@@ -17,7 +17,7 @@ const dbConfig =
     }
     :
     {
-        connectionString: 'postgresql://postgres:2!@32Ar*tHb2JQ2@db.uupimsesrmizjiwvoiit.supabase.co:5432/postgres',
+        connectionString: 'postgresql://postgres.uupimsesrmizjiwvoiit:2!@32Ar*tHb2JQ2@aws-0-ap-south-1.pooler.supabase.com:6543/postgres',
         connectionTimeoutMillis: 5000,  // Timeout in milliseconds
         idleTimeoutMillis: 30000,       // Idle connection timeout
         query_timeout: 60000            // Query timeout
