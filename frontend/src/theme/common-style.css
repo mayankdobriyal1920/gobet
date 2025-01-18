@@ -1839,3 +1839,10 @@ figure.icon {
 .custom-datetime::part(calendar-day) {
     font-size: 0.4rem!important;
 }
+
+.list_item_in_search_list_main .pending {
+    color: red;
+}
+.list_item_in_search_list_main .approved {
+    color: green;
+}
