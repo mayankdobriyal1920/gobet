@@ -18,7 +18,9 @@ import {
     actionToGetCurrentUserProfileDataApiCall,
     actionTransferMoneyToMainWalletApiCall,
     actionToGenerateWithdrawalRequestAndDeductAmountApiCall,
-    actionToGenerateDepositRequestApiCall
+    actionToGenerateDepositRequestApiCall,
+    actionToCompleteStatusOfDepositRequestApiCall,
+    actionToCompleteStatusOfWithdrawalRequestApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -427,6 +429,38 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGenerateDepositRequestApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToCompleteStatusOfDepositRequestApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToCompleteStatusOfDepositRequestApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToCompleteStatusOfWithdrawalRequestApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToCompleteStatusOfWithdrawalRequestApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

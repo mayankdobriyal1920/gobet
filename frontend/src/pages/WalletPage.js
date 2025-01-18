@@ -95,7 +95,7 @@ export default function WalletPage() {
                         </div>
                         <div  className="userDetail">
                             <div>
-                                <div className="imgD">
+                                <div onClick={()=>setIsDepositPopupOpen(true)} className="imgD">
                                     <img src={rechargeIcon}/>
                                 </div>
                                 <span >Deposit</span>
@@ -139,7 +139,23 @@ export default function WalletPage() {
                 ]}
                 onDidDismiss={() => setShowSuccessAlertToWithdrawalRequest(false)}
             />
-            <IonLoading isOpen={walletTransferLoader || loadingWithdrawalAmountSuccess} message={"Please wait..."}/>
+            <IonAlert
+                header="Deposit request Success!!"
+                message="We have initiated your deposit request our customer representative will contact you shortly"
+                isOpen={showSuccessAlertToDepositRequest}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Okay',
+                        role: 'confirm',
+                        handler: () => {
+                            setShowSuccessAlertToDepositRequest(false)
+                        },
+                    },
+                ]}
+                onDidDismiss={() => setShowSuccessAlertToDepositRequest(false)}
+            />
+            <IonLoading isOpen={walletTransferLoader || loadingWithdrawalAmountSuccess || loadingDepositAmountSuccess} message={"Please wait..."}/>
             <WithdrawalPopupComponent setShowSuccessAlertToWithdrawalRequest={setShowSuccessAlertToWithdrawalRequest} setLoadingWithdrawalAmountSuccess={setLoadingWithdrawalAmountSuccess} setIsWithdrawalPopupOpen={setIsWithdrawalPopupOpen} isWithdrawalPopupOpen={isWithdrawalPopupOpen}/>
             <DepositPopupComponent setShowSuccessAlertToDepositRequest={setShowSuccessAlertToDepositRequest} setLoadingDepositAmountSuccess={setLoadingDepositAmountSuccess} setIsDepositPopupOpen={setIsDepositPopupOpen} isDepositPopupOpen={isDepositPopupOpen}/>
         </IonPage>

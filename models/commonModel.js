@@ -336,6 +336,44 @@ export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,b
     })
 }
 
+export const actionToCompleteStatusOfDepositRequestApiCall = (userId,body) => {
+    const {id} = body;
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT * from deposit_history WHERE id = $1`;
+        pool.query(query, [id], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if (results?.rows?.length) {
+                let userId = results?.rows[0]?.user_id;
+                let userDepositAmount = results?.rows[0]?.amount;
+                let setData = `wallet_balance = wallet_balance + $1`;
+                let whereCondition = `id = $2`;
+                let dataToSend = {column: setData, value: [userDepositAmount,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                updateCommonApiCall(dataToSend).then(()=>{
+                    setData = `status = $1`;
+                    whereCondition = `id = $2`;
+                    dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'deposit_history'};
+                    updateCommonApiCall(dataToSend).then(()=>{
+                        resolve({status:1});
+                    })
+                })
+            }
+        })
+    })
+}
+
+export const actionToCompleteStatusOfWithdrawalRequestApiCall = (userId,body) => {
+    const {id} = body;
+    return new Promise(function(resolve) {
+        let setData = `status = $1`;
+        let whereCondition = `id = $2`;
+        let dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'withdrawal_history'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            resolve({status:1});
+        })
+    })
+}
 export const actionToGenerateDepositRequestApiCall = (userId,body) => {
     const {amount} = body;
     return new Promise(function(resolve, reject) {
