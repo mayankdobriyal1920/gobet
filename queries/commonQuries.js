@@ -97,7 +97,7 @@ export const getWithdrawalHistoryQuery = (userId, body) => {
 
     // Add condition for status if provided
     if (status && status !== 'All') {
-        values.push(status === 'Pending' ? 1 : 0);  // Append the status value (1 for 'Pending', 0 otherwise)
+        values.push(status === 'Pending' ? 0 : 1);  // Append the status value (1 for 'Pending', 0 otherwise)
         condition += ` AND status = $${values.length}`;  // Add 'status' condition
     }
 

@@ -48,7 +48,7 @@ export default function WithdrawalHistoryListPage() {
     }
 
     const callFunctionToAddFilterAndGetData = (typeFilter,dateFilter)=>{
-       dispatch(actionToGetWithdrawalRequestHistoryData(true,{status:typeFilter,created_at:moment(dateFilter).format('YYYY-MM-DD')}))
+       dispatch(actionToGetWithdrawalRequestHistoryData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
     useEffect(() => {
