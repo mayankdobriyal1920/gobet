@@ -316,7 +316,7 @@ export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,b
                 if(Number(amount) > Number(userWalletBalance)){
                     resolve({status:0,error:'Given amount is greater then wallet balance'});
                 }else{
-                    let setData = `wallet_balance = $2`;
+                    let setData = `wallet_balance = $1`;
                     const whereCondition = `id = '${userId}'`;
                     let dataToSend = {column: setData, value: [Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{

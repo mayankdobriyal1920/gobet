@@ -141,7 +141,7 @@ export default function WinAndGoBettingMainPage() {
                                     </div>
                                     <div className={"GameList__C"}>
                                         <div className={"GameList__C-item active"}>
-                                            <div>Win Go<br/>${prediction?.min} Min</div>
+                                            <div>Win Go<br/>{prediction?.min} Min</div>
                                         </div>
                                         <div className={"GameList__C-item not_active"}>
                                             <div className={"bet_pre_txt_1"}>{prediction?.option_name}</div>
