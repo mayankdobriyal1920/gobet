@@ -33,6 +33,11 @@ import SettingPage from "./pages/SettingPage";
 import ComingSoonPage from "./pages/ComingSoonPage";
 import GameTransactionPage from "./pages/GameTransactionPage";
 import MoneyTransactionPage from "./pages/MoneyTransactionPage";
+import {Capacitor} from "@capacitor/core";
+import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
+import {StatusBar, Style} from "@capacitor/status-bar";
+import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
+import DepositHistoryListPage from "./pages/DepositHistoryListPage";
 
 setupIonicReact();
 
@@ -63,6 +68,8 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/game-history" component={GameTransactionPage}/>
                 <Route exact={true} path="/money-transaction" component={MoneyTransactionPage}/>
                 <Route exact={true} path="/coming-soon" component={ComingSoonPage}/>
+                <Route exact={true} path="/withdrawal-history" component={WithdrawalHistoryListPage}/>
+                <Route exact={true} path="/deposit-history" component={DepositHistoryListPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>
@@ -78,6 +85,15 @@ const App = () => {
     useEffect(() => {
         dispatch(actionToGetUserSessionData());
     }, []);
+
+    useEffect(()=>{
+        if(Capacitor.isNativePlatform()){
+            NavigationBar.setColor({ color: '#ffffff' , darkButtons:true});
+            StatusBar.setBackgroundColor({ color: '#f57b2c' }).then(()=>{
+                StatusBar.setStyle({ style:Style.Light });
+            });
+        }
+    },[])
 
     return (
         <IonApp>

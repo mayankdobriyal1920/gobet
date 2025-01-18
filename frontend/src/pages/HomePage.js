@@ -53,7 +53,7 @@ export default function HomePage() {
                                 <div className="navbar__content-right">
                                     <div className="content-getbet__right">
                                         <div className="message">
-                                            Wallet Balance
+                                            Main Balance
                                             ₹{walletBalance ? walletBalance : '0.00'}
                                         </div>
                                     </div>

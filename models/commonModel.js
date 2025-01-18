@@ -1,7 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    CheckMobNumberAlreadyExistQuery, getUserByIdQuery,
+    CheckMobNumberAlreadyExistQuery, getUserByIdQuery, getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
     loginUserQuery,
     signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery, userProfileDataQuery
@@ -399,6 +399,22 @@ export const actionToGenerateDepositRequestApiCall = (userId,body) => {
     })
 }
 
+export const actionToGetWithdrawalRequestHistoryDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const {query,values} = getWithdrawalHistoryQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                userData = results?.rows;
+            }
+            resolve(userData);
+        })
+    })
+}
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';

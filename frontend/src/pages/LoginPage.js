@@ -8,9 +8,6 @@ import {
 import {countries as countriesList} from 'countries-list';
 import {useDispatch, useSelector} from "react-redux";
 import {actionToSendOtpForLogin, actionToVerifyLoginUserOtp} from "../redux/CommonAction";
-import {Capacitor} from "@capacitor/core";
-import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
-import {StatusBar, Style} from "@capacitor/status-bar";
 import {useHistory} from "react-router";
 import {USER_GET_OTP_REQUEST_FAIL} from "../redux/CommonConstants";
 
@@ -38,11 +35,6 @@ export default function LoginPage(){
     const history = useHistory();
 
     useEffect(()=>{
-        if(Capacitor.isNativePlatform()){
-            NavigationBar.setColor({ color: '#ffffff' , darkButtons:true});
-            StatusBar.setBackgroundColor({ color: '#f57b2c' });
-            StatusBar.setStyle({ style:Style.Dark });
-        }
         setPhoneError(false);
         setOtpErrorMessage('');
         setOtpError(false);

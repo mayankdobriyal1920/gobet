@@ -1,6 +1,10 @@
 import {
-    CHANGE_USER_AVATAR_MODAL, USER_BET_PREDICTION_HISTORY_REQUEST, USER_BET_PREDICTION_HISTORY_SUCCESS,
-    USER_BET_PREDICTION_STATUS, USER_BET_PREDICTION_STATUS_EXPIRED, USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
+    CHANGE_USER_AVATAR_MODAL,
+    USER_BET_PREDICTION_HISTORY_REQUEST,
+    USER_BET_PREDICTION_HISTORY_SUCCESS,
+    USER_BET_PREDICTION_STATUS,
+    USER_BET_PREDICTION_STATUS_EXPIRED,
+    USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
     USER_BET_PREDICTION_STATUS_WAITING,
     USER_BET_PREDICTION_STATUS_TIMER,
     USER_GET_OTP_REQUEST_FAIL,
@@ -13,7 +17,10 @@ import {
     USER_SIGNOUT,
     USER_SIGNUP_SIGNIN_ERROR,
     USER_WALLET_AND_GAME_BALANCE_REQUEST,
-    USER_WALLET_AND_GAME_BALANCE_SUCCESS, USER_BET_PREDICTION_STATUS_READY, USER_BET_PREDICTION_STATUS_READY_TIMER
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS,
+    USER_BET_PREDICTION_STATUS_READY,
+    USER_BET_PREDICTION_STATUS_READY_TIMER,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST, USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -59,6 +66,16 @@ export const userBetPredictionHistoryReducer = (state = {}, action) => {
             return { loading: true};
         case USER_BET_PREDICTION_HISTORY_SUCCESS:
             return { loading: false, predictionHistory: action.payload};
+        default:
+            return state;
+    }
+};
+export const userWithdrawalAmountHistoryReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST:
+            return { loading: true};
+        case USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS:
+            return { loading: false, withdrawalHistory: action.payload};
         default:
             return state;
     }

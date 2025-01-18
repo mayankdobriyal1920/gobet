@@ -9,6 +9,8 @@ import rechargeIcon from "../theme/img/rechargeIcon.png";
 import {actionTransferMoneyToMainWallet} from "../redux/CommonAction";
 import WithdrawalPopupComponent from "../components/commonPopup/WithdrawalPopupComponent";
 import DepositPopupComponent from "../components/commonPopup/DepositPopupComponent";
+import WithdrawalHistoryListPage from "./WithdrawalHistoryListPage";
+import {useHistory} from "react-router";
 
 export default function WalletPage() {
     const [totalWalletBalancePercentage,setTotalWalletBalancePercentage] = useState(0);
@@ -17,6 +19,7 @@ export default function WalletPage() {
     const [loadingWithdrawalAmountSuccess,setLoadingWithdrawalAmountSuccess] = useState(false);
     const [isWithdrawalPopupOpen,setIsWithdrawalPopupOpen] = useState(false);
     const [showSuccessAlertToWithdrawalRequest,setShowSuccessAlertToWithdrawalRequest] = useState(false);
+    const history = useHistory();
 
 
     const [loadingDepositAmountSuccess,setLoadingDepositAmountSuccess] = useState(false);
@@ -38,6 +41,10 @@ export default function WalletPage() {
         setWalletTransferLoader(true);
         dispatch(actionTransferMoneyToMainWallet(setWalletTransferLoader));
     };
+
+    const goToPage = (page)=>{
+        history.push(page);
+    }
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -107,13 +114,13 @@ export default function WalletPage() {
                                 <span>Withdraw</span>
                             </div>
                             <div>
-                                <div className="imgD">
+                                <div onClick={()=>goToPage('/deposit-history')} className="imgD">
                                     <img src={rechargeHistory}/>
                                 </div>
                                 <span>Deposit history</span>
                             </div>
                             <div>
-                                <div  className="imgD">
+                                <div onClick={()=>goToPage('/withdrawal-history')} className="imgD">
                                     <img src={withdrawHistory}/>
                                 </div>
                                 <span >Withdrawal history</span>

@@ -921,7 +921,7 @@ ion-header {
 .Wallet__C-balance-l3>div {
     width: 100%;
     height: .93333rem;
-    line-height: .93333rem;
+    line-height: 1.1rem;
     background: var(--norm_green-color);
     border-radius: .53333rem;
     font-weight: 600;
@@ -1398,6 +1398,24 @@ ion-header {
     display: block!important;
 }
 
+.ar-searchbar__selector_clear {}.ar-searchbar__selector_clear {}
+
+.list_status_type {
+    text-align: center;
+    padding-top: .1rem;
+    line-height: .8rem;
+    font-size: .4rem;
+    color: #878787;
+}
+
+.list_status_type .list_status_type_item {
+    border-bottom: 1px solid #ccc;
+    padding: 0.2rem 0.1rem;
+}
+.list_status_type_item.active {
+    color: var(--main-color)!important;
+}
+
 .add-money-to-game-wallet-modal .add-money-input {
     padding-left: 10px;
     background: var(--theme-background-secondry-color);
@@ -1705,8 +1723,10 @@ figure.icon {
 .ar-searchbar {
     display: -webkit-box;
     display: -webkit-flex;
-    display: flex
-;
+    display: flex;
+    padding-left: .2rem;
+    padding-right: .2rem;
+    padding-top: .4rem;
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
@@ -1755,7 +1775,7 @@ figure.icon {
 }
 .ar-searchbar__selector>div:first-of-type svg {
     position: absolute;
-    top: 50%;
+    top: 39%;
     right: .21333rem;
 }
 
@@ -1809,4 +1829,13 @@ figure.icon {
     width: 8em;
     height: 8em;
     vertical-align: middle;
+}
+.custom-datetime {
+    font-size: 0.4rem!important;; /* Set font size */
+}
+.custom-datetime::part(month-year-button) {
+    font-size: 0.4rem!important; /* Adjust individual picker item font size */
+}
+.custom-datetime::part(calendar-day) {
+    font-size: 0.4rem!important;
 }

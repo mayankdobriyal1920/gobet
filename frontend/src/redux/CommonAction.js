@@ -18,7 +18,10 @@ import {
     USER_BET_PREDICTION_HISTORY_SUCCESS,
     USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
     USER_BET_PREDICTION_STATUS_EXPIRED,
-    USER_BET_PREDICTION_STATUS_READY, USER_BET_PREDICTION_STATUS_READY_TIMER
+    USER_BET_PREDICTION_STATUS_READY,
+    USER_BET_PREDICTION_STATUS_READY_TIMER,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -235,6 +238,19 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
     try {
         api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
             dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetWithdrawalRequestHistoryData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST});
+    }
+    try {
+        api.post(`actionToGetWithdrawalRequestHistoryDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);
