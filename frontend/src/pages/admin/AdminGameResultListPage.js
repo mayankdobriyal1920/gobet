@@ -242,13 +242,13 @@ export default function AdminGameResultListPage() {
                         <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}
                              onClick={() => callFunctionToApplyTypeFilter('All')}>All
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Approved' ? 'active' : ''}`}
+                        <div className={`list_status_type_item ${statusTypeFilter === 'Win Go' ? 'active' : ''}`}
                              onClick={() => callFunctionToApplyTypeFilter('Win Go')}>Win Go
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Pending' ? 'active' : ''}`}
+                        <div className={`list_status_type_item ${statusTypeFilter === 'Aviator' ? 'active' : ''}`}
                              onClick={() => callFunctionToApplyTypeFilter('Aviator')}>Aviator
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Pending' ? 'active' : ''}`}
+                        <div className={`list_status_type_item ${statusTypeFilter === 'Limbo' ? 'active' : ''}`}
                              onClick={() => callFunctionToApplyTypeFilter('Limbo')}>Limbo
                         </div>
                     </div>

@@ -2017,3 +2017,9 @@ figure.icon {
     border-radius: 1.06667rem;
     border: none;
 }
+.list_item_in_search_list_main .list_row_items span.SMALL {
+    color: green;
+}
+.list_item_in_search_list_main .list_row_items span.BIG {
+    color: red;
+}
