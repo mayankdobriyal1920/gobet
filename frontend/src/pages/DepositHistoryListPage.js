@@ -189,7 +189,7 @@ export default function DepositHistoryListPage() {
                                             <IonCol>Status</IonCol>
                                         </IonRow>
                                         <Virtuoso
-                                            style={{ height: '74vh' }}
+                                            style={{ height: '71vh' }}
                                             className={"virtual_item_listing"}
                                             totalCount={depositHistory?.length}
                                             itemContent={index => renderVirtualElement(depositHistory[index])}

@@ -409,11 +409,11 @@ ion-header {
     flex-direction: column;
 }
 .financialServices__container-box-para h3 {
-    font-size: .37333rem;
+    font-size: .33rem;
     color: var(--text_color_L1);
 }
 .financialServices__container-box>div span {
-    font-size: .32rem;
+    font-size: .31rem;
     color: var(--text_color_L2);
 }
 .serviceCenter__container {
@@ -1770,7 +1770,7 @@ figure.icon {
 }
 .ar-searchbar__selector>div {
     width: 100%;
-    line-height: 1.06667rem;
+    line-height: 1.3rem;
     border-radius: .13333rem;
     background: var(--bg_color_L2);
 }

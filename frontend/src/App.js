@@ -1,6 +1,6 @@
-import React,{useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import {IonApp, IonLoading, IonRouterOutlet, setupIonicReact} from '@ionic/react';
+import {IonAlert, IonApp, IonLoading, IonRouterOutlet, setupIonicReact} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
@@ -38,6 +38,7 @@ import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
 import DepositHistoryListPage from "./pages/DepositHistoryListPage";
+import {useHistory} from "react-router";
 
 setupIonicReact();
 
@@ -81,6 +82,8 @@ const App = () => {
     const dispatch = useDispatch();
     const userSession = useSelector((state) => state.userSession);
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const history = useHistory();
+    const [showExitAlert, setShowExitAlert] = useState(false);
 
     useEffect(() => {
         dispatch(actionToGetUserSessionData());
@@ -93,7 +96,24 @@ const App = () => {
                 StatusBar.setStyle({ style:Style.Light });
             });
         }
+
+        const backButtonListener = App.addListener('backButton', () => {
+            if (history.length <= 1) {
+                // If there's no more history, show exit confirmation alert
+                setShowExitAlert(true);
+            } else {
+                // Navigate to the previous page
+                history.goBack();
+            }
+        });
+
+        return () => {
+            // Remove listener on unmount
+            backButtonListener.remove();
+        };
+
     },[])
+
 
     return (
         <IonApp>
@@ -103,6 +123,27 @@ const App = () => {
                 </React.Fragment>:''
             }
             <IonLoading className={"loading_loader_spinner_container"} isOpen={userSession?.loading} message={"Loading..."}/>
+            <IonAlert
+                isOpen={showExitAlert}
+                onDidDismiss={() => setShowExitAlert(false)} // Close the alert
+                header="Exit App"
+                message="Do you really want to exit the app?"
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            setShowExitAlert(false); // Close alert
+                        },
+                    },
+                    {
+                        text: 'Exit',
+                        handler: () => {
+                            App.exitApp(); // Exit the app
+                        },
+                    },
+                ]}
+            />
         </IonApp>
     )
 }

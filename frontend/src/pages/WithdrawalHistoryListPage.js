@@ -189,7 +189,7 @@ export default function WithdrawalHistoryListPage() {
                                             <IonCol>Status</IonCol>
                                         </IonRow>
                                         <Virtuoso
-                                            style={{ height: '74vh' }}
+                                            style={{ height: '71vh' }}
                                             className={"virtual_item_listing"}
                                             totalCount={withdrawalHistory?.length}
                                             itemContent={index => renderVirtualElement(withdrawalHistory[index])}
