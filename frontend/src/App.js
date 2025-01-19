@@ -97,6 +97,7 @@ const App = () => {
             });
 
             const backButtonListener = CapacitorApp.addListener('backButton', () => {
+                console.log(history)
                 if (history.length <= 1) {
                     // If there's no more history, show exit confirmation alert
                     setShowExitAlert(true);

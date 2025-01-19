@@ -185,84 +185,110 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
     let valuesArrayUserTransaction = [];
     let updatesBerUserActiveArray = [];
     let betActiveUserIds = [];
-    userPayloadData?.map((userPredData)=> {
-        valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go']);
-        updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
-        updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
-        betActiveUserIds.push(userPredData.betting_active_users_id);
-        valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
-    })
 
-    const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_type"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
-
-    bulkInsertCommonApiCall(insertData)
-        .then((ids) => {
-            let idInJoin = ids.map((uid)=> uid.id);
-            console.log('Inserted IDs:', ids);
-            let currentSecond = new Date().getSeconds();
-            ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
-            setTimeout(() => {
-                // Prepare the update data
-                let setData = `status = $1`; // Update the status column to 0
-                let whereCondition = `id IN (${idInJoin.join(",")})`; // Use the IN operator for the IDs
-                let dataToSend = {
-                    column: setData,
-                    value: [0], // Value to update (status = 0)
-                    whereCondition: whereCondition,
-                    tableName: 'bet_prediction_history',
-                };
-
-                // Perform the update
-                updateCommonApiCall(dataToSend)
-                    .then(() => {
-                        console.log('Status updated to 0 for IDs:', ids);
-                    })
-                    .catch((error) => {
-                        console.error('Error updating status:', error);
-                });
-
-                //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
-                setData = `status = $1`; // Update the status column to 0
-                whereCondition = `id IN (${betActiveUserIds.join(",")})`; // Use the IN operator for the IDs
-                dataToSend = {column: setData, value: [4], whereCondition: whereCondition, tableName: 'betting_active_users'};
-                // Perform the update
-                updateCommonApiCall(dataToSend)
-                    .then(() => {
-                        console.log('Status updated to 0 for IDs:', ids);
-                    })
-                    .catch((error) => {
-                        console.error('Error updating status:', error);
-                    });
-                //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
-            }, (1000 * 60) - (currentSecond * 1000)); // Delay of 1 minute
+    if(userPayloadData?.length) {
+        let gameBetId = userPayloadData[0]?.bet_id;
+        if(!gameBetId){
+            return;
+        }
+        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+        let aliasResultArray = ['$1', '$2'];
+        let columnResultArray = ["game_type", "game_id"];
+        let valuesResultArray = ['win_go', gameBetId];
+        let insertResultData = {
+            alias: aliasResultArray,
+            column: columnResultArray,
+            values: valuesResultArray,
+            tableName: 'game_result'
+        };
+        insertCommonApiCall(insertResultData).then((game_result_id) => {
 
 
-            //////////// UPDATE USER GAME BALANCE ///////////
-            const updateData = {tableName: "app_user", conditionColumn: "id", updates: updatesArray,};
-            bulkUpdateCommonApiCall(updateData)
-                .then((response) => console.log("Bulk update successful:", response))
-                .catch((error) => console.error("Bulk update error:", error));
-            //////////// UPDATE USER GAME BALANCE ///////////
-
-            /////////// INSERT USER TOTAL TRANSACTION DATA ////////
-            const insertUserTransData = {column: ["amount", "user_id","type"], valuesArray: valuesArrayUserTransaction, tableName: 'user_transaction_history'};
-            bulkInsertCommonApiCall(insertUserTransData)
-                .then(() => {})
-                .catch((error) => {console.error('Error:', error)});
-            /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+            userPayloadData?.map((userPredData)=> {
+                valuesArray.push([userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go',game_result_id]);
+                updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
+                updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
+                betActiveUserIds.push(userPredData.betting_active_users_id);
+                valuesArrayUserTransaction.push([userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
+            })
 
 
-            //////////// UPDATE USER GAME BALANCE ///////////
-            const updateAllBetUserActiveData = {tableName: "betting_active_users", conditionColumn: "id", updates: updatesBerUserActiveArray};
-            bulkUpdateCommonApiCall(updateAllBetUserActiveData)
-                .then((response) => console.log("Bulk update successful:", response))
-                .catch((error) => console.error("Bulk update error:", error));
-            //////////// UPDATE USER GAME BALANCE ///////////
+            const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_result_id","game_type","game_result_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
+
+            bulkInsertCommonApiCall(insertData)
+                .then((ids) => {
+                    let idInJoin = ids.map((uid)=> uid.id);
+                    console.log('Inserted IDs:', ids);
+                    let currentSecond = new Date().getSeconds();
+                    ///////// FOR DEACTIVATE CALL IN 1 MIN /////////
+                    setTimeout(() => {
+                        // Prepare the update data
+                        let setData = `status = $1`; // Update the status column to 0
+                        let whereCondition = `id IN (${idInJoin.join(",")})`; // Use the IN operator for the IDs
+                        let dataToSend = {
+                            column: setData,
+                            value: [0], // Value to update (status = 0)
+                            whereCondition: whereCondition,
+                            tableName: 'bet_prediction_history',
+                        };
+
+                        // Perform the update
+                        updateCommonApiCall(dataToSend)
+                            .then(() => {
+                                console.log('Status updated to 0 for IDs:', ids);
+                            })
+                            .catch((error) => {
+                                console.error('Error updating status:', error);
+                            });
+
+                        //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+                        setData = `status = $1`; // Update the status column to 0
+                        whereCondition = `id IN (${betActiveUserIds.join(",")})`; // Use the IN operator for the IDs
+                        dataToSend = {column: setData, value: [4], whereCondition: whereCondition, tableName: 'betting_active_users'};
+                        // Perform the update
+                        updateCommonApiCall(dataToSend)
+                            .then(() => {
+                                console.log('Status updated to 0 for IDs:', ids);
+                            })
+                            .catch((error) => {
+                                console.error('Error updating status:', error);
+                            });
+                        //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+                    }, (1000 * 60) - (currentSecond * 1000)); // Delay of 1 minute
 
 
-        }).catch((error) => {
-            console.error('Error:', error);
-    });
+                    //////////// UPDATE USER GAME BALANCE ///////////
+                    const updateData = {tableName: "app_user", conditionColumn: "id", updates: updatesArray,};
+                    bulkUpdateCommonApiCall(updateData)
+                        .then((response) => console.log("Bulk update successful:", response))
+                        .catch((error) => console.error("Bulk update error:", error));
+                    //////////// UPDATE USER GAME BALANCE ///////////
+
+                    /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+                    const insertUserTransData = {column: ["amount", "user_id","type"], valuesArray: valuesArrayUserTransaction, tableName: 'user_transaction_history'};
+                    bulkInsertCommonApiCall(insertUserTransData)
+                        .then(() => {})
+                        .catch((error) => {console.error('Error:', error)});
+                    /////////// INSERT USER TOTAL TRANSACTION DATA ////////
+
+
+                    //////////// UPDATE USER GAME BALANCE ///////////
+                    const updateAllBetUserActiveData = {tableName: "betting_active_users", conditionColumn: "id", updates: updatesBerUserActiveArray};
+                    bulkUpdateCommonApiCall(updateAllBetUserActiveData)
+                        .then((response) => console.log("Bulk update successful:", response))
+                        .catch((error) => console.error("Bulk update error:", error));
+                    //////////// UPDATE USER GAME BALANCE ///////////
+
+
+                }).catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+    }
+
+
+
 
 
     // userPayloadData?.map((userPredData)=>{
