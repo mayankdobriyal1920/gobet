@@ -115,7 +115,7 @@ export default function AdminGameResultListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Deposit History</span>
+                                        <span>Game Result</span>
                                     </div>
                                 </div>
                             </div>
