@@ -108,7 +108,7 @@ export const getWithdrawalHistoryQuery = (userId, body) => {
     }
 
     // Final query
-    let query = `SELECT * FROM withdrawal_history WHERE ${condition} created_at desc`;
+    let query = `SELECT * FROM withdrawal_history WHERE ${condition} order by created_at desc`;
 
     return { values, query };
 };
@@ -131,7 +131,7 @@ export const getDepositHistoryQuery = (userId, body) => {
     }
 
     // Final query
-    let query = `SELECT * FROM deposit_history WHERE ${condition} created_at desc`;
+    let query = `SELECT * FROM deposit_history WHERE ${condition} order by created_at desc`;
 
     return { values, query };
 };
@@ -156,7 +156,7 @@ export const getGameResultListQuery = (userId, body) => {
     }
 
     // Final query
-    let query = `SELECT * FROM game_result WHERE ${condition} game_id desc`;
+    let query = `SELECT * FROM game_result WHERE ${condition} order by game_id desc`;
 
     return { values, query };
 };
