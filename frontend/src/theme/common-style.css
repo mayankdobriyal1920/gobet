@@ -1531,6 +1531,7 @@ ion-header {
 }
 .userInfo__container-setting-center-content h5 {
     color: var(--text_color_L2);
+    line-height: 0.5rem;
 }
 .userInfo__container-setting-center-content div {
     display: -webkit-box;
@@ -1590,6 +1591,7 @@ ion-header {
 }
 .userInfo__container-setting-center-content svg {
     width: .45333rem;
+    height: .45333rem;
     color: var(--main-color);
 }
 .content_setting-wrapper {

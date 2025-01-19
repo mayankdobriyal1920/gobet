@@ -154,10 +154,10 @@ export default function WithdrawalHistoryListPage() {
                                 </div>
                                 {(statusTypeFilter !== 'All' || dateTypeFilter !== null) ?
                                 <div onClick={()=>callFunctionClearToAddFilterAndGetData('All',null)} className="ar-searchbar__selector_clear">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px"
-                                         viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="10" stroke="#1C274C" strokeWidth="1.5"/>
-                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#1C274C"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
+                                         viewBox="0 0 24 24" fill="var(--main-color)">
+                                        <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
                                               strokeWidth="1.5" strokeLinecap="round"/>
                                     </svg>
                                 </div>:''
@@ -173,6 +173,8 @@ export default function WithdrawalHistoryListPage() {
                         <div className={"infiniteScroll__loading"}>
                             {loading ?
                                 <React.Fragment>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>

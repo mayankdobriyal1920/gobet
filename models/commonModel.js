@@ -1,7 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    CheckMobNumberAlreadyExistQuery, getUserByIdQuery, getWithdrawalHistoryQuery,
+    CheckMobNumberAlreadyExistQuery, getDepositHistoryQuery, getUserByIdQuery, getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
     loginUserQuery,
     signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery, userProfileDataQuery
@@ -257,18 +257,15 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
             }
             if (results?.rows?.length) {
                 let userWalletBalance = results?.rows[0]?.wallet_balance;
-
                 if(Number(amount) > Number(userWalletBalance)){
                     resolve({status:0,error:'Given amount is greater then wallet balance'});
                 }else{
-                    ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-                    let userGameBalance = results?.rows[0]?.game_balance;
-                    let percentageOfGame = Math.round(amount / 100);
-                    let userTotalGameBalance = amount - percentageOfGame;
-                    ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+                     let userGameBalance = results?.rows[0]?.game_balance;
+                    // let percentageOfGame = Math.round(amount / 100);
+                    // let userTotalGameBalance = amount - percentageOfGame;
                     let setData = `game_balance = $1,wallet_balance = $2`;
                     const whereCondition = `id = '${userId}'`;
-                    let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(userTotalGameBalance),Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(amount),Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                         let aliasArray = ['$1','$2','$3'];
@@ -276,21 +273,7 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
                         let valuesArray = [amount,userId,'wallet_to_game_wallet_transfer'];
                         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
                         insertCommonApiCall(insertData).then(()=>{
-                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                            aliasArray = ['$1','$2'];
-                            columnArray = ["amount", "user_id"];
-                            valuesArray = [percentageOfGame,userId];
-                            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
-                            insertCommonApiCall(insertData).then(()=>{
-                                aliasArray = ['$1','$2','$3'];
-                                columnArray = ["amount", "user_id","type"];
-                                valuesArray = [percentageOfGame,userId,'game_percentage_deduct'];
-                                insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
-                                insertCommonApiCall(insertData).then(()=>{
-                                    resolve({status:1});
-                                })
-                            })
-                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                            resolve({status:1});
                         })
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                     })
@@ -355,7 +338,12 @@ export const actionToCompleteStatusOfDepositRequestApiCall = (userId,body) => {
                     whereCondition = `id = $2`;
                     dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'deposit_history'};
                     updateCommonApiCall(dataToSend).then(()=>{
-                        resolve({status:1});
+                        setData = `status = $1`;
+                        whereCondition = `deposit_history_id = $2`;
+                        dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_percentage'};
+                        updateCommonApiCall(dataToSend).then(()=> {
+                            resolve({status: 1});
+                        })
                     })
                 })
             }
@@ -385,13 +373,34 @@ export const actionToGenerateDepositRequestApiCall = (userId,body) => {
             if (results?.rows?.length) {
                 let userSubAdminId = results?.rows[0]?.sub_admin;
 
+
+                ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+                let percentageOfDeposit = Math.round(amount / 100);
+                let userBalanceAmount = amount - percentageOfDeposit;
+                ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+
+
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                 let aliasArray = ['$1','$2','$3','$4'];
                 let columnArray = ["amount", "user_id","sub_admin_id","status"];
-                let valuesArray = [amount,userId,userSubAdminId,0];
+                let valuesArray = [userBalanceAmount,userId,userSubAdminId,0];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'deposit_history'};
-                insertCommonApiCall(insertData).then(()=>{
-                    resolve({status:1});
+                insertCommonApiCall(insertData).then((id)=>{
+                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                    aliasArray = ['$1','$2','$3','$4'];
+                    columnArray = ["amount", "user_id", "deposit_history_id", "status"];
+                    valuesArray = [percentageOfDeposit,userId,id,0];
+                    insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
+                    insertCommonApiCall(insertData).then(()=>{
+                        aliasArray = ['$1','$2','$3'];
+                        columnArray = ["amount", "user_id","type"];
+                        valuesArray = [percentageOfDeposit,userId,'game_percentage_deduct'];
+                        insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+                        insertCommonApiCall(insertData).then(()=>{
+                            resolve({status:1});
+                        })
+                    })
+                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                 })
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
             }
@@ -404,6 +413,23 @@ export const actionToGetWithdrawalRequestHistoryDataApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
         const {query,values} = getWithdrawalHistoryQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetDepositRequestHistoryDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getDepositHistoryQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

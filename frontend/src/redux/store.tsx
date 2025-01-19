@@ -3,9 +3,14 @@ import {thunk} from 'redux-thunk';
 import {
     changeUserAvatarModal,
     signupSigninFormError,
-    userAuthDetailReducer, userBetPredictionHistoryReducer, userBetPredictionStatusReducer,
+    userAuthDetailReducer,
+    userBetPredictionHistoryReducer,
+    userBetPredictionStatusReducer,
+    userDepositAmountHistoryReducer,
     userOtpReducer,
-    userSessionReducer, userWalletAndGameBalanceReducer, userWithdrawalAmountHistoryReducer
+    userSessionReducer,
+    userWalletAndGameBalanceReducer,
+    userWithdrawalAmountHistoryReducer
 } from './CommonReducers';
 
 const initialState = {
@@ -17,11 +22,13 @@ const initialState = {
     userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0},
     userBetPredictionHistory: {loading:true,predictionHistory:[]},
     userWithdrawalAmountHistory: {loading:true,withdrawalHistory:[]},
+    userDepositAmountHistory: {loading:true,depositHistory:[]},
     userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     userWithdrawalAmountHistory: userWithdrawalAmountHistoryReducer,
+    userDepositAmountHistory: userDepositAmountHistoryReducer,
     userAuthDetail: userAuthDetailReducer,
     userOtpDetails: userOtpReducer,
     signupSigninFormError: signupSigninFormError,

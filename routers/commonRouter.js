@@ -20,7 +20,9 @@ import {
     actionToGenerateWithdrawalRequestAndDeductAmountApiCall,
     actionToGenerateDepositRequestApiCall,
     actionToCompleteStatusOfDepositRequestApiCall,
-    actionToCompleteStatusOfWithdrawalRequestApiCall, actionToGetWithdrawalRequestHistoryDataApiCall
+    actionToCompleteStatusOfWithdrawalRequestApiCall,
+    actionToGetWithdrawalRequestHistoryDataApiCall,
+    actionToGetDepositRequestHistoryDataApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -381,6 +383,20 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetWithdrawalRequestHistoryDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+
+commonRouter.post(
+    '/actionToGetDepositRequestHistoryDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetDepositRequestHistoryDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

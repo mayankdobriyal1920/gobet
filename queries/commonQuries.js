@@ -113,6 +113,29 @@ export const getWithdrawalHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
+export const getDepositHistoryQuery = (userId, body) => {
+    let { status, created_at } = body;
+    let values = [userId];  // Initial values array with userId
+    let condition = `user_id = $1`;  // Initial condition with userId
+
+    // Add condition for status if provided
+    if (status && status !== 'All') {
+        values.push(status === 'Pending' ? 0 : 1);  // Append the status value (1 for 'Pending', 0 otherwise)
+        condition += ` AND status = $${values.length}`;  // Add 'status' condition
+    }
+
+    // Add condition for created_at if provided
+    if (created_at) {
+        values.push(created_at);  // Append the created_at value
+        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+    }
+
+    // Final query
+    let query = `SELECT * FROM deposit_history WHERE ${condition}`;
+
+    return { values, query };
+};
+
 export const getUserByIdQuery = () => {
     return `
         SELECT

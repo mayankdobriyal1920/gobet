@@ -20,7 +20,10 @@ import {
     USER_WALLET_AND_GAME_BALANCE_SUCCESS,
     USER_BET_PREDICTION_STATUS_READY,
     USER_BET_PREDICTION_STATUS_READY_TIMER,
-    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST, USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS
+    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
+    USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
+    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -76,6 +79,16 @@ export const userWithdrawalAmountHistoryReducer = (state = {}, action) => {
             return { loading: true};
         case USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS:
             return { loading: false, withdrawalHistory: action.payload};
+        default:
+            return state;
+    }
+};
+export const userDepositAmountHistoryReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_DEPOSIT_AMOUNT_HISTORY_REQUEST:
+            return { loading: true};
+        case USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS:
+            return { loading: false, depositHistory: action.payload};
         default:
             return state;
     }
