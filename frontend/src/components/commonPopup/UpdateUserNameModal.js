@@ -37,6 +37,15 @@ const UpdateUserNameModal = ({setIsEditing,isEditing}) => {
         return isFormValid;
     }
 
+    useEffect(() => {
+        setTempName(userInfo?.name);
+        setNameError(false);
+        setNameErrorMessage('');
+        setTimeout(()=>{
+            document.querySelector('#update_user_name_input')?.focus();
+        },500)
+    }, [isEditing]);
+
 
 
     return (
@@ -60,6 +69,7 @@ const UpdateUserNameModal = ({setIsEditing,isEditing}) => {
                                         onChange={(e) => setTempName(e.target.value)}
                                         autoFocus
                                         className="update_user_name_input"
+                                        id={"update_user_name_input"}
                                         placeholder={"Enter Name"}  required={true}
                                     />
                                 </IonItem>
