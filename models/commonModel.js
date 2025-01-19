@@ -1,10 +1,18 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    CheckMobNumberAlreadyExistQuery, getDepositHistoryQuery, getUserByIdQuery, getWithdrawalHistoryQuery,
+    CheckMobNumberAlreadyExistQuery,
+    getDepositHistoryQuery,
+    getGameResultListQuery,
+    getUserByIdQuery,
+    getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
     loginUserQuery,
-    signupQuery, updatePassCodeQuery, updateUserAvatarQuery, updateUserUserNameQuery, userProfileDataQuery
+    signupQuery,
+    updatePassCodeQuery,
+    updateUserAvatarQuery,
+    updateUserUserNameQuery,
+    userProfileDataQuery
 } from "../queries/commonQuries.js";
 import {
     actionToGetAliveUserAndStartTimerOnIt,
@@ -430,6 +438,23 @@ export const actionToGetDepositRequestHistoryDataApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
         const {query,values} = getDepositHistoryQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getGameResultListQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

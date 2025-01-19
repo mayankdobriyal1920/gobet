@@ -23,7 +23,7 @@ import {
     USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
     USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
     USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
-    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS
+    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS, ADMIN_GAME_RESULT_LIST_REQUEST, ADMIN_GAME_RESULT_LIST_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -89,6 +89,17 @@ export const userDepositAmountHistoryReducer = (state = {}, action) => {
             return { loading: true};
         case USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS:
             return { loading: false, depositHistory: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const adminGameResultListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ADMIN_GAME_RESULT_LIST_REQUEST:
+            return { loading: true};
+        case ADMIN_GAME_RESULT_LIST_SUCCESS:
+            return { loading: false, gameResult: action.payload};
         default:
             return state;
     }

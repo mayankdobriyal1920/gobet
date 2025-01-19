@@ -40,6 +40,7 @@ import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
 import DepositHistoryListPage from "./pages/DepositHistoryListPage";
 import {useHistory} from "react-router";
 import { App as CapacitorApp } from '@capacitor/app';
+import AdminGameResultListPage from "./pages/admin/AdminGameResultListPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -71,6 +72,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/coming-soon" component={ComingSoonPage}/>
                 <Route exact={true} path="/withdrawal-history" component={WithdrawalHistoryListPage}/>
                 <Route exact={true} path="/deposit-history" component={DepositHistoryListPage}/>
+                <Route exact={true} path="/admin-game-result" component={AdminGameResultListPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>
@@ -97,7 +99,6 @@ const App = () => {
             });
 
             const backButtonListener = CapacitorApp.addListener('backButton', () => {
-                console.log(history)
                 if (history.length <= 1) {
                     // If there's no more history, show exit confirmation alert
                     setShowExitAlert(true);

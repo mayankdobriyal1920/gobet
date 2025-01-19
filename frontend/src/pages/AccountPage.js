@@ -186,7 +186,7 @@ export default function AccountPage() {
                             </div>
                             <div className="settingPanel__container-items">
                                 <div className="settingPanel__container-items__item ar-1px-b">
-                                    <div className="settingPanel__container-items__title">
+                                    <div onClick={()=>goToPage('/admin-game-result')} className="settingPanel__container-items__title">
                                         <svg className="svg-icon icon-betHistory svg_min_icon" viewBox="0 0 80 80"
                                              fill="none"
                                              xmlns="http://www.w3.org/2000/svg">
