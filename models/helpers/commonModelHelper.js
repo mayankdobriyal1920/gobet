@@ -146,7 +146,7 @@ export const bulkUpdateCommonApiCall = (body) => {
     } catch (e) {
         return Promise.reject(e);
     }
-};
+}
 
 
 

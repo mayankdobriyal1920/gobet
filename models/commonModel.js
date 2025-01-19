@@ -15,7 +15,7 @@ import {
     userProfileDataQuery
 } from "../queries/commonQuries.js";
 import {
-    actionToGetAliveUserAndStartTimerOnIt,
+    actionToGetAliveUserAndStartTimerOnIt, bulkUpdateCommonApiCall,
     insertCommonApiCall,
     updateCommonApiCall
 } from "./helpers/commonModelHelper.js";
@@ -467,31 +467,113 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
     })
 }
 
-export const actionToCallFunctionToUpdateGameResultApiCall = (userId,body) => {
-    let {id,result} = body;
-    return new Promise(function(resolve, reject) {
+export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
+    let { id, result } = body;
+
+    return new Promise(function (resolve, reject) {
+        // Step 1: Update the `game_result` table with the provided result
         let setData = `result = $1`;
         let whereCondition = `id = $2`;
-        let dataToSend = {column: setData, value: [result,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'game_result'};
-        updateCommonApiCall(dataToSend).then(()=>{
-            setData = `win_status = CASE 
-                            WHEN option_name = $2 THEN 1 
-                            ELSE 0 
-                        END`;
-            whereCondition = `game_result_id = $1`;
-            dataToSend = {
-                column: setData,
-                value: [id, result],
-                whereCondition: whereCondition,
-                returnColumnName: 'id',
-                tableName: 'bet_prediction_history'
-            };
-            updateCommonApiCall(dataToSend).then(()=>{
-                resolve({status:1});
+        let dataToSend = {
+            column: setData,
+            value: [result, id],
+            whereCondition: whereCondition,
+            returnColumnName: 'id',
+            tableName: 'game_result'
+        };
+
+        updateCommonApiCall(dataToSend)
+            .then(() => {
+                // Step 2: Fetch users who lost the bet (those whose option_name != result)
+                const query = `SELECT user_id, amount 
+                               FROM bet_prediction_history 
+                               WHERE game_result_id = $1 AND option_name != $2`;
+
+                pool.query(query, [id, result], (error, results) => {
+                    if (error) {
+                        return reject(error); // Handle database query error
+                    }
+
+                    if (results?.rows?.length) {
+                        // Step 3: Update wallet balances for users who lost the bet
+                        let updatePromises = results.rows.map((looseBetData) => {
+                            setData = `wallet_balance = wallet_balance + $1`;
+                            whereCondition = `id = $2`;
+                            dataToSend = {
+                                column: setData,
+                                value: [looseBetData?.amount, looseBetData?.user_id],
+                                whereCondition: whereCondition,
+                                returnColumnName: 'id',
+                                tableName: 'app_user'
+                            };
+
+                            // Return a promise for each update
+                            return updateCommonApiCall(dataToSend);
+                        });
+
+                        // Wait for all wallet updates to complete
+                        Promise.all(updatePromises)
+                            .then(() => {
+                                // Step 4: Update win_status for all bets related to the game_result_id
+                                ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
+                                setData = `win_status = CASE 
+                                           WHEN option_name = $2 THEN 1 
+                                           ELSE 0 
+                                           END`;
+                                whereCondition = `game_result_id = $1`;
+                                dataToSend = {
+                                    column: setData,
+                                    value: [id, result],
+                                    whereCondition: whereCondition,
+                                    returnColumnName: 'id',
+                                    tableName: 'bet_prediction_history'
+                                };
+
+                                updateCommonApiCall(dataToSend)
+                                    .then(() => {
+                                        resolve({ status: 1 }); // Resolve after all updates are complete
+                                    })
+                                    .catch((error) => {
+                                        reject(error); // Handle error during win_status update
+                                    });
+                                ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
+                            })
+                            .catch((error) => {
+                                reject(error); // Handle error during wallet updates
+                            });
+                    }else {
+                        ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
+                        // No losing bets, directly update win_status
+                        setData = `win_status = CASE 
+                                   WHEN option_name = $2 THEN 1 
+                                   ELSE 0 
+                                   END`;
+                        whereCondition = `game_result_id = $1`;
+                        dataToSend = {
+                            column: setData,
+                            value: [id, result],
+                            whereCondition: whereCondition,
+                            returnColumnName: 'id',
+                            tableName: 'bet_prediction_history'
+                        };
+
+                        updateCommonApiCall(dataToSend)
+                            .then(() => {
+                                resolve({status: 1}); // Resolve after win_status update
+                            })
+                            .catch((error) => {
+                                reject(error); // Handle error during win_status update
+                            });
+                        ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
+                    }
+                });
             })
-        })
-    })
-}
+            .catch((error) => {
+                reject(error); // Handle error during game_result update
+            });
+    });
+};
+
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';
