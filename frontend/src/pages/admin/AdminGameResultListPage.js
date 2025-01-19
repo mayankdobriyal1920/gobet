@@ -12,7 +12,7 @@ import {useHistory} from "react-router";
 import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
-import {actionToGetAdminGameResultListData} from "../../redux/CommonAction";
+import {actionToCallFunctionToUpdateGameResult, actionToGetAdminGameResultListData} from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 export default function AdminGameResultListPage() {
     const history = useHistory();
@@ -21,6 +21,7 @@ export default function AdminGameResultListPage() {
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
     const {loading,gameResult} = useSelector((state) => state.adminGameResultList);
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
+    const [updateGameResult,setUpdateGameResult] = useState(null);
     const datetimeRef = createRef();
     const dispatch = useDispatch();
     const goBack = ()=>{
@@ -87,18 +88,28 @@ export default function AdminGameResultListPage() {
         dispatch(actionToGetAdminGameResultListData())
     },[])
 
-    const callFunctionToUpdateGameResult = (gameResult)=>{
+    const callFunctionToUpdateGameResultPopup = (gameResult)=>{
         if(!gameResult?.result){
-            console.log(gameResult);
+            console.log('gameResult',gameResult)
+            setUpdateGameResult(gameResult);
         }
+    }
+
+    const callFunctionToReloadGameResultList = ()=>{
+        callFunctionToAddFilterAndGetData(statusTypeFilter,dateTypeFilter);
+        setUpdateGameResult(null);
+    }
+
+    const callFunctionToUpdateGameResult = (result)=>{
+        dispatch(actionToCallFunctionToUpdateGameResult(updateGameResult?.id,result,callFunctionToReloadGameResultList));
     }
 
     const renderVirtualElement = (dataItems)=>{
         return (
             <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol>{dataItems?.game_id}</IonCol>
+                <IonCol><span className={"list_game_id"}>{dataItems?.game_id}</span></IonCol>
                 <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
-                <IonCol onClick={()=>callFunctionToUpdateGameResult(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
+                <IonCol onClick={()=>callFunctionToUpdateGameResultPopup(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
             </IonRow>
         )
     }
@@ -259,6 +270,26 @@ export default function AdminGameResultListPage() {
                             value={dateTypeFilter}
                             onIonChange={(e) => callFunctionToApplyDateFilter(e.detail.value)}
                         />
+                    </div>
+                </IonContent>
+            </IonModal>
+
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={!!updateGameResult?.id}
+                onDidDismiss={() => setUpdateGameResult(null)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Game Result</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <div className={`list_status_type_item`}
+                             onClick={() => callFunctionToUpdateGameResult('SMALL')}>SMALL
+                        </div>
+                        <div className={`list_status_type_item`}
+                             onClick={() => callFunctionToUpdateGameResult('BIG')}>BIG
+                        </div>
                     </div>
                 </IonContent>
             </IonModal>

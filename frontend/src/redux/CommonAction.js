@@ -289,6 +289,17 @@ export const actionToGetAdminGameResultListData = (isLoading = true,payload = {}
     }
 }
 
+export const actionToCallFunctionToUpdateGameResult = (id,result,callFunctionToReloadGameResultLis) => async (dispatch) => {
+    try {
+        api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {id,result}).then(responseData => {
+            if(callFunctionToReloadGameResultLis)
+               callFunctionToReloadGameResultLis();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 let betStateTimeInterval = null;
 
 export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => async (dispatch) => {

@@ -1959,6 +1959,24 @@ figure.icon {
 .settingPanel__container-items__item:last-child.ar-1px-b:after {
     content: none
 }
+.list_item_in_search_list_main .list_row_items span.list_game_id {
+    font-weight: 600;
+    font-size: .3rem;
+}
+.list_item_in_search_list_main .list_row_items span.list_game_id {
+    font-weight: 600;
+    font-size: .3rem;
+}
+
+.list_item_in_search_list_main .list_row_items span.update {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: .3rem;
+    padding: 10px 16px;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--main-color);
+}
 .user_name_change_modal_heading{
     width: 100%;
     text-align: center;

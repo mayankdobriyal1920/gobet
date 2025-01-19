@@ -22,7 +22,9 @@ import {
     actionToCompleteStatusOfDepositRequestApiCall,
     actionToCompleteStatusOfWithdrawalRequestApiCall,
     actionToGetWithdrawalRequestHistoryDataApiCall,
-    actionToGetDepositRequestHistoryDataApiCall, actionToGetAdminGameResultListDataApiCall
+    actionToGetDepositRequestHistoryDataApiCall,
+    actionToGetAdminGameResultListDataApiCall,
+    actionToCallFunctionToUpdateGameResultApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -410,6 +412,19 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetAdminGameResultListDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToCallFunctionToUpdateGameResultApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToCallFunctionToUpdateGameResultApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

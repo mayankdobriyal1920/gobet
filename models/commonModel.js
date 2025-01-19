@@ -466,6 +466,32 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
         })
     })
 }
+
+export const actionToCallFunctionToUpdateGameResultApiCall = (userId,body) => {
+    let {id,result} = body;
+    return new Promise(function(resolve, reject) {
+        let setData = `result = $1`;
+        let whereCondition = `id = $2`;
+        let dataToSend = {column: setData, value: [result,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'game_result'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            setData = `win_status = CASE 
+                            WHEN option_name = $2 THEN 1 
+                            ELSE 0 
+                        END`;
+            whereCondition = `game_result_id = $1`;
+            dataToSend = {
+                column: setData,
+                value: [id, result],
+                whereCondition: whereCondition,
+                returnColumnName: 'id',
+                tableName: 'bet_prediction_history'
+            };
+            updateCommonApiCall(dataToSend).then(()=>{
+                resolve({status:1});
+            })
+        })
+    })
+}
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';
