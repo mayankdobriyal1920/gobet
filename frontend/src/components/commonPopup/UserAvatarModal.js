@@ -2,36 +2,29 @@ import React, {useEffect, useState, useRef} from 'react';
 import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonList, IonAvatar} from '@ionic/react';
 import {useDispatch, useSelector} from "react-redux";
 import {actionUpdateUserAvatar} from "../../redux/CommonAction";
-const UserAvatarModal = () => {
+const UserAvatarModal = ({setIsChangingAvatar, isChangingAvatar}) => {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
-    const changeUserAvatarModal = useSelector((state) => state.changeUserAvatarModal);
-    const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
 
-    useEffect(()=>{
-        setIsOpen(changeUserAvatarModal.open);
-    },[changeUserAvatarModal])
-
     const updateUserAvatar = (avatar) =>{
-        modalRef.current?.dismiss();
+        setIsChangingAvatar(false);
         if (userInfo?.profile_url !== avatar){
             dispatch(actionUpdateUserAvatar(userInfo?.id, avatar));
         }
     }
 
-    const modalRef = useRef(null);
+    const handleCloseModal = () => {
+        setIsChangingAvatar(false); // Close the modal
+    };
 
     return (
         <React.Fragment>
-            <IonAvatar className="userAvatarWrapper" id="open-modal" expand="block">
-                <img alt={"userInfo"} src={`assets/avatar/${userInfo?.profile_url}.png`}
-                     className="userAvatar"/>
-            </IonAvatar>
             <IonModal
-                ref={modalRef}
-                trigger="open-modal"
-                isOpen={isOpen}
-                initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
+                isOpen={isChangingAvatar}
+                initialBreakpoint={0.5}
+                breakpoints={[0.5, 1]}
+                onDidDismiss={handleCloseModal}
+            >
                 <IonContent className="ion-padding avatar-modal-main-wrapper">
                     <div className={"avatar_heading_choose"}>
                       <h2>Choose Avatar</h2>

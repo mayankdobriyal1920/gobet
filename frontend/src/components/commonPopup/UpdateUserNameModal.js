@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '@ionic/react';
 import {useDispatch, useSelector} from "react-redux";
 import {actionUpdateUserName} from "../../redux/CommonAction";
@@ -16,6 +16,10 @@ const UpdateUserNameModal = ({setIsEditing,isEditing}) => {
             dispatch(actionUpdateUserName(tempName));
         }
     };
+
+    useEffect(() => {
+        setTempName(userInfo?.name);
+    }, [userInfo?.name])
 
     const handleCloseModal = () => {
         setIsEditing(false); // Close the modal

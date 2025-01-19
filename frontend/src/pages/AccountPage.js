@@ -16,9 +16,8 @@ export default function AccountPage() {
     const [userLogoutAlertConfirm,setUserLogoutAlertConfirm] = useState(false);
     const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
+    const [isChangingAvatar, setIsChangingAvatar] = useState(false);
     const [balanceLoading, setBalanceLoading] = useState(false);
-    const [tempName, setTempName] = useState(userInfo?.name);
-
     const history = useHistory();
 
     const callFunctionToLogoutUser = ()=>{
@@ -28,8 +27,11 @@ export default function AccountPage() {
     }
 
     const handleEdit = () => {
-        setTempName(userInfo?.name);
         setIsEditing(true);
+    };
+
+    const handleChangeAvatar = () => {
+        setIsChangingAvatar(true);
     };
 
     const goToPage = (page)=>{
@@ -49,7 +51,10 @@ export default function AccountPage() {
                         <div className={"userInfo__container-content"}>
                             <div className={"profile_account_main_page_header_wrapper"}>
                                 <div className={"profile_account_container-content__avatar"}>
-                                    <UserAvatarModal/>
+                                    <img alt={"userInfo"} onClick={handleChangeAvatar}
+                                         src={`assets/avatar/${userInfo?.profile_url}.png`}
+                                         className="userAvatar 12345"/>
+                                    <UserAvatarModal setIsChangingAvatar={setIsChangingAvatar} isChangingAvatar={isChangingAvatar}/>
                                 </div>
                             </div>
                         </div>
