@@ -1,15 +1,21 @@
-import React from "react";
+import React, {useState} from "react";
 import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {useSelector} from "react-redux";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
+import UpdateUserNameModal from "../components/commonPopup/UpdateUserNameModal";
 
 export default function SettingPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const [isEditing, setIsEditing] = useState(false);
     const history = useHistory();
     const goBack = ()=>{
         history.goBack();
     }
+
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
 
     return (
         <IonPage  className={"home_welcome_page_container"}>
@@ -51,7 +57,7 @@ export default function SettingPage() {
                         </div>
                         <div className="userInfo__container-setting-center-content ar-1px-b">
                             <h5>Nickname</h5>
-                            <div>
+                            <div onClick={handleEdit}>
                                 <span>{userInfo?.name}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                      className="van-badge__wrapper van-icon van-icon-arrow"
@@ -61,6 +67,7 @@ export default function SettingPage() {
                                           d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
                                 </svg>
                             </div>
+                            <UpdateUserNameModal setIsEditing={setIsEditing} isEditing={isEditing} />
                         </div>
                         <div className="userInfo__container-setting-center-content"><h5>
                             UID

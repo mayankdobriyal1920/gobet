@@ -3,11 +3,11 @@ import {IonAlert, IonContent, IonLoading, IonPage} from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
 import {
     actionToGetUserWalletAndGameBalance,
-    actionToLogoutUserSession,
-    actionUpdateUserName
+    actionToLogoutUserSession
 } from "../redux/CommonAction";
 import UserAvatarModal from "../components/commonPopup/UserAvatarModal";
 import {useHistory} from "react-router";
+import UpdateUserNameModal from "../components/commonPopup/UpdateUserNameModal";
 
 export default function AccountPage() {
     const {userInfo} = useSelector((state) => state.userAuthDetail);
@@ -30,11 +30,6 @@ export default function AccountPage() {
     const handleEdit = () => {
         setTempName(userInfo?.name);
         setIsEditing(true);
-    };
-
-    const handleBlur = () => {
-        setIsEditing(false);
-        dispatch(actionUpdateUserName(tempName));
     };
 
     const goToPage = (page)=>{
@@ -61,26 +56,18 @@ export default function AccountPage() {
                         <div className="userInfo__container-content__name">
                             <div className="userInfo__container-content-nickname">
                                 <div className="userInfo__container-content-nickname_edit">
-                                    {isEditing ? (
-                                        <input
-                                            type="text"
-                                            value={tempName}
-                                            onChange={(e) => setTempName(e.target.value)}
-                                            onBlur={handleBlur}
-                                            autoFocus
-                                            className="userInfo__container-content-nickname_input"
-                                        />
-                                    ) : (
-                                        <>
-                                            <h3>{userInfo?.name}</h3>
-                                            <button
-                                                onClick={handleEdit}
-                                                className="userInfo__container-content-nickname_edit_icon"
-                                                aria-label="Edit name">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{cursor: "pointer"}}><path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm14.81-10.64c.2-.2.2-.51 0-.71l-2.83-2.83a.5.5 0 0 0-.71 0l-1.06 1.06 3.54 3.54 1.06-1.06z"/></svg>
-                                            </button>
-                                        </>
-                                    )}
+                                    <h3>{userInfo?.name}</h3>
+                                    <button
+                                        onClick={handleEdit}
+                                        className="userInfo__container-content-nickname_edit_icon"
+                                        aria-label="Edit name">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16"
+                                             height="16" fill="currentColor" style={{cursor: "pointer"}}>
+                                            <path
+                                                d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm14.81-10.64c.2-.2.2-.51 0-.71l-2.83-2.83a.5.5 0 0 0-.71 0l-1.06 1.06 3.54 3.54 1.06-1.06z"/>
+                                        </svg>
+                                    </button>
+                                    <UpdateUserNameModal setIsEditing={setIsEditing} isEditing={isEditing} />
                                 </div>
                             </div>
                             <div className="userInfo__container-content-uid">
