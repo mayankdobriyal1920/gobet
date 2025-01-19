@@ -39,7 +39,7 @@ import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
 import DepositHistoryListPage from "./pages/DepositHistoryListPage";
 import {useHistory} from "react-router";
-
+import { App as CapacitorApp } from '@capacitor/app';
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -95,24 +95,30 @@ const App = () => {
             StatusBar.setBackgroundColor({ color: '#f57b2c' }).then(()=>{
                 StatusBar.setStyle({ style:Style.Light });
             });
+
+            const backButtonListener = CapacitorApp.addListener('backButton', () => {
+                if (history.length <= 1) {
+                    // If there's no more history, show exit confirmation alert
+                    setShowExitAlert(true);
+                } else {
+                    // Navigate to the previous page
+                    history.goBack();
+                }
+            });
+
+            return () => {
+                // Remove listener on unmount
+                backButtonListener.remove();
+            };
         }
 
-        const backButtonListener = App.addListener('backButton', () => {
-            if (history.length <= 1) {
-                // If there's no more history, show exit confirmation alert
-                setShowExitAlert(true);
-            } else {
-                // Navigate to the previous page
-                history.goBack();
-            }
-        });
-
-        return () => {
-            // Remove listener on unmount
-            backButtonListener.remove();
-        };
-
     },[])
+
+    const exitApp = ()=>{
+        if(Capacitor.isNativePlatform()){
+            CapacitorApp.exitApp();
+        }
+    }
 
 
     return (
@@ -139,7 +145,7 @@ const App = () => {
                     {
                         text: 'Exit',
                         handler: () => {
-                            App.exitApp(); // Exit the app
+                            exitApp(); // Exit the app
                         },
                     },
                 ]}
