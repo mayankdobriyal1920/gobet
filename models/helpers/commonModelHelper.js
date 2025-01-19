@@ -213,7 +213,7 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
             })
 
 
-            const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_result_id","game_type","game_result_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
+            const insertData = {column: ["user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_type","game_result_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
 
             bulkInsertCommonApiCall(insertData)
                 .then((ids) => {
