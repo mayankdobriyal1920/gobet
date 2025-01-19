@@ -156,7 +156,7 @@ export const getGameResultListQuery = (userId, body) => {
     }
 
     // Final query
-    let query = `SELECT * FROM game_result WHERE ${condition} created_at desc`;
+    let query = `SELECT * FROM game_result WHERE ${condition} game_id desc`;
 
     return { values, query };
 };
