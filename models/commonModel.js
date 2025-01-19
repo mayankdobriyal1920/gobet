@@ -472,11 +472,11 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 
     return new Promise(function (resolve, reject) {
         // Step 1: Update the `game_result` table with the provided result
-        let setData = `result = $1`;
-        let whereCondition = `id = $2`;
+        let setData = `result = $1 , updated_by = $2`;
+        let whereCondition = `id = $3`;
         let dataToSend = {
             column: setData,
-            value: [result, id],
+            value: [result,userId,id],
             whereCondition: whereCondition,
             returnColumnName: 'id',
             tableName: 'game_result'
