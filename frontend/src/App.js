@@ -38,9 +38,9 @@ import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
 import DepositHistoryListPage from "./pages/DepositHistoryListPage";
-import {useHistory} from "react-router";
 import { App as CapacitorApp } from '@capacitor/app';
 import AdminGameResultListPage from "./pages/admin/AdminGameResultListPage";
+import {useHistory} from "react-router";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -76,6 +76,7 @@ const AppEnterMainPage = () => {
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>
+
         </IonReactRouter>
     );
 };
@@ -84,8 +85,6 @@ const App = () => {
     const dispatch = useDispatch();
     const userSession = useSelector((state) => state.userSession);
     const {userInfo} = useSelector((state) => state.userAuthDetail);
-    const history = useHistory();
-    const [showExitAlert, setShowExitAlert] = useState(false);
 
     useEffect(() => {
         dispatch(actionToGetUserSessionData());
@@ -97,30 +96,9 @@ const App = () => {
             StatusBar.setBackgroundColor({ color: '#f57b2c' }).then(()=>{
                 StatusBar.setStyle({ style:Style.Light });
             });
-
-            const backButtonListener = CapacitorApp.addListener('backButton', () => {
-                if (history.length <= 1) {
-                    // If there's no more history, show exit confirmation alert
-                    setShowExitAlert(true);
-                } else {
-                    // Navigate to the previous page
-                    history.goBack();
-                }
-            });
-
-            return () => {
-                // Remove listener on unmount
-                backButtonListener.remove();
-            };
         }
 
     },[])
-
-    const exitApp = ()=>{
-        if(Capacitor.isNativePlatform()){
-            CapacitorApp.exitApp();
-        }
-    }
 
 
     return (
@@ -131,27 +109,6 @@ const App = () => {
                 </React.Fragment>:''
             }
             <IonLoading className={"loading_loader_spinner_container"} isOpen={userSession?.loading} message={"Loading..."}/>
-            <IonAlert
-                isOpen={showExitAlert}
-                onDidDismiss={() => setShowExitAlert(false)} // Close the alert
-                header="Exit App"
-                message="Do you really want to exit the app?"
-                buttons={[
-                    {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        handler: () => {
-                            setShowExitAlert(false); // Close alert
-                        },
-                    },
-                    {
-                        text: 'Exit',
-                        handler: () => {
-                            exitApp(); // Exit the app
-                        },
-                    },
-                ]}
-            />
         </IonApp>
     )
 }
