@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IonModal, IonRow, IonCol, IonContent, IonGrid, IonItem, IonLabel} from '@ionic/react';
 import {useDispatch, useSelector} from "react-redux";
 import {actionAddMoneyToGameWallet} from "../../redux/CommonAction";
@@ -46,6 +46,15 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
         }
     };
 
+    useEffect(() => {
+        setAmount('');
+        setAmountError(false);
+        setAmountErrorMessage('');
+        setTimeout(()=>{
+            document.querySelector('#deposit_game_input_cont')?.focus();
+        },500)
+    }, [isAddMoneyOpen]);
+
     return (
         <React.Fragment>
             <div className="Wallet__C-balance-l3" onClick={() => openModal()}>
@@ -68,6 +77,7 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
                                     <input className={"add-money-input input"}
                                            onChange={(e)=>setAmount(e.target.value)}
                                            value={amount}
+                                           id={"deposit_game_input_cont"}
                                            placeholder={"Enter Amount"} type={"text"} required={true}/>
                                 </IonItem>
                             </IonCol>

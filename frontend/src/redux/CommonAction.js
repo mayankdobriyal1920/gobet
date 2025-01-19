@@ -169,11 +169,14 @@ export const actionUpdateUserName = (name) => async (dispatch) => {
     }
 }
 
-export const actionToGetUserWalletAndGameBalance = () => async (dispatch) => {
+export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async (dispatch) => {
     //dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
             dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData.data}});
+            if(setBalanceLoading){
+                setBalanceLoading(false);
+            }
         })
     } catch (error) {
         console.log(error);
