@@ -3,7 +3,7 @@ import {
     IonCol,
     IonContent, IonDatetime, IonGrid,
     IonHeader,
-    IonIcon,
+    IonIcon, IonLoading,
     IonModal,
     IonPage, IonRow,
 } from "@ionic/react";
@@ -18,6 +18,7 @@ export default function AdminGameResultListPage() {
     const history = useHistory();
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
+    const [updateLoading,setUpdateLoading] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
     const {loading,gameResult} = useSelector((state) => state.adminGameResultList);
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
@@ -98,9 +99,11 @@ export default function AdminGameResultListPage() {
     const callFunctionToReloadGameResultList = ()=>{
         callFunctionToAddFilterAndGetData(statusTypeFilter,dateTypeFilter);
         setUpdateGameResult(null);
+        setUpdateLoading(false);
     }
 
     const callFunctionToUpdateGameResult = (result)=>{
+        setUpdateLoading(true);
         dispatch(actionToCallFunctionToUpdateGameResult(updateGameResult?.id,result,callFunctionToReloadGameResultList));
     }
 
@@ -293,6 +296,7 @@ export default function AdminGameResultListPage() {
                     </div>
                 </IonContent>
             </IonModal>
+            <IonLoading isOpen={updateLoading} message={"Updating..."}/>
         </IonPage>
     )
 }
