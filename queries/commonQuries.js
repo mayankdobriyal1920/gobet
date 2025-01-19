@@ -139,7 +139,7 @@ export const getDepositHistoryQuery = (userId, body) => {
 export const getGameResultListQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [];  // Initial values array with userId
-    let condition = ``;  // Initial condition with userId
+    let condition = `1=1`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
