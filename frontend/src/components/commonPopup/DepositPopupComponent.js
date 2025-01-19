@@ -45,6 +45,9 @@ const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPop
         setAmount('');
         setAmountError(false);
         setAmountErrorMessage('');
+        setTimeout(()=>{
+            document.querySelector('#deposit_input_cont')?.focus();
+        },500)
     }, [isDepositPopupOpen]);
 
     return (
@@ -65,6 +68,8 @@ const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPop
                                 <input className={"add-money-input input"}
                                        onChange={(e)=>setAmount(e.target.value)}
                                        value={amount}
+                                       autoFocus={true}
+                                       id={"deposit_input_cont"}
                                        placeholder={"Enter Amount"} type={"text"} required={true}/>
                             </IonItem>
                         </IonCol>

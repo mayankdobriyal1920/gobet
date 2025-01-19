@@ -1848,3 +1848,20 @@ figure.icon {
 .list_item_in_search_list_main .approved {
     color: green;
 }
+
+.list_item_in_search_list_main {}
+
+.list_item_in_search_list_main .list_row_header_items {
+    background: var(--main-color);
+    color: #ffffff;
+    font-size: .42rem;
+    font-weight: 600;
+    padding: .1rem 0;
+}
+
+.list_item_in_search_list_main .list_row_items {
+    padding: .2rem 0;
+    font-size: .4rem;
+    border-bottom: 1px solid #ccc;
+    color: #777777;
+}

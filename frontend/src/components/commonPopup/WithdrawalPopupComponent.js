@@ -43,6 +43,9 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
         setAmount('');
         setAmountError(false);
         setAmountErrorMessage('');
+        setTimeout(()=>{
+            document.querySelector('#withdrawal_input_cont')?.focus();
+        },500)
     }, [isWithdrawalPopupOpen]);
 
     return (
@@ -63,6 +66,7 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
                                 <input className={"add-money-input input"}
                                        onChange={(e)=>setAmount(e.target.value)}
                                        value={amount}
+                                       id={"withdrawal_input_cont"}
                                        placeholder={"Enter Amount"} type={"text"} required={true}/>
                             </IonItem>
                         </IonCol>

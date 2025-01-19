@@ -89,7 +89,7 @@ export default function WithdrawalHistoryListPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.id}>
+            <IonRow className={"list_row_items"} key={dataItems?.id}>
                 <IonCol>{moment(dataItems?.created_at).format('DD MMM')}</IonCol>
                 <IonCol>₹{dataItems?.amount}</IonCol>
                 <IonCol>{moment(dataItems?.created_at).format('hh:mm a')}</IonCol>
@@ -182,14 +182,12 @@ export default function WithdrawalHistoryListPage() {
                                 </React.Fragment>
                                 : (withdrawalHistory?.length) ?
                                     <div className={"list_item_in_search_list_main"}>
-                                        <IonGrid>
-                                            <IonRow>
-                                                <IonCol>Date</IonCol>
-                                                <IonCol>Amount</IonCol>
-                                                <IonCol>Time</IonCol>
-                                                <IonCol>Status</IonCol>
-                                            </IonRow>
-                                        </IonGrid>
+                                        <IonRow className={"list_row_header_items"}>
+                                            <IonCol>Date</IonCol>
+                                            <IonCol>Amount</IonCol>
+                                            <IonCol>Time</IonCol>
+                                            <IonCol>Status</IonCol>
+                                        </IonRow>
                                         <Virtuoso
                                             style={{ height: '74vh' }}
                                             className={"virtual_item_listing"}
