@@ -95,9 +95,9 @@ export default function AdminGameResultListPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.game_id} className={"list_row_items"}>
-                <IonCol>{dataItems?.replace('_' , ' ').toLowerCase()}</IonCol>
-                <IonCol>{moment(dataItems?.created_at).format('hh:mm a')}</IonCol>
+            <IonRow key={dataItems?.id} className={"list_row_items"}>
+                <IonCol>{dataItems?.game_id}</IonCol>
+                <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
                 <IonCol onClick={()=>callFunctionToUpdateGameResult(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
             </IonRow>
         )
@@ -189,8 +189,7 @@ export default function AdminGameResultListPage() {
                                     <div className={"list_item_in_search_list_main"}>
                                         <IonRow className={"list_row_header_items"}>
                                             <IonCol>Game Id</IonCol>
-                                            <IonCol>Game Type</IonCol>
-                                            <IonCol>Time</IonCol>
+                                            <IonCol>Type</IonCol>
                                             <IonCol>Result</IonCol>
                                         </IonRow>
                                         <Virtuoso
