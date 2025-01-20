@@ -487,7 +487,7 @@ export const actionToGetPendingWithdrawalRequestListDataApiCall = (userId,body) 
 export const actionToGetAllUsersUnderSubAdminListApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const query = `SELECT id,name from app_users WHERE sub_admin = $1`;
+        const query = `SELECT id,name from app_user WHERE sub_admin = $1`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)

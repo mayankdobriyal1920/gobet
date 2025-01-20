@@ -95,7 +95,7 @@ export default function PendingWithdrawalRequestListPage() {
         dispatch(actionToGetPendingWithdrawalRequestListData())
     },[])
 
-    const callFunctionToUpdateGameResultPopup = (gameResult)=>{
+    const callFunctionToUpdateWithrawalRequestPopup = (gameResult)=>{
         if(!gameResult?.result){
             console.log('gameResult',gameResult)
             setUpdateWithdrawalStatus(gameResult);
@@ -116,9 +116,9 @@ export default function PendingWithdrawalRequestListPage() {
     const renderVirtualElement = (dataItems)=>{
         return (
             <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol><span className={"list_game_id"}>{dataItems?.game_id}</span></IonCol>
-                <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
-                <IonCol onClick={()=>callFunctionToUpdateGameResultPopup(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
+                <IonCol>{dataItems?.user_id}</IonCol>
+                <IonCol>{dataItems?.amount}</IonCol>
+                <IonCol onClick={()=>callFunctionToUpdateWithrawalRequestPopup(dataItems)}><span className={`update`}>APPROVE</span></IonCol>
             </IonRow>
         )
     }
@@ -135,7 +135,7 @@ export default function PendingWithdrawalRequestListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Game Result</span>
+                                        <span>Withdrawal Requests</span>
                                     </div>
                                 </div>
                             </div>
@@ -208,9 +208,9 @@ export default function PendingWithdrawalRequestListPage() {
                                 : (gameResult?.length) ?
                                     <div className={"list_item_in_search_list_main"}>
                                         <IonRow className={"list_row_header_items"}>
-                                            <IonCol>Game Id</IonCol>
-                                            <IonCol>Type</IonCol>
-                                            <IonCol>Result</IonCol>
+                                            <IonCol>User Id</IonCol>
+                                            <IonCol>Amount</IonCol>
+                                            <IonCol>Status</IonCol>
                                         </IonRow>
                                         <Virtuoso
                                             style={{ height: '71vh' }}
