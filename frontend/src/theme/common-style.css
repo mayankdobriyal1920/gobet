@@ -2023,3 +2023,36 @@ figure.icon {
 .list_item_in_search_list_main .list_row_items span.BIG {
     color: red;
 }
+
+.list_item_in_search_list_main {
+    overflow-x: auto; /* Enable horizontal scroll */
+    display: block; /* Ensure it's a block container for proper layout */
+}
+
+.scrollable-container {
+    display: inline-block; /* Enable scrollable content */
+    min-width: 800px; /* Set a minimum width to prevent collapsing */
+}
+
+.list_row_header_items {
+    font-weight: bold;
+    background-color: #f4f4f4;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #000;
+}
+.list_row_header_items ion-col {
+    border-right: 1px solid #ddd;
+}
+
+.list_row_items {
+    text-align: center;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.virtual_item_listing {
+    padding-top: 8px; /* Space above virtualized list */
+    padding-bottom: 8px; /* Space below virtualized list */
+}

@@ -110,9 +110,10 @@ export default function AdminGameResultListPage() {
     const renderVirtualElement = (dataItems)=>{
         return (
             <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol><span className={"list_game_id"}>{dataItems?.game_id}</span></IonCol>
-                <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
+                <IonCol>{dataItems?.game_id}</IonCol>
                 <IonCol onClick={()=>callFunctionToUpdateGameResultPopup(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
+                <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
+                <IonCol>{moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}</IonCol>
             </IonRow>
         )
     }
@@ -201,17 +202,20 @@ export default function AdminGameResultListPage() {
                                 </React.Fragment>
                                 : (gameResult?.length) ?
                                     <div className={"list_item_in_search_list_main"}>
-                                        <IonRow className={"list_row_header_items"}>
-                                            <IonCol>Game Id</IonCol>
-                                            <IonCol>Type</IonCol>
-                                            <IonCol>Result</IonCol>
-                                        </IonRow>
-                                        <Virtuoso
-                                            style={{ height: '71vh' }}
-                                            className={"virtual_item_listing"}
-                                            totalCount={gameResult?.length}
-                                            itemContent={index => renderVirtualElement(gameResult[index])}
-                                        />
+                                        <div className={"scrollable-container"}>
+                                            <IonRow className={"list_row_header_items"}>
+                                                <IonCol >Id</IonCol>
+                                                <IonCol >Result</IonCol>
+                                                <IonCol >Type</IonCol>
+                                                <IonCol >Date Time</IonCol>
+                                            </IonRow>
+                                            <Virtuoso
+                                                style={{ height: '71vh' }}
+                                                className={"virtual_item_listing"}
+                                                totalCount={gameResult?.length}
+                                                itemContent={index => renderVirtualElement(gameResult[index])}
+                                            />
+                                        </div>
                                     </div>
                                     :
                                     <div className={"empty__container empty"}>
