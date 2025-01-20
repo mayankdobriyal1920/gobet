@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import {
     CheckMobNumberAlreadyExistQuery,
     getDepositHistoryQuery,
-    getGameResultListQuery,
+    getGameResultListQuery, getPendingWithdrawalRequestListQuery,
     getUserByIdQuery,
     getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
@@ -456,6 +456,39 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
         let responseData = [];
         const {query,values} = getGameResultListQuery(userId,payload);
         pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetPendingWithdrawalRequestListDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getPendingWithdrawalRequestListQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetAllUsersUnderSubAdminListApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const query = `SELECT id,name from app_users WHERE sub_admin = $1`;
+        pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
             }

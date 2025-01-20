@@ -34,7 +34,7 @@ export default function MainAppTabsRoutePage() {
                 if(!canGoBack){
                     setShowExitAlert(true);
                 } else {
-                    history.goBack();
+                    window.history.back();
                 }
             });
 

@@ -1,8 +1,8 @@
 import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
-    adminGameResultListReducer,
-    changeUserAvatarModal,
+    adminGameResultListReducer, allUsersUnsetSubAdminListReducer,
+    changeUserAvatarModal, pendingWithdrawalRequestListReducer,
     signupSigninFormError,
     userAuthDetailReducer,
     userBetPredictionHistoryReducer,
@@ -25,13 +25,17 @@ const initialState = {
     userWithdrawalAmountHistory: {loading:true,withdrawalHistory:[]},
     userDepositAmountHistory: {loading:true,depositHistory:[]},
     adminGameResultList: {loading:true,gameResult:[]},
+    pendingWithdrawalRequestList: {loading:true,withdrawalRequest:[]},
+    allUsersUnsetSubAdminList: {loading:true,userData:[]},
     userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     userWithdrawalAmountHistory: userWithdrawalAmountHistoryReducer,
     userDepositAmountHistory: userDepositAmountHistoryReducer,
+    allUsersUnsetSubAdminList: allUsersUnsetSubAdminListReducer,
     adminGameResultList: adminGameResultListReducer,
+    pendingWithdrawalRequestList: pendingWithdrawalRequestListReducer,
     userAuthDetail: userAuthDetailReducer,
     userOtpDetails: userOtpReducer,
     signupSigninFormError: signupSigninFormError,

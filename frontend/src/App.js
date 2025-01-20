@@ -24,7 +24,11 @@ import './theme/variables.css';
 import './theme/additional.css';
 import './theme/common-style.css';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetUserSessionData, actionToGetUserWalletAndGameBalance} from "./redux/CommonAction";
+import {
+    actionToGetAllUsersUnderSubAdminList,
+    actionToGetUserSessionData,
+    actionToGetUserWalletAndGameBalance
+} from "./redux/CommonAction";
 import LoginPage from "./pages/LoginPage";
 import MainAppTabsRoutePage from "./pages/MainAppTabsRoutePage";
 import SignupPage from "./pages/SignupPage";
@@ -41,6 +45,7 @@ import DepositHistoryListPage from "./pages/DepositHistoryListPage";
 import { App as CapacitorApp } from '@capacitor/app';
 import AdminGameResultListPage from "./pages/admin/AdminGameResultListPage";
 import {useHistory} from "react-router";
+import PendingWithdrawalRequestListPage from "./pages/admin/PendingWithdrawalRequestListPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -59,6 +64,7 @@ const AppEnterMainPage = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(actionToGetUserWalletAndGameBalance());
+        dispatch(actionToGetAllUsersUnderSubAdminList());
     }, []);
 
     return (
@@ -73,6 +79,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/withdrawal-history" component={WithdrawalHistoryListPage}/>
                 <Route exact={true} path="/deposit-history" component={DepositHistoryListPage}/>
                 <Route exact={true} path="/admin-game-result" component={AdminGameResultListPage}/>
+                <Route exact={true} path="/admin-withdrawal-pending-request" component={PendingWithdrawalRequestListPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

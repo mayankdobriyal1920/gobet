@@ -24,7 +24,12 @@ import {
     USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
     USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
     USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS,
-    ADMIN_GAME_RESULT_LIST_REQUEST, ADMIN_GAME_RESULT_LIST_SUCCESS
+    ADMIN_GAME_RESULT_LIST_REQUEST,
+    ADMIN_GAME_RESULT_LIST_SUCCESS,
+    PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
+    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -289,11 +294,45 @@ export const actionToGetAdminGameResultListData = (isLoading = true,payload = {}
     }
 }
 
+export const actionToGetPendingWithdrawalRequestListData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST});
+    }
+    try {
+        api.post(`actionToGetPendingWithdrawalRequestListDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToCallFunctionToUpdateGameResult = (id,result,callFunctionToReloadGameResultLis) => async (dispatch) => {
     try {
         api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {id,result}).then(responseData => {
             if(callFunctionToReloadGameResultLis)
                callFunctionToReloadGameResultLis();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToCompleteStatusOfWithdrawalRequest = (id,callFunctionToReloadList) => async () => {
+    try {
+        api.post(`actionToCompleteStatusOfWithdrawalRequestApiCall`, {id}).then(() => {
+            if(callFunctionToReloadList)
+                callFunctionToReloadList();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
+    dispatch({type: ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST});
+    try {
+        api.post(`actionToGetAllUsersUnderSubAdminListApiCall`, {}).then(responseData => {
+            dispatch({ type: ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);

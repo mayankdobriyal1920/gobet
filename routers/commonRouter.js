@@ -24,7 +24,9 @@ import {
     actionToGetWithdrawalRequestHistoryDataApiCall,
     actionToGetDepositRequestHistoryDataApiCall,
     actionToGetAdminGameResultListDataApiCall,
-    actionToCallFunctionToUpdateGameResultApiCall
+    actionToCallFunctionToUpdateGameResultApiCall,
+    actionToGetPendingWithdrawalRequestListDataApiCall,
+    actionToGetAllUsersUnderSubAdminListApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -416,6 +418,35 @@ commonRouter.post(
             })
         }else{
             res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetPendingWithdrawalRequestListDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetPendingWithdrawalRequestListDataApiCall(req?.session?.userSessionData?.id, req.body).then(responseData => {
+                res.status(200).send(responseData);
+            });
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetAllUsersUnderSubAdminListApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetAllUsersUnderSubAdminListApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
         }
     })
 );

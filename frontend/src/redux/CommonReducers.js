@@ -23,7 +23,12 @@ import {
     USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
     USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
     USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
-    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS, ADMIN_GAME_RESULT_LIST_REQUEST, ADMIN_GAME_RESULT_LIST_SUCCESS
+    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS,
+    ADMIN_GAME_RESULT_LIST_REQUEST,
+    ADMIN_GAME_RESULT_LIST_SUCCESS,
+    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
+    PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST, ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -100,6 +105,29 @@ export const adminGameResultListReducer = (state = {}, action) => {
             return { loading: true};
         case ADMIN_GAME_RESULT_LIST_SUCCESS:
             return { loading: false, gameResult: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const allUsersUnsetSubAdminListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST:
+            return { loading: true};
+        case ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS:
+            return { loading: false, userData: action.payload};
+        default:
+            return state;
+    }
+};
+
+
+export const pendingWithdrawalRequestListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST:
+            return { loading: true};
+        case PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS:
+            return { loading: false, withdrawalRequest: action.payload};
         default:
             return state;
     }
