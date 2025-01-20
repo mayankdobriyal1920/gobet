@@ -163,8 +163,8 @@ export const getGameResultListQuery = (userId, body) => {
 
 export const getPendingWithdrawalRequestListQuery = (userId, body) => {
     let { status, created_at } = body;
-    let values = [userId];  // Initial values array with userId
-    let condition = `sub_admin_id = $1`;  // Initial condition with userId
+    let values = [userId,0];  // Initial values array with userId
+    let condition = `sub_admin_id = $1 AND status = $2`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {

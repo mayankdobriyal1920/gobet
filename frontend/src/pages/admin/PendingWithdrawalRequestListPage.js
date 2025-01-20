@@ -25,7 +25,7 @@ export default function PendingWithdrawalRequestListPage() {
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
     const [updateLoading,setUpdateLoading] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
-    const {loading,gameResult} = useSelector((state) => state.adminGameResultList);
+    const {loading,withdrawalRequest} = useSelector((state) => state.pendingWithdrawalRequestList);
     const allUsersUnsetSubAdminList = useSelector((state) => state.allUsersUnsetSubAdminList);
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
     const [updateWithdrawalStatus,setUpdateWithdrawalStatus] = useState(null);
@@ -95,10 +95,10 @@ export default function PendingWithdrawalRequestListPage() {
         dispatch(actionToGetPendingWithdrawalRequestListData())
     },[])
 
-    const callFunctionToUpdateWithrawalRequestPopup = (gameResult)=>{
-        if(!gameResult?.result){
-            console.log('gameResult',gameResult)
-            setUpdateWithdrawalStatus(gameResult);
+    const callFunctionToUpdateWithrawalRequestPopup = (withdrawalRequest)=>{
+        if(!withdrawalRequest?.result){
+            console.log('withdrawalRequest',withdrawalRequest)
+            setUpdateWithdrawalStatus(withdrawalRequest);
         }
     }
 
@@ -108,15 +108,15 @@ export default function PendingWithdrawalRequestListPage() {
         setUpdateLoading(false);
     }
 
-    const callFunctionToUpdateWithdrawalStatus = (result)=>{
+    const callFunctionToUpdateWithdrawalStatus = ()=>{
         setUpdateLoading(true);
-        dispatch(actionToCompleteStatusOfWithdrawalRequest(updateWithdrawalStatus?.id,result,callFunctionToReloadList));
+        dispatch(actionToCompleteStatusOfWithdrawalRequest(updateWithdrawalStatus?.id,callFunctionToReloadList));
     }
 
     const renderVirtualElement = (dataItems)=>{
         return (
             <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol>{dataItems?.user_id}</IonCol>
+                <IonCol><span className={"list_game_id"}>{dataItems?.user_id}</span></IonCol>
                 <IonCol>{dataItems?.amount}</IonCol>
                 <IonCol onClick={()=>callFunctionToUpdateWithrawalRequestPopup(dataItems)}><span className={`update`}>APPROVE</span></IonCol>
             </IonRow>
@@ -205,7 +205,7 @@ export default function PendingWithdrawalRequestListPage() {
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                 </React.Fragment>
-                                : (gameResult?.length) ?
+                                : (withdrawalRequest?.length) ?
                                     <div className={"list_item_in_search_list_main"}>
                                         <IonRow className={"list_row_header_items"}>
                                             <IonCol>User Id</IonCol>
@@ -215,8 +215,8 @@ export default function PendingWithdrawalRequestListPage() {
                                         <Virtuoso
                                             style={{ height: '71vh' }}
                                             className={"virtual_item_listing"}
-                                            totalCount={gameResult?.length}
-                                            itemContent={index => renderVirtualElement(gameResult[index])}
+                                            totalCount={withdrawalRequest?.length}
+                                            itemContent={index => renderVirtualElement(withdrawalRequest[index])}
                                         />
                                     </div>
                                     :
