@@ -2,7 +2,7 @@ import pool from "./connection.js";
 import crypto from 'crypto';
 import {
     CheckMobNumberAlreadyExistQuery,
-    getDepositHistoryQuery,
+    getDepositHistoryQuery, getGameHistoryQuery,
     getGameResultListQuery, getPendingWithdrawalRequestListQuery,
     getUserByIdQuery,
     getWithdrawalHistoryQuery,
@@ -438,6 +438,23 @@ export const actionToGetDepositRequestHistoryDataApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
         const {query,values} = getDepositHistoryQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetGameHistoryDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getGameHistoryQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

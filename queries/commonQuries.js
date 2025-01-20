@@ -136,6 +136,29 @@ export const getDepositHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
+export const getGameHistoryQuery = (userId, body) => {
+    let { status, created_at } = body;
+    let values = [userId];  // Initial values array with userId
+    let condition = `user_id = $1`;  // Initial condition with userId
+
+    // Add condition for status if provided
+    if (status && status !== 'All') {
+        values.push(status);  // Append the status value (1 for 'Pending', 0 otherwise)
+        condition += ` AND game_type = $${values.length}`;  // Add 'status' condition
+    }
+
+    // Add condition for created_at if provided
+    if (created_at) {
+        values.push(created_at);  // Append the created_at value
+        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+    }
+
+    // Final query
+    let query = `SELECT * FROM bet_prediction_history WHERE ${condition} order by created_at desc`;
+
+    return { values, query };
+};
+
 export const getGameResultListQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [];  // Initial values array with userId

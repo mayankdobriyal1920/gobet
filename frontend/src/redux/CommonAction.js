@@ -29,7 +29,7 @@ import {
     PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
     PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
     ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS, USER_GAME_HISTORY_REQUEST, USER_GAME_HISTORY_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -275,6 +275,19 @@ export const actionToGetDepositRequestHistoryData = (isLoading = true,payload = 
     try {
         api.post(`actionToGetDepositRequestHistoryDataApiCall`, {payload}).then(responseData => {
             dispatch({ type: USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetGameHistoryData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: USER_GAME_HISTORY_REQUEST});
+    }
+    try {
+        api.post(`actionToGetGameHistoryDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: USER_GAME_HISTORY_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);
