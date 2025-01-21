@@ -230,7 +230,7 @@ export default function AccountPage() {
                                         </svg>
                                     </div>
                                 </div>
-                                <div className="settingPanel__container-items__item ar-1px-b">
+                                <div onClick={()=>goToPage('/admin-deposit-pending-request')} className="settingPanel__container-items__item ar-1px-b">
                                     <div className="settingPanel__container-items__title">
                                         <svg className="svg-icon icon-rechargeHistory svg_min_icon"
                                              viewBox="0 0 80 80" fill="none"

@@ -14,7 +14,7 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToCompleteStatusOfWithdrawalRequest,
+    actionToCompleteStatusOfDepositRequest,
     actionToGetPendingDepositRequestListData
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
@@ -27,7 +27,7 @@ export default function PendingDepositRequestListPage() {
     const {loading,depositRequest} = useSelector((state) => state.pendingDepositRequestList);
     const allUsersUnsetSubAdminList = useSelector((state) => state.allUsersUnsetSubAdminList);
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
-    const [updateWithdrawalStatus,setUpdateWithdrawalStatus] = useState(null);
+    const [updateDepositStatus,setUpdateDepositStatus] = useState(null);
     const datetimeRef = createRef();
     const dispatch = useDispatch();
     const goBack = ()=>{
@@ -96,19 +96,19 @@ export default function PendingDepositRequestListPage() {
 
     const callFunctionToUpdateWithdrawalRequestPopup = (withdrawalRequest)=>{
         if(!withdrawalRequest?.result){
-            setUpdateWithdrawalStatus(withdrawalRequest);
+            setUpdateDepositStatus(withdrawalRequest);
         }
     }
 
     const callFunctionToReloadList = ()=>{
         callFunctionToAddFilterAndGetData(statusTypeFilter,dateTypeFilter);
-        setUpdateWithdrawalStatus(null);
+        setUpdateDepositStatus(null);
         setUpdateLoading(false);
     }
 
     const callFunctionToUpdateWithdrawalStatus = ()=>{
         setUpdateLoading(true);
-        dispatch(actionToCompleteStatusOfWithdrawalRequest(updateWithdrawalStatus?.id,callFunctionToReloadList));
+        dispatch(actionToCompleteStatusOfDepositRequest(updateDepositStatus?.id,callFunctionToReloadList));
     }
 
     const renderVirtualElement = (dataItems)=>{
@@ -143,7 +143,7 @@ export default function PendingDepositRequestListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Withdrawal Requests</span>
+                                        <span>Deposit Requests</span>
                                     </div>
                                 </div>
                             </div>
@@ -285,14 +285,14 @@ export default function PendingDepositRequestListPage() {
             <IonAlert
                 header="Are you sure?"
                 message="You want to approve this withdrawal request?"
-                isOpen={!!updateWithdrawalStatus?.id}
+                isOpen={!!updateDepositStatus?.id}
                 className={"custom_site_alert_toast"}
                 buttons={[
                     {
                         text: 'Cancel',
                         role: 'cancel',
                         handler: () => {
-                            setUpdateWithdrawalStatus(null);
+                            setUpdateDepositStatus(null);
                         },
                     },
                     {
@@ -303,7 +303,7 @@ export default function PendingDepositRequestListPage() {
                         },
                     },
                 ]}
-                onDidDismiss={() => setUpdateWithdrawalStatus(null)}
+                onDidDismiss={() => setUpdateDepositStatus(null)}
             />
             <IonLoading isOpen={updateLoading} message={"Updating..."}/>
         </IonPage>
