@@ -357,6 +357,17 @@ export const actionToCompleteStatusOfWithdrawalRequest = (id,callFunctionToReloa
         console.log(error);
     }
 }
+
+export const actionToCompleteStatusOfDepositRequest = (id,callFunctionToReloadList) => async () => {
+    try {
+        api.post(`actionToCompleteStatusOfDepositRequestApiCall`, {id}).then(() => {
+            if(callFunctionToReloadList)
+                callFunctionToReloadList();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
 export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
     dispatch({type: ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST});
     try {

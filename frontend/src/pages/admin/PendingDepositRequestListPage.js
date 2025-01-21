@@ -96,7 +96,6 @@ export default function PendingDepositRequestListPage() {
 
     const callFunctionToUpdateWithdrawalRequestPopup = (withdrawalRequest)=>{
         if(!withdrawalRequest?.result){
-            console.log('withdrawalRequest',withdrawalRequest)
             setUpdateWithdrawalStatus(withdrawalRequest);
         }
     }
