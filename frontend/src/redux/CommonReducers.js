@@ -31,7 +31,7 @@ import {
     ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
     ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
     USER_GAME_HISTORY_REQUEST,
-    USER_GAME_HISTORY_SUCCESS
+    USER_GAME_HISTORY_SUCCESS, PENDING_DEPOSIT_REQUEST_LIST_SUCCESS, PENDING_DEPOSIT_REQUEST_LIST_REQUEST
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -142,6 +142,16 @@ export const pendingWithdrawalRequestListReducer = (state = {}, action) => {
             return { loading: true};
         case PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS:
             return { loading: false, withdrawalRequest: action.payload};
+        default:
+            return state;
+    }
+};
+export const pendingDepositRequestListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case PENDING_DEPOSIT_REQUEST_LIST_REQUEST:
+            return { loading: true};
+        case PENDING_DEPOSIT_REQUEST_LIST_SUCCESS:
+            return { loading: false, depositRequest: action.payload};
         default:
             return state;
     }

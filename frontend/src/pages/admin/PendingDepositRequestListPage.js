@@ -1,9 +1,10 @@
-import React, {createRef, useEffect, useRef, useState} from "react";
+import React, {createRef, useEffect, useState} from "react";
 import {
+    IonAlert,
     IonCol,
-    IonContent, IonDatetime, IonGrid,
+    IonContent, IonDatetime,
     IonHeader,
-    IonIcon,
+    IonIcon, IonLoading,
     IonModal,
     IonPage, IonRow,
 } from "@ionic/react";
@@ -11,16 +12,22 @@ import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
 import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetWithdrawalRequestHistoryData} from "../redux/CommonAction";
-import LineLoaderComponent from "../components/LineLoaderComponent";
 import { Virtuoso } from 'react-virtuoso'
-export default function WithdrawalHistoryListPage() {
+import {
+    actionToCompleteStatusOfWithdrawalRequest,
+    actionToGetPendingDepositRequestListData
+} from "../../redux/CommonAction";
+import LineLoaderComponent from "../../components/LineLoaderComponent";
+export default function PendingDepositRequestListPage() {
     const history = useHistory();
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
+    const [updateLoading,setUpdateLoading] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
-    const {loading,withdrawalHistory} = useSelector((state) => state.userWithdrawalAmountHistory);
+    const {loading,depositRequest} = useSelector((state) => state.pendingDepositRequestList);
+    const allUsersUnsetSubAdminList = useSelector((state) => state.allUsersUnsetSubAdminList);
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
+    const [updateWithdrawalStatus,setUpdateWithdrawalStatus] = useState(null);
     const datetimeRef = createRef();
     const dispatch = useDispatch();
     const goBack = ()=>{
@@ -49,43 +56,61 @@ export default function WithdrawalHistoryListPage() {
     }
 
     const callFunctionToAddFilterAndGetData = (typeFilter,dateFilter)=>{
-       dispatch(actionToGetWithdrawalRequestHistoryData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
+        dispatch(actionToGetPendingDepositRequestListData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
     useEffect(() => {
         setTimeout(()=>{
-        const datetimeElement = datetimeRef.current;
-        const shadowRoot = datetimeElement?.shadowRoot;
+            const datetimeElement = datetimeRef.current;
+            const shadowRoot = datetimeElement?.shadowRoot;
 
-        if (shadowRoot) {
-            // Access the buttons inside the calendar
-            const buttons = shadowRoot.querySelectorAll('.calendar-next-prev ion-button');
-            buttons?.forEach((button) => {
-                button.style.fontSize = '.7rem';  // Reduce font size
-                button.style.height = '50px';    // Reduce height
-                button.style.width = '50px';     // Reduce width
-                button.style.padding = '0';      // Remove padding
-            });
+            if (shadowRoot) {
+                // Access the buttons inside the calendar
+                const buttons = shadowRoot.querySelectorAll('.calendar-next-prev ion-button');
+                buttons?.forEach((button) => {
+                    button.style.fontSize = '.7rem';  // Reduce font size
+                    button.style.height = '50px';    // Reduce height
+                    button.style.width = '50px';     // Reduce width
+                    button.style.padding = '0';      // Remove padding
+                });
 
-            // Optionally reduce icon size
-            const icons = shadowRoot.querySelectorAll('.calendar-next-prev ion-icon');
-            icons?.forEach((icon) => {
-                icon.style.fontSize = '.7rem';  // Reduce icon size
-            });
+                // Optionally reduce icon size
+                const icons = shadowRoot.querySelectorAll('.calendar-next-prev ion-icon');
+                icons?.forEach((icon) => {
+                    icon.style.fontSize = '.7rem';  // Reduce icon size
+                });
 
 
-            const weekDaysButtons = shadowRoot.querySelector('.calendar-days-of-week');
-            if(weekDaysButtons)
-              weekDaysButtons.style.fontSize = '.5rem';  // Reduce icon size
-        }
+                const weekDaysButtons = shadowRoot.querySelector('.calendar-days-of-week');
+                if(weekDaysButtons)
+                    weekDaysButtons.style.fontSize = '.5rem';  // Reduce icon size
+            }
         },100)
     }, [datetimeRef.current,isDateFilterOpen]);
 
     useEffect(() => {
         setStatusTypeFilter('All');
         setDateTypeFilter(null);
-        dispatch(actionToGetWithdrawalRequestHistoryData())
+        dispatch(actionToGetPendingDepositRequestListData())
     },[])
+
+    const callFunctionToUpdateWithdrawalRequestPopup = (withdrawalRequest)=>{
+        if(!withdrawalRequest?.result){
+            console.log('withdrawalRequest',withdrawalRequest)
+            setUpdateWithdrawalStatus(withdrawalRequest);
+        }
+    }
+
+    const callFunctionToReloadList = ()=>{
+        callFunctionToAddFilterAndGetData(statusTypeFilter,dateTypeFilter);
+        setUpdateWithdrawalStatus(null);
+        setUpdateLoading(false);
+    }
+
+    const callFunctionToUpdateWithdrawalStatus = ()=>{
+        setUpdateLoading(true);
+        dispatch(actionToCompleteStatusOfWithdrawalRequest(updateWithdrawalStatus?.id,callFunctionToReloadList));
+    }
 
     const renderVirtualElement = (dataItems)=>{
         return (
@@ -94,8 +119,7 @@ export default function WithdrawalHistoryListPage() {
                     <div>
                         <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
                     </div>
-                    <span
-                        className={`action_button ${dataItems?.status === 1 ? 'approved' : 'pending'}`}>{dataItems?.status === 1 ? 'approved' : 'pending'}</span>
+                    <span onClick={()=>callFunctionToUpdateWithdrawalRequestPopup(dataItems)} className={`action_button update`}>APPROVE</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     User Id : {dataItems?.user_id}
@@ -120,7 +144,7 @@ export default function WithdrawalHistoryListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Withdrawal History</span>
+                                        <span>Withdrawal Requests</span>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +160,7 @@ export default function WithdrawalHistoryListPage() {
                                 <div onClick={()=>setIsTypeFilterOpen(true)} className="ar-searchbar__selector">
                                     <div>
                                         <span
-                                        className="ar-searchbar__selector-default">{statusTypeFilter}</span>
+                                            className="ar-searchbar__selector-default">{statusTypeFilter}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              className="van-badge__wrapper van-icon van-icon-arrow"
                                              fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
@@ -163,14 +187,14 @@ export default function WithdrawalHistoryListPage() {
                                     </div>
                                 </div>
                                 {(statusTypeFilter !== 'All' || dateTypeFilter !== null) ?
-                                <div onClick={()=>callFunctionClearToAddFilterAndGetData('All',null)} className="ar-searchbar__selector_clear">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
-                                         viewBox="0 0 24 24" fill="var(--main-color)">
-                                        <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
-                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
-                                              strokeWidth="1.5" strokeLinecap="round"/>
-                                    </svg>
-                                </div>:''
+                                    <div onClick={()=>callFunctionClearToAddFilterAndGetData('All',null)} className="ar-searchbar__selector_clear">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
+                                             viewBox="0 0 24 24" fill="var(--main-color)">
+                                            <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
+                                                  strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                    </div>:''
                                 }
                             </div>
                         </div>
@@ -190,12 +214,12 @@ export default function WithdrawalHistoryListPage() {
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                 </React.Fragment>
-                                : (withdrawalHistory?.length) ?
+                                : (depositRequest?.length) ?
                                     <div className={"sysMessage__container"}>
                                         <Virtuoso
                                             className={"virtual_item_listing"}
-                                            totalCount={withdrawalHistory?.length}
-                                            itemContent={index => renderVirtualElement(withdrawalHistory[index])}
+                                            totalCount={depositRequest?.length}
+                                            itemContent={index => renderVirtualElement(depositRequest[index])}
                                         />
                                     </div>
                                     :
@@ -221,18 +245,17 @@ export default function WithdrawalHistoryListPage() {
                 initialBreakpoint={0.5} breakpoints={[0.5]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Status Type</h2>
+                        <h2>Users</h2>
                     </div>
                     <div className={"list_status_type"}>
                         <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}
                              onClick={() => callFunctionToApplyTypeFilter('All')}>All
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Approved' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('Approved')}>Approved
-                        </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Pending' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('Pending')}>Pending
-                        </div>
+                        {allUsersUnsetSubAdminList?.userData?.map((userData)=>(
+                            <div key={userData?.id} className={`list_status_type_item ${statusTypeFilter === userData?.id ? 'active' : ''}`}
+                                 onClick={() => callFunctionToApplyTypeFilter(userData?.id)}>{userData?.id}
+                            </div>
+                        ))}
                     </div>
                 </IonContent>
             </IonModal>
@@ -258,6 +281,32 @@ export default function WithdrawalHistoryListPage() {
                     </div>
                 </IonContent>
             </IonModal>
+
+
+            <IonAlert
+                header="Are you sure?"
+                message="You want to approve this withdrawal request?"
+                isOpen={!!updateWithdrawalStatus?.id}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            setUpdateWithdrawalStatus(null);
+                        },
+                    },
+                    {
+                        text: 'Approved',
+                        role: 'confirm',
+                        handler: () => {
+                            callFunctionToUpdateWithdrawalStatus()
+                        },
+                    },
+                ]}
+                onDidDismiss={() => setUpdateWithdrawalStatus(null)}
+            />
+            <IonLoading isOpen={updateLoading} message={"Updating..."}/>
         </IonPage>
     )
 }

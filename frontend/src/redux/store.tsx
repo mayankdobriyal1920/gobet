@@ -2,7 +2,7 @@ import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
     adminGameResultListReducer, allUsersUnsetSubAdminListReducer,
-    changeUserAvatarModal, pendingWithdrawalRequestListReducer,
+    changeUserAvatarModal, pendingDepositRequestListReducer, pendingWithdrawalRequestListReducer,
     signupSigninFormError,
     userAuthDetailReducer,
     userBetPredictionHistoryReducer,
@@ -27,6 +27,7 @@ const initialState = {
     userDepositAmountHistory: {loading:true,depositHistory:[]},
     adminGameResultList: {loading:true,gameResult:[]},
     pendingWithdrawalRequestList: {loading:true,withdrawalRequest:[]},
+    pendingDepositRequestList: {loading:true,depositRequest:[]},
     allUsersUnsetSubAdminList: {loading:true,userData:[]},
     userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
 }
@@ -36,6 +37,7 @@ export const rootReducer = combineReducers({
     userDepositAmountHistory: userDepositAmountHistoryReducer,
     allUsersUnsetSubAdminList: allUsersUnsetSubAdminListReducer,
     adminGameResultList: adminGameResultListReducer,
+    pendingDepositRequestList: pendingDepositRequestListReducer,
     pendingWithdrawalRequestList: pendingWithdrawalRequestListReducer,
     userAuthDetail: userAuthDetailReducer,
     userOtpDetails: userOtpReducer,

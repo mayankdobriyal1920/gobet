@@ -207,6 +207,29 @@ export const getPendingWithdrawalRequestListQuery = (userId, body) => {
     return { values, query };
 };
 
+export const getPendingDepositRequestListQuery = (userId, body) => {
+    let { status, created_at } = body;
+    let values = [userId,0];  // Initial values array with userId
+    let condition = `sub_admin_id = $1 AND status = $2`;  // Initial condition with userId
+
+    // Add condition for status if provided
+    if (status && status !== 'All') {
+        values.push(status);
+        condition += ` AND user_id = $${values.length}`;
+    }
+
+    // Add condition for created_at if provided
+    if (created_at) {
+        values.push(created_at);  // Append the created_at value
+        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+    }
+
+    // Final query
+    let query = `SELECT * FROM deposit_history WHERE ${condition} order by created_at desc`;
+
+    return { values, query };
+};
+
 export const getUserByIdQuery = () => {
     return `
         SELECT

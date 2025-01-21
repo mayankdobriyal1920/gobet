@@ -109,24 +109,33 @@ export default function AdminGameResultListPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol>{dataItems?.game_id}</IonCol>
-                <IonCol onClick={()=>callFunctionToUpdateGameResultPopup(dataItems)}><span className={`${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span></IonCol>
-                <IonCol>{dataItems?.game_type?.replace('_' , ' ').toUpperCase()}</IonCol>
-                <IonCol>{moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}</IonCol>
-            </IonRow>
+            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>{dataItems?.game_id}</span>
+                    </div>
+                    <span onClick={() => callFunctionToUpdateGameResultPopup(dataItems)} className={`action_button ${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                </div>
+            </div>
         )
     }
 
     return (
-        <IonPage  className={"home_welcome_page_container"}>
+        <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
                 <div className={"content-getbet content"}>
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
                                 <div onClick={goBack} className="navbar__content-left">
-                                    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />
+                                    <IonIcon icon={arrowBack}
+                                             style={{color: "#ffffff", width: "24px", height: "24px"}}/>
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
@@ -201,21 +210,12 @@ export default function AdminGameResultListPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (gameResult?.length) ?
-                                    <div className={"list_item_in_search_list_main"}>
-                                        <div className={"scrollable-container"}>
-                                            <IonRow className={"list_row_header_items"}>
-                                                <IonCol >Id</IonCol>
-                                                <IonCol >Result</IonCol>
-                                                <IonCol >Type</IonCol>
-                                                <IonCol >Date Time</IonCol>
-                                            </IonRow>
-                                            <Virtuoso
-                                                style={{ height: '71vh' }}
-                                                className={"virtual_item_listing"}
-                                                totalCount={gameResult?.length}
-                                                itemContent={index => renderVirtualElement(gameResult[index])}
-                                            />
-                                        </div>
+                                    <div className={"sysMessage__container"}>
+                                        <Virtuoso
+                                            className={"virtual_item_listing"}
+                                            totalCount={gameResult?.length}
+                                            itemContent={index => renderVirtualElement(gameResult[index])}
+                                        />
                                     </div>
                                     :
                                     <div className={"empty__container empty"}>

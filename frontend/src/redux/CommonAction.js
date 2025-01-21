@@ -29,7 +29,10 @@ import {
     PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
     PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
     ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS, USER_GAME_HISTORY_REQUEST, USER_GAME_HISTORY_SUCCESS
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
+    USER_GAME_HISTORY_REQUEST,
+    USER_GAME_HISTORY_SUCCESS,
+    PENDING_DEPOSIT_REQUEST_LIST_REQUEST, PENDING_DEPOSIT_REQUEST_LIST_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -314,6 +317,19 @@ export const actionToGetPendingWithdrawalRequestListData = (isLoading = true,pay
     try {
         api.post(`actionToGetPendingWithdrawalRequestListDataApiCall`, {payload}).then(responseData => {
             dispatch({ type: PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetPendingDepositRequestListData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: PENDING_DEPOSIT_REQUEST_LIST_REQUEST});
+    }
+    try {
+        api.post(`actionToGetPendingDepositRequestListDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: PENDING_DEPOSIT_REQUEST_LIST_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);

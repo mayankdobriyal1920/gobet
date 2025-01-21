@@ -89,24 +89,33 @@ export default function DepositHistoryListPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol>{moment(dataItems?.created_at).format('DD MMM')}</IonCol>
-                <IonCol>₹{dataItems?.amount}</IonCol>
-                <IonCol>{moment(dataItems?.created_at).format('hh:mm a')}</IonCol>
-                <IonCol><span className={`${dataItems?.status === 1 ? 'approved' : 'pending'}`}>{dataItems?.status === 1 ? 'Approved' : 'Pending' }</span></IonCol>
-            </IonRow>
+            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
+                    </div>
+                    <span className={`action_button ${dataItems?.status === 1 ? 'approved' : 'pending'}`}>{dataItems?.status === 1 ? 'approved' : 'pending'}</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    User Id : {dataItems?.user_id}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                </div>
+            </div>
         )
     }
 
     return (
-        <IonPage  className={"home_welcome_page_container"}>
+        <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
                 <div className={"content-getbet content"}>
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
                                 <div onClick={goBack} className="navbar__content-left">
-                                    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />
+                                    <IonIcon icon={arrowBack}
+                                             style={{color: "#ffffff", width: "24px", height: "24px"}}/>
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
@@ -181,15 +190,8 @@ export default function DepositHistoryListPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (depositHistory?.length) ?
-                                    <div className={"list_item_in_search_list_main"}>
-                                        <IonRow className={"list_row_header_items"}>
-                                            <IonCol>Date</IonCol>
-                                            <IonCol>Amount</IonCol>
-                                            <IonCol>Time</IonCol>
-                                            <IonCol>Status</IonCol>
-                                        </IonRow>
+                                    <div className={"sysMessage__container"}>
                                         <Virtuoso
-                                            style={{ height: '71vh' }}
                                             className={"virtual_item_listing"}
                                             totalCount={depositHistory?.length}
                                             itemContent={index => renderVirtualElement(depositHistory[index])}

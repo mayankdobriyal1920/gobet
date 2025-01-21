@@ -24,41 +24,62 @@ export default function GameTransactionPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol>{moment(dataItems?.created_at).format('DD MMM')}</IonCol>
-                <IonCol>₹{dataItems?.amount}</IonCol>
-                <IonCol>{dataItems?.option_name}</IonCol>
-                <IonCol>{dataItems?.win_status === 1 ? 'Win' : 'Loss' }</IonCol>
-            </IonRow>
+            // <IonRow key={dataItems?.id} className={"list_row_items"}>
+            //     <IonCol>{moment(dataItems?.created_at).format('DD MMM')}</IonCol>
+            //     <IonCol>₹{dataItems?.amount}</IonCol>
+            //     <IonCol>{dataItems?.option_name}</IonCol>
+            //     <IonCol>{dataItems?.win_status === 1 ? 'Win' : 'Loss' }</IonCol>
+            // </IonRow>
+            //
+
+            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
+                    </div>
+                    <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }`}>{dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                   <strong>ID</strong> : {dataItems?.bet_id}
+                    <br/>
+                    <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
+                    <br/>
+                   <strong>PREDICTION</strong> : {dataItems?.option_name}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                </div>
+            </div>
+
         )
     }
 
-    const callFunctionToApplyTypeFilter = (filter, optionValue)=>{
-        if(statusTypeFilter !== filter){
+    const callFunctionToApplyTypeFilter = (filter, optionValue) => {
+        if (statusTypeFilter !== filter) {
             setStatusTypeFilter(filter);
             setOptionFilter(optionValue);
             setIsTypeFilterOpen(false);
-            callFunctionToAddFilterAndGetData(filter,dateTypeFilter);
+            callFunctionToAddFilterAndGetData(filter, dateTypeFilter);
         }
     }
 
-    const callFunctionToApplyDateFilter = (filter)=>{
-        if(dateTypeFilter !== filter){
+    const callFunctionToApplyDateFilter = (filter) => {
+        if (dateTypeFilter !== filter) {
             setDateTypeFilter(filter);
             setIsDateFilterOpen(false);
-            callFunctionToAddFilterAndGetData(statusTypeFilter,filter);
+            callFunctionToAddFilterAndGetData(statusTypeFilter, filter);
         }
     }
 
-    const callFunctionClearToAddFilterAndGetData = ()=>{
+    const callFunctionClearToAddFilterAndGetData = () => {
         setStatusTypeFilter('All');
         setOptionFilter('All');
         setDateTypeFilter(null);
-        callFunctionToAddFilterAndGetData('All',null)
+        callFunctionToAddFilterAndGetData('All', null)
     }
 
-    const callFunctionToAddFilterAndGetData = (typeFilter,dateFilter)=>{
-        dispatch(actionToGetGameHistoryData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
+    const callFunctionToAddFilterAndGetData = (typeFilter, dateFilter) => {
+        dispatch(actionToGetGameHistoryData(true, {status: typeFilter, created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
     useEffect(() => {
@@ -182,15 +203,8 @@ export default function GameTransactionPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (gameHistory?.length) ?
-                                    <div className={"list_item_in_search_list_main"}>
-                                        <IonRow className={"list_row_header_items"}>
-                                            <IonCol>Date</IonCol>
-                                            <IonCol>Amount</IonCol>
-                                            <IonCol>Option</IonCol>
-                                            <IonCol>Status</IonCol>
-                                        </IonRow>
+                                    <div className={"sysMessage__container"}>
                                         <Virtuoso
-                                            style={{height: '71vh'}}
                                             className={"virtual_item_listing"}
                                             totalCount={gameHistory?.length}
                                             itemContent={index => renderVirtualElement(gameHistory[index])}

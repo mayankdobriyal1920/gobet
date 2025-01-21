@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import {
     CheckMobNumberAlreadyExistQuery,
     getDepositHistoryQuery, getGameHistoryQuery,
-    getGameResultListQuery, getPendingWithdrawalRequestListQuery,
+    getGameResultListQuery, getPendingDepositRequestListQuery, getPendingWithdrawalRequestListQuery,
     getUserByIdQuery,
     getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
@@ -489,6 +489,22 @@ export const actionToGetPendingWithdrawalRequestListDataApiCall = (userId,body) 
     return new Promise(function(resolve, reject) {
         let responseData = [];
         const {query,values} = getPendingWithdrawalRequestListQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+export const actionToGetPendingDepositRequestListDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getPendingDepositRequestListQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

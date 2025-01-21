@@ -1,12 +1,11 @@
 import React, {createRef, useEffect, useState} from "react";
 import {
     IonAlert,
-    IonCol,
     IonContent, IonDatetime,
     IonHeader,
     IonIcon, IonLoading,
     IonModal,
-    IonPage, IonRow,
+    IonPage,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
@@ -14,7 +13,6 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToCallFunctionToUpdateGameResult,
     actionToCompleteStatusOfWithdrawalRequest,
     actionToGetPendingWithdrawalRequestListData
 } from "../../redux/CommonAction";
@@ -95,7 +93,7 @@ export default function PendingWithdrawalRequestListPage() {
         dispatch(actionToGetPendingWithdrawalRequestListData())
     },[])
 
-    const callFunctionToUpdateWithrawalRequestPopup = (withdrawalRequest)=>{
+    const callFunctionToUpdateWithdrawalRequestPopup = (withdrawalRequest)=>{
         if(!withdrawalRequest?.result){
             console.log('withdrawalRequest',withdrawalRequest)
             setUpdateWithdrawalStatus(withdrawalRequest);
@@ -115,23 +113,33 @@ export default function PendingWithdrawalRequestListPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <IonRow key={dataItems?.id} className={"list_row_items"}>
-                <IonCol><span className={"list_game_id"}>{dataItems?.user_id}</span></IonCol>
-                <IonCol>{dataItems?.amount}</IonCol>
-                <IonCol onClick={()=>callFunctionToUpdateWithrawalRequestPopup(dataItems)}><span className={`update`}>APPROVE</span></IonCol>
-            </IonRow>
+            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
+                    </div>
+                    <span onClick={()=>callFunctionToUpdateWithdrawalRequestPopup(dataItems)} className={`action_button update`}>APPROVE</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    User Id : {dataItems?.user_id}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                </div>
+            </div>
         )
     }
 
     return (
-        <IonPage  className={"home_welcome_page_container"}>
+        <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
                 <div className={"content-getbet content"}>
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
                                 <div onClick={goBack} className="navbar__content-left">
-                                    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />
+                                    <IonIcon icon={arrowBack}
+                                             style={{color: "#ffffff", width: "24px", height: "24px"}}/>
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
@@ -206,14 +214,8 @@ export default function PendingWithdrawalRequestListPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (withdrawalRequest?.length) ?
-                                    <div className={"list_item_in_search_list_main"}>
-                                        <IonRow className={"list_row_header_items"}>
-                                            <IonCol>User Id</IonCol>
-                                            <IonCol>Amount</IonCol>
-                                            <IonCol>Status</IonCol>
-                                        </IonRow>
+                                    <div className={"sysMessage__container"}>
                                         <Virtuoso
-                                            style={{ height: '71vh' }}
                                             className={"virtual_item_listing"}
                                             totalCount={withdrawalRequest?.length}
                                             itemContent={index => renderVirtualElement(withdrawalRequest[index])}

@@ -26,7 +26,9 @@ import {
     actionToGetAdminGameResultListDataApiCall,
     actionToCallFunctionToUpdateGameResultApiCall,
     actionToGetPendingWithdrawalRequestListDataApiCall,
-    actionToGetAllUsersUnderSubAdminListApiCall, actionToGetGameHistoryDataApiCall
+    actionToGetAllUsersUnderSubAdminListApiCall,
+    actionToGetGameHistoryDataApiCall,
+    actionToGetPendingDepositRequestListDataApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -440,6 +442,19 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetPendingWithdrawalRequestListDataApiCall(req?.session?.userSessionData?.id, req.body).then(responseData => {
+                res.status(200).send(responseData);
+            });
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetPendingDepositRequestListDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetPendingDepositRequestListDataApiCall(req?.session?.userSessionData?.id, req.body).then(responseData => {
                 res.status(200).send(responseData);
             });
         }else{

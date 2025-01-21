@@ -1788,8 +1788,8 @@ figure.icon {
 .infiniteScroll__loading {
     width: 100%;
     min-height: 1.4rem;
+    height: 100%;
     margin-top: auto;
-    padding-bottom: .4rem;
     color: var(--text_color_L1);
     font-size: .37333rem;
     text-align: center;
@@ -1816,7 +1816,7 @@ figure.icon {
     opacity: .2;
 }
 
-.empty__container svg[data-v-f84b843f] {
+.empty__container svg {
     width: 5.17333rem;
     height: 3.02667rem;
     margin-top: .4rem;
@@ -1839,30 +1839,6 @@ figure.icon {
 }
 .custom-datetime::part(calendar-day) {
     font-size: 0.4rem!important;
-}
-
-.list_item_in_search_list_main .pending {
-    color: red;
-}
-.list_item_in_search_list_main .approved {
-    color: green;
-}
-
-.list_item_in_search_list_main {}
-
-.list_item_in_search_list_main .list_row_header_items {
-    background: var(--main-color);
-    color: #ffffff;
-    font-size: .42rem;
-    font-weight: 600;
-    padding: .1rem 0;
-}
-
-.list_item_in_search_list_main .list_row_items {
-    padding: .2rem 0;
-    font-size: .4rem;
-    border-bottom: 1px solid #ccc;
-    color: #777777;
 }
 
 .settingPanel__container {
@@ -1968,15 +1944,6 @@ figure.icon {
     font-size: .3rem;
 }
 
-.list_item_in_search_list_main .list_row_items span.update {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: .3rem;
-    padding: 10px 16px;
-    text-transform: uppercase;
-    color: #fff;
-    background: var(--main-color);
-}
 .user_name_change_modal_heading{
     width: 100%;
     text-align: center;
@@ -2017,42 +1984,84 @@ figure.icon {
     border-radius: 1.06667rem;
     border: none;
 }
-.list_item_in_search_list_main .list_row_items span.SMALL {
+.sysMessage__container-msgWrapper__item-title .SMALL {
     color: green;
 }
-.list_item_in_search_list_main .list_row_items span.BIG {
+.sysMessage__container-msgWrapper__item-title .BIG {
     color: red;
 }
-
-.list_item_in_search_list_main {
-    overflow-x: auto; /* Enable horizontal scroll */
-    display: block; /* Ensure it's a block container for proper layout */
+.sysMessage__container-msgWrapper__item-title .pending {
+    color: red;
+}
+.sysMessage__container-msgWrapper__item-title .approved {
+    color: green;
+}
+.sysMessage__container-msgWrapper__item-title .LOOSE {
+    color: red;
+}
+.sysMessage__container-msgWrapper__item-title .WIN {
+    color: green;
+}
+.sysMessage__container-msgWrapper__item {
+    padding: .26667rem;
+    border-radius: .06667rem;
+    background: var(--bg_color_L2);
+    text-align: left;
+    margin-bottom: .32rem;
 }
 
-.scrollable-container {
-    display: inline-block; /* Enable scrollable content */
-    min-width: 800px; /* Set a minimum width to prevent collapsing */
-}
-
-.list_row_header_items {
-    font-weight: bold;
-    background-color: #f4f4f4;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #000;
-}
-.list_row_header_items ion-col {
-    border-right: 1px solid #ddd;
-}
-
-.list_row_items {
-    text-align: center;
-    border-right: 1px solid #000;
-    border-bottom: 1px solid #eee;
+.sysMessage__container-msgWrapper__item-title {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
     align-items: center;
+    color: var(--text_color_L1);
+}
+.sysMessage__container-msgWrapper__item-title>div {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-content: center;
+    align-content: center;
+}
+.sysMessage__container-msgWrapper__item-title .title {
+    margin-left: .09333rem;
+    font-size: .4rem;
+    font-weight: 600;
+}
+.sysMessage__container-msgWrapper__item-title .action_button {
+    margin-left: auto;
+    text-transform: uppercase;
+}
+.sysMessage__container-msgWrapper__item-title .action_button.update {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: .3rem;
+    padding: 10px 16px;
+    color: #fff;
+    background: var(--main-color);
+}
+.sysMessage__container-msgWrapper__item-time {
+    margin-block: .10667rem .37333rem;
+    color: var(--text_color_L2);
+    font-size: .32rem;
+    font-weight: 400;
+    padding: 0 .1rem;
+}
+.sysMessage__container-msgWrapper__item-content {
+    color: var(--text_color_L2);
+    font-size: .32rem;
+    font-weight: 400;
+    word-break: break-word;
+    padding: 0 .1rem;
 }
 
-.virtual_item_listing {
-    padding-top: 8px; /* Space above virtualized list */
-    padding-bottom: 8px; /* Space below virtualized list */
+.sysMessage__container {
+    padding: .32rem;
+    background: var(--off-white-back-color);
+}
+.virtual_item_listing{
+    height: 78vh!important;
 }
