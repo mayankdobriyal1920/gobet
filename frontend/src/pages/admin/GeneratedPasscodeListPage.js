@@ -90,7 +90,7 @@ export default function GeneratedPasscodeListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Deposit Requests</span>
+                                        <span>Pass Codes</span>
                                     </div>
                                 </div>
                             </div>

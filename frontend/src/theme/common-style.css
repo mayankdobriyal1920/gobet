@@ -2065,3 +2065,6 @@ figure.icon {
 .virtual_item_listing{
     height: 78vh!important;
 }
+ion-toast {
+    font-size: 0.4rem !important;
+}
