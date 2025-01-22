@@ -230,6 +230,28 @@ export const getPendingDepositRequestListQuery = (userId, body) => {
     return { values, query };
 };
 
+export const getAdminPassCodeListQuery = (userId) => {
+    let values = [userId];  // Initial values array with userId
+    let condition = `user_id = $1 AND allot_to IS NULL`;  // Initial condition with userId
+
+    // // Add condition for status if provided
+    // if (status && status !== 'All') {
+    //     values.push(status);
+    //     condition += ` AND user_id = $${values.length}`;
+    // }
+    //
+    // // Add condition for created_at if provided
+    // if (created_at) {
+    //     values.push(created_at);  // Append the created_at value
+    //     condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+    // }
+
+    // Final query
+    let query = `SELECT * FROM pass_code WHERE ${condition} order by created_at desc`;
+
+    return { values, query };
+};
+
 export const getUserByIdQuery = () => {
     return `
         SELECT

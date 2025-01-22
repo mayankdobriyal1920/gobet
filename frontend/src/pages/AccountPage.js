@@ -255,7 +255,7 @@ export default function AccountPage() {
                                         </svg>
                                     </div>
                                 </div>
-                                <div className="settingPanel__container-items__item ar-1px-b">
+                                <div onClick={()=>goToPage('/admin-generated-passcode-list')} className="settingPanel__container-items__item ar-1px-b">
                                     <div className="settingPanel__container-items__title">
                                         <svg fill="#ffaf7b" className="svg-icon icon-rechargeHistory svg_min_icon"
                                              version="1.1" id="Layer_1"

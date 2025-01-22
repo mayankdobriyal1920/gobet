@@ -1,12 +1,11 @@
 import React, {createRef, useEffect, useState} from "react";
 import {
     IonAlert,
-    IonCol,
     IonContent, IonDatetime,
     IonHeader,
     IonIcon, IonLoading,
     IonModal,
-    IonPage, IonRow,
+    IonPage,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";

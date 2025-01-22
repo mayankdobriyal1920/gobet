@@ -31,7 +31,10 @@ import {
     ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
     ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
     USER_GAME_HISTORY_REQUEST,
-    USER_GAME_HISTORY_SUCCESS, PENDING_DEPOSIT_REQUEST_LIST_SUCCESS, PENDING_DEPOSIT_REQUEST_LIST_REQUEST
+    USER_GAME_HISTORY_SUCCESS,
+    PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
+    PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST, GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -152,6 +155,17 @@ export const pendingDepositRequestListReducer = (state = {}, action) => {
             return { loading: true};
         case PENDING_DEPOSIT_REQUEST_LIST_SUCCESS:
             return { loading: false, depositRequest: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const generatedPasscodeListByAdminReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST:
+            return { loading: true};
+        case GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS:
+            return { loading: false, passcodeList: action.payload};
         default:
             return state;
     }

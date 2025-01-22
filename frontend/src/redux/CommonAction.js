@@ -32,7 +32,10 @@ import {
     ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
     USER_GAME_HISTORY_REQUEST,
     USER_GAME_HISTORY_SUCCESS,
-    PENDING_DEPOSIT_REQUEST_LIST_REQUEST, PENDING_DEPOSIT_REQUEST_LIST_SUCCESS
+    PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
+    PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -330,6 +333,19 @@ export const actionToGetPendingDepositRequestListData = (isLoading = true,payloa
     try {
         api.post(`actionToGetPendingDepositRequestListDataApiCall`, {payload}).then(responseData => {
             dispatch({ type: PENDING_DEPOSIT_REQUEST_LIST_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetAdminUserPasscodeListDataList = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST});
+    }
+    try {
+        api.post(`actionToGetAdminUserPasscodeListDataListApiCall`, {payload}).then(responseData => {
+            dispatch({ type: GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);

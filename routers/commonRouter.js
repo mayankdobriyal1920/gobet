@@ -28,7 +28,7 @@ import {
     actionToGetPendingWithdrawalRequestListDataApiCall,
     actionToGetAllUsersUnderSubAdminListApiCall,
     actionToGetGameHistoryDataApiCall,
-    actionToGetPendingDepositRequestListDataApiCall
+    actionToGetPendingDepositRequestListDataApiCall, actionToGetAdminUserPasscodeListDataListApiCall
 } from "../models/commonModel.js";
 import {
     createNewSessionWithUserDataAndRole,
@@ -462,6 +462,23 @@ commonRouter.post(
         }
     })
 );
+
+commonRouter.post(
+    '/actionToGetAdminUserPasscodeListDataListApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetAdminUserPasscodeListDataListApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
 
 commonRouter.post(
     '/actionToGetAllUsersUnderSubAdminListApiCall',
