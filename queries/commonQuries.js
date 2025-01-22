@@ -232,7 +232,7 @@ export const getPendingDepositRequestListQuery = (userId, body) => {
 
 export const getAdminPassCodeListQuery = (userId) => {
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1 AND allot_to IS NULL`;  // Initial condition with userId
+    let condition = `user_id = $1 AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
 
     // // Add condition for status if provided
     // if (status && status !== 'All') {
