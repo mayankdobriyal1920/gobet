@@ -1,4 +1,4 @@
-import React, {createRef, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     IonContent,
     IonHeader,
@@ -16,11 +16,10 @@ import {
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {Capacitor} from "@capacitor/core";
 import {Clipboard} from "@capacitor/clipboard";
-export default function GeneratedPasscodeListPage() {
+export default function AllUsersUnderSubAdminPage() {
     const history = useHistory();
     const [isCopyStatus,setIsCopyStatus] = useState(false);
-    const [updateLoading,setUpdateLoading] = useState(false);
-    const {loading,passcodeList} = useSelector((state) => state.generatedPasscodeListByAdmin);
+    const {loading,userData} = useSelector((state) => state.allUsersUnsetSubAdminList);
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
@@ -64,9 +63,9 @@ export default function GeneratedPasscodeListPage() {
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}>CODE {dataItems?.code}</span>
+                        <span className={"title"}>{dataItems?.name}</span>
                     </div>
-                    <span onClick={()=>callFunctionToCopyCode(dataItems?.code)} className={`action_button update`}>COPY</span>
+                    <span className={`action_button update`}><strong>PHONE NUMBER :</strong> {dataItems?.phone_number}</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
@@ -109,12 +108,12 @@ export default function GeneratedPasscodeListPage() {
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                 </React.Fragment>
-                                : (passcodeList?.length) ?
+                                : (userData?.length) ?
                                     <div className={"sysMessage__container"}>
                                         <Virtuoso
                                             className={"virtual_item_listing"}
-                                            totalCount={passcodeList?.length}
-                                            itemContent={index => renderVirtualElement(passcodeList[index])}
+                                            totalCount={userData?.length}
+                                            itemContent={index => renderVirtualElement(userData[index])}
                                         />
                                     </div>
                                     :
@@ -131,9 +130,6 @@ export default function GeneratedPasscodeListPage() {
                     </div>
                 </div>
             </IonContent>
-
-            <IonToast isOpen={isCopyStatus} message={"Code Copied..."}/>
-            <IonLoading isOpen={updateLoading} message={"Adding Request..."}/>
         </IonPage>
     )
 }
