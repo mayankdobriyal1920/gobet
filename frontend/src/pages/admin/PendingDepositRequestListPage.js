@@ -120,7 +120,7 @@ export default function PendingDepositRequestListPage() {
                     <span onClick={()=>callFunctionToUpdateWithdrawalRequestPopup(dataItems)} className={`action_button update`}>APPROVE</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
-                    User Id : {dataItems?.user_id}
+                    <strong>User Id</strong> : {dataItems?.user_id}
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
@@ -215,7 +215,7 @@ export default function PendingDepositRequestListPage() {
                                 : (depositRequest?.length) ?
                                     <div className={"sysMessage__container"}>
                                         <Virtuoso
-                                            className={"virtual_item_listing"}
+                                            className={"virtual_item_listing no_filter"}
                                             totalCount={depositRequest?.length}
                                             itemContent={index => renderVirtualElement(depositRequest[index])}
                                         />

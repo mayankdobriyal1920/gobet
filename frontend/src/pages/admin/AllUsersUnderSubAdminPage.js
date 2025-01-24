@@ -67,6 +67,9 @@ export default function AllUsersUnderSubAdminPage() {
                     </div>
                     <span className={`action_button SMALL`}><strong>Mobile :</strong> {dataItems?.phone_number}</span>
                 </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>Wallet Balance</strong> : ₹{dataItems?.wallet_balance ? dataItems?.wallet_balance : '0.00'}
+                </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
                 </div>

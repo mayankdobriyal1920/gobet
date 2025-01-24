@@ -112,7 +112,7 @@ export default function GeneratedPasscodeListPage() {
                                 : (passcodeList?.length) ?
                                     <div className={"sysMessage__container"}>
                                         <Virtuoso
-                                            className={"virtual_item_listing"}
+                                            className={"virtual_item_listing no_filter"}
                                             totalCount={passcodeList?.length}
                                             itemContent={index => renderVirtualElement(passcodeList[index])}
                                         />

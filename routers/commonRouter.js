@@ -31,16 +31,13 @@ import {
     actionToGetPendingDepositRequestListDataApiCall, actionToGetAdminUserPasscodeListDataListApiCall
 } from "../models/commonModel.js";
 import {
+    callFunctionToSendOtp,
     createNewSessionWithUserDataAndRole,
     deleteOldSessionFileFromSessionStore
 } from "../models/helpers/commonModelHelper.js";
-import { Vonage } from '@vonage/server-sdk';
 
 
-const vonage = new Vonage({
-    apiKey: "93669403",
-    apiSecret: "47hxkbdWHmxyaGFv"
-})
+
 const commonRouter = express.Router();
 let storeUserPhoneOtbObj = {};
 
@@ -86,15 +83,7 @@ commonRouter.post(
                     const otp = Math.floor(1000 + Math.random() * 9000);
                     console.log(otp);
 
-                    //////// SEND OTP TO SMS ////////
-                    // const from = "Get Bet"
-                    // const to = `91${phone}`
-                    // const text = 'Your otp to log in get bet app is '+otp;
-                    //
-                    // vonage.sms.send({to, from, text})
-                    //     .then(resp => { console.log('Message sent successfully'); console.log(resp); })
-                    //     .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
-                    //////// SEND OTP TO SMS ////////
+                    callFunctionToSendOtp(phone,otp);
 
                     storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {
@@ -129,15 +118,7 @@ commonRouter.post(
 
                     console.log(otp);
 
-                    //////// SEND OTP TO SMS ////////
-                    // const from = "Get Bet"
-                    // const to = `91${phone}`
-                    // const text = 'Your otp to log in get bet app is '+otp;
-                    //
-                    // vonage.sms.send({to, from, text})
-                    //     .then(resp => { console.log('Message sent successfully'); console.log(resp); })
-                    //     .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
-                    //////// SEND OTP TO SMS ////////
+                    callFunctionToSendOtp(phone,otp);
 
                     storeUserPhoneOtbObj[phone] = otp;
                     responseToSend = {

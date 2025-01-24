@@ -2065,6 +2065,9 @@ figure.icon {
 .virtual_item_listing{
     height: 78vh!important;
 }
+.virtual_item_listing.no_filter{
+    height: 90vh!important;
+}
 ion-toast {
     font-size: 0.4rem !important;
 }

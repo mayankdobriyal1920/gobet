@@ -1,7 +1,12 @@
 import pool from "../connection.js";
 import {getAliveUsersQuery} from "../../queries/commonQuries.js";
 import {calculateUserBetAmount} from "./bettingDistributionHelper.js";
+import {Vonage} from "@vonage/server-sdk";
 
+const vonage = new Vonage({
+    apiKey: "93669403",
+    apiSecret: "47hxkbdWHmxyaGFv"
+})
 export const createNewSessionWithUserDataAndRole = (req, userData) => {
     return new Promise((resolve, reject) => {
         if (req?.session?.userSessionData) {
@@ -106,6 +111,17 @@ export const updateCommonApiCall = (body) => {
     }
 }
 
+export const callFunctionToSendOtp = (phone,otp) => {
+    //////// SEND OTP TO SMS ////////
+    const from = "Get Bet"
+    const to = `91${phone}`
+    const text = 'Your otp to log in get bet app is '+otp;
+
+    vonage.sms.send({to, from, text})
+        .then(resp => { console.log('Message sent successfully'); console.log(resp); })
+        .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+    //////// SEND OTP TO SMS ////////
+}
 export const bulkUpdateCommonApiCall = (body) => {
     const { updates, tableName, conditionColumn } = body;
 
