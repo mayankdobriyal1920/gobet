@@ -11,7 +11,7 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToGetAdminUserPasscodeListDataList
+    actionToGetAllUsersUnderSubAdminList
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {Capacitor} from "@capacitor/core";
@@ -26,7 +26,7 @@ export default function AllUsersUnderSubAdminPage() {
     }
 
     useEffect(() => {
-        dispatch(actionToGetAdminUserPasscodeListDataList())
+        dispatch(actionToGetAllUsersUnderSubAdminList())
     },[])
 
     const callFunctionToCopyCode = async (code) => {
@@ -65,7 +65,7 @@ export default function AllUsersUnderSubAdminPage() {
                     <div>
                         <span className={"title"}>{dataItems?.name}</span>
                     </div>
-                    <span className={`action_button update`}><strong>PHONE NUMBER :</strong> {dataItems?.phone_number}</span>
+                    <span className={`action_button SMALL`}><strong>Mobile :</strong> {dataItems?.phone_number}</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}

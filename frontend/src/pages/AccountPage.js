@@ -288,7 +288,7 @@ export default function AccountPage() {
                                         </svg>
                                     </div>
                                 </div>
-                                <div className="settingPanel__container-items__item ar-1px-b">
+                                <div onClick={()=>goToPage('/admin-sub-admin-users-list')} className="settingPanel__container-items__item ar-1px-b">
                                     <div className="settingPanel__container-items__title">
                                         <svg className="svg-icon icon-serverTicket svg_min_icon" viewBox="0 0 52 52" fill="none"
                                              xmlns="http://www.w3.org/2000/svg">
