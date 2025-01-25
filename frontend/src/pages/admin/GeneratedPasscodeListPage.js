@@ -39,7 +39,8 @@ export default function GeneratedPasscodeListPage() {
     },[])
 
     const callFunctionToResetPasscodeRequest = () => {
-        dispatch(actionToGetPasscodeRequestBySubAdmin());
+        dispatch(actionToGetPasscodeRequestBySubAdmin())
+        dispatch(actionToGetAdminUserPasscodeListDataList())
         setTimeout(()=>{
             setUpdateLoading(false);
         })
