@@ -292,6 +292,16 @@ export const actionToGeneratePasscodeRequestBySubAdmin = (count,callFunctionToRe
     }
 }
 
+export const actionToApprovePasscodeRequestAndGeneratePasscode = (payload = {},callFunctionToResetPasscodeRequest) => async () => {
+    try {
+        api.post(`actionToApprovePasscodeRequestAndGeneratePasscodeApiCall`, payload).then(() => {
+            callFunctionToResetPasscodeRequest();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToUpdateUserRole = (role,userId,callFunctionToResetPasscodeRequest) => async () => {
     try {
         api.post(`actionToUpdateUserRoleApiCall`, {role,userId}).then(() => {

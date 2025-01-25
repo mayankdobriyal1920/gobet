@@ -12,6 +12,7 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
+    actionToApprovePasscodeRequestAndGeneratePasscode,
     actionToGeneratePasscodeRequestBySubAdmin,
     actionToGetAdminUserPasscodeListDataList, actionToGetPasscodeRequestBySubAdmin
 } from "../../redux/CommonAction";
@@ -26,6 +27,7 @@ export default function GeneratedPasscodeListPage() {
     const [updateLoading,setUpdateLoading] = useState(false);
     const {loading,passcodeList} = useSelector((state) => state.generatedPasscodeListByAdmin);
     const passcodeRequestBySubAdmin = useSelector((state) => state.passcodeRequestBySubAdmin);
+    const userAuthDetail = useSelector((state) => state.userAuthDetail);
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
@@ -83,6 +85,12 @@ export default function GeneratedPasscodeListPage() {
         setRequestPasscodeCount(1);
     }
 
+    const callFunctionToDirectGeneratePassCode = ()=>{
+        setUpdateLoading(true);
+        dispatch(actionToApprovePasscodeRequestAndGeneratePasscode({},callFunctionToResetPasscodeRequest));
+        setIsRequestPasscodePopupOpen(false);
+    }
+
     const renderVirtualElement = (dataItems)=>{
         return (
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
@@ -115,18 +123,29 @@ export default function GeneratedPasscodeListPage() {
                                         <span>Pass Codes</span>
                                     </div>
                                 </div>
-                                {(!passcodeRequestBySubAdmin?.loading && passcodeRequestBySubAdmin?.passcodeRequest?.id) ?
-                                    <div onClick={callFunctionToOpenPasscodeRequestPopup}
-                                         className="navbar__content-right">
-                                        <div className="navbar__content-button">
-                                            Requested
-                                        </div>
-                                    </div>
+                                {(userAuthDetail?.role == 2) ?
+                                    <>
+                                        {(!passcodeRequestBySubAdmin?.loading && passcodeRequestBySubAdmin?.passcodeRequest?.id) ?
+                                            <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                                 className="navbar__content-right">
+                                                <div className="navbar__content-button">
+                                                    Requested
+                                                </div>
+                                            </div>
+                                            :
+                                            <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                                 className="navbar__content-right">
+                                                <div className="navbar__content-button">
+                                                    Request
+                                                </div>
+                                            </div>
+                                        }
+                                    </>
                                     :
-                                    <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                    <div onClick={callFunctionToDirectGeneratePassCode}
                                          className="navbar__content-right">
                                         <div className="navbar__content-button">
-                                            Request
+                                            Generate
                                         </div>
                                     </div>
                                 }
@@ -137,7 +156,7 @@ export default function GeneratedPasscodeListPage() {
             </IonHeader>
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
-                <div className={"infiniteScroll"}>
+                    <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {loading ?
                                 <React.Fragment>
@@ -219,7 +238,7 @@ export default function GeneratedPasscodeListPage() {
                 </IonContent>
             </IonModal>
             <IonToast isOpen={isCopyStatus} message={"Code Copied..."}/>
-            <IonLoading isOpen={updateLoading} message={"Adding Request..."}/>
+            <IonLoading isOpen={updateLoading} message={"Please wait..."}/>
         </IonPage>
     )
 }
