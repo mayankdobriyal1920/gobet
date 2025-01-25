@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import {
     IonContent,
     IonHeader,
-    IonIcon, IonLoading,
-    IonPage, IonToast,
+    IonIcon,
+    IonPage,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";

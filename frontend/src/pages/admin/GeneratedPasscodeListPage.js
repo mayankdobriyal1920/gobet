@@ -1,9 +1,10 @@
 import React, {createRef, useEffect, useState} from "react";
 import {
+    IonCol,
     IonContent,
     IonHeader,
-    IonIcon, IonLoading,
-    IonPage, IonToast,
+    IonIcon, IonLoading, IonModal,
+    IonPage, IonRow, IonSelect, IonSelectOption, IonToast,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
@@ -11,7 +12,8 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToGetAdminUserPasscodeListDataList
+    actionToGeneratePasscodeRequestBySubAdmin,
+    actionToGetAdminUserPasscodeListDataList, actionToGetPasscodeRequestBySubAdmin
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {Capacitor} from "@capacitor/core";
@@ -19,16 +21,33 @@ import {Clipboard} from "@capacitor/clipboard";
 export default function GeneratedPasscodeListPage() {
     const history = useHistory();
     const [isCopyStatus,setIsCopyStatus] = useState(false);
+    const [isRequestPasscodePopupOpen,setIsRequestPasscodePopupOpen] = useState(false);
+    const [requestPasscodeCount,setRequestPasscodeCount] = useState(1);
     const [updateLoading,setUpdateLoading] = useState(false);
     const {loading,passcodeList} = useSelector((state) => state.generatedPasscodeListByAdmin);
+    const passcodeRequestBySubAdmin = useSelector((state) => state.passcodeRequestBySubAdmin);
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
     }
 
     useEffect(() => {
+        dispatch(actionToGetPasscodeRequestBySubAdmin())
         dispatch(actionToGetAdminUserPasscodeListDataList())
     },[])
+
+    const callFunctionToResetPasscodeRequest = () => {
+        dispatch(actionToGetPasscodeRequestBySubAdmin());
+        setTimeout(()=>{
+            setUpdateLoading(false);
+        })
+    }
+
+    const callFunctionToSubmitPasscodeRequest = () => {
+        setUpdateLoading(true);
+        dispatch(actionToGeneratePasscodeRequestBySubAdmin(requestPasscodeCount,callFunctionToResetPasscodeRequest));
+        setIsRequestPasscodePopupOpen(false);
+    }
 
     const callFunctionToCopyCode = async (code) => {
         console.log('Code to copy:', code);
@@ -57,6 +76,11 @@ export default function GeneratedPasscodeListPage() {
         setTimeout(()=>{
             setIsCopyStatus(false);
         },2000)
+    }
+
+    const callFunctionToOpenPasscodeRequestPopup = ()=>{
+        setIsRequestPasscodePopupOpen(true);
+        setRequestPasscodeCount(1);
     }
 
     const renderVirtualElement = (dataItems)=>{
@@ -91,6 +115,21 @@ export default function GeneratedPasscodeListPage() {
                                         <span>Pass Codes</span>
                                     </div>
                                 </div>
+                                {(!passcodeRequestBySubAdmin?.loading && passcodeRequestBySubAdmin?.passcodeRequest?.id) ?
+                                    <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                         className="navbar__content-right">
+                                        <div className="navbar__content-button">
+                                            Requested
+                                        </div>
+                                    </div>
+                                    :
+                                    <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                         className="navbar__content-right">
+                                        <div className="navbar__content-button">
+                                            Request
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -98,7 +137,7 @@ export default function GeneratedPasscodeListPage() {
             </IonHeader>
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
-                    <div className={"infiniteScroll"}>
+                <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {loading ?
                                 <React.Fragment>
@@ -132,6 +171,53 @@ export default function GeneratedPasscodeListPage() {
                 </div>
             </IonContent>
 
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={isRequestPasscodePopupOpen}
+                onDidDismiss={() => setIsRequestPasscodePopupOpen(false)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Passcode Count</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <IonRow>
+                            <IonCol size="12">
+                                <IonSelect onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
+                                    <IonSelectOption value={1}>1</IonSelectOption>
+                                    <IonSelectOption value={2}>2</IonSelectOption>
+                                    <IonSelectOption value={3}>3</IonSelectOption>
+                                    <IonSelectOption value={4}>4</IonSelectOption>
+                                    <IonSelectOption value={5}>5</IonSelectOption>
+                                    <IonSelectOption value={6}>6</IonSelectOption>
+                                    <IonSelectOption value={7}>7</IonSelectOption>
+                                    <IonSelectOption value={8}>8</IonSelectOption>
+                                    <IonSelectOption value={9}>9</IonSelectOption>
+                                    <IonSelectOption value={10}>10</IonSelectOption>
+                                    <IonSelectOption value={11}>11</IonSelectOption>
+                                    <IonSelectOption value={12}>12</IonSelectOption>
+                                    <IonSelectOption value={13}>13</IonSelectOption>
+                                    <IonSelectOption value={14}>14</IonSelectOption>
+                                    <IonSelectOption value={15}>15</IonSelectOption>
+                                    <IonSelectOption value={16}>16</IonSelectOption>
+                                    <IonSelectOption value={17}>17</IonSelectOption>
+                                    <IonSelectOption value={18}>18</IonSelectOption>
+                                    <IonSelectOption value={19}>19</IonSelectOption>
+                                    <IonSelectOption value={20}>20</IonSelectOption>
+                                </IonSelect>
+                            </IonCol>
+                        </IonRow>
+                        <IonRow>
+                            <IonCol size="12">
+                                <button onClick={callFunctionToSubmitPasscodeRequest} type={"button"}
+                                        className={"submit-transfer-btn"}>
+                                    Submit
+                                </button>
+                            </IonCol>
+                        </IonRow>
+                    </div>
+                </IonContent>
+            </IonModal>
             <IonToast isOpen={isCopyStatus} message={"Code Copied..."}/>
             <IonLoading isOpen={updateLoading} message={"Adding Request..."}/>
         </IonPage>

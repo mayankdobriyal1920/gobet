@@ -4,7 +4,7 @@ import {
     adminGameResultListReducer,
     allUsersUnsetSubAdminListReducer,
     changeUserAvatarModal,
-    generatedPasscodeListByAdminReducer,
+    generatedPasscodeListByAdminReducer, passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
     pendingWithdrawalRequestListReducer,
     signupSigninFormError,
@@ -35,6 +35,7 @@ const initialState = {
     pendingDepositRequestList: {loading:true,depositRequest:[]},
     allUsersUnsetSubAdminList: {loading:true,userData:[]},
     generatedPasscodeListByAdmin: {loading:true,passcodeList:[]},
+    passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
     userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
 }
 export const rootReducer = combineReducers({
@@ -53,6 +54,7 @@ export const rootReducer = combineReducers({
     userWalletAndGameBalance: userWalletAndGameBalanceReducer,
     userBetPredictionStatus: userBetPredictionStatusReducer,
     userBetPredictionHistory: userBetPredictionHistoryReducer,
+    passcodeRequestBySubAdmin: passcodeRequestBySubAdminReducer,
     userGameHistory: userGameHistoryReducer,
 });
 

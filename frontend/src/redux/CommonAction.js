@@ -35,7 +35,10 @@ import {
     PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
     PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
     GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, USER_GET_OTP_REQUEST
+    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
+    USER_GET_OTP_REQUEST,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -260,6 +263,27 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
     try {
         api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
             dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetPasscodeRequestBySubAdmin = () => async (dispatch) => {
+    dispatch({type: PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST});
+    try {
+        api.post(`actionToGetPasscodeRequestBySubAdminApiCall`, {}).then(responseData => {
+            dispatch({ type: PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGeneratePasscodeRequestBySubAdmin = (count,callFunctionToResetPasscodeRequest) => async () => {
+    try {
+        api.post(`actionToGeneratePasscodeRequestBySubAdminApiCall`, {count}).then(responseData => {
+            callFunctionToResetPasscodeRequest();
         })
     } catch (error) {
         console.log(error);

@@ -28,7 +28,9 @@ import {
     actionToGetPendingWithdrawalRequestListDataApiCall,
     actionToGetAllUsersUnderSubAdminListApiCall,
     actionToGetGameHistoryDataApiCall,
-    actionToGetPendingDepositRequestListDataApiCall, actionToGetAdminUserPasscodeListDataListApiCall
+    actionToGetPendingDepositRequestListDataApiCall,
+    actionToGetAdminUserPasscodeListDataListApiCall,
+    actionToGetPasscodeRequestBySubAdminApiCall, actionToGeneratePasscodeRequestBySubAdminApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -293,6 +295,42 @@ commonRouter.post(
         // Check if the session exists and the user is logged in
         if (req?.session?.userSessionData?.id) {
             actionToGetCurrentUserProfileDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetPasscodeRequestBySubAdminApiCall',
+    expressAsyncHandler(async (req, res) => {
+        // Check if the session exists and the user is logged in
+        if (req?.session?.userSessionData?.id) {
+            actionToGetPasscodeRequestBySubAdminApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGeneratePasscodeRequestBySubAdminApiCall',
+    expressAsyncHandler(async (req, res) => {
+        // Check if the session exists and the user is logged in
+        if (req?.session?.userSessionData?.id) {
+            actionToGeneratePasscodeRequestBySubAdminApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         } else {

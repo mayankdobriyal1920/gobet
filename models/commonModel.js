@@ -212,6 +212,46 @@ export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
     })
 }
 
+export const actionToGetPasscodeRequestBySubAdminApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        let userData = {};
+        const query = `SELECT id from passcode_request WHERE user_id = $1 AND status = $2`;
+        pool.query(query,[userId,0], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                userData = results?.rows[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) => {
+    return new Promise(function(resolve, reject) {
+        const {count} = body;
+        const query = `SELECT id from passcode_request WHERE user_id = $1 AND status = $2`;
+        pool.query(query,[userId,0], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(!results?.rows?.length){
+                ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                let aliasArray = ['$1','$2'];
+                let columnArray = ["user_id","count"];
+                let valuesArray = [userId,count];
+                let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'passcode_request'};
+                insertCommonApiCall(insertData).then(()=>{
+                    resolve({status:1});
+                })
+                ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+            }
+            resolve({status:0});
+        })
+    })
+}
+
 export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_users_id) => {
     return new Promise(function(resolve, reject) {
         let predData = {success:5};

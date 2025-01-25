@@ -34,7 +34,10 @@ import {
     USER_GAME_HISTORY_SUCCESS,
     PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
     PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST, GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, USER_GET_OTP_REQUEST
+    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
+    USER_GET_OTP_REQUEST,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST, PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -80,6 +83,17 @@ export const userBetPredictionHistoryReducer = (state = {}, action) => {
             return { loading: true};
         case USER_BET_PREDICTION_HISTORY_SUCCESS:
             return { loading: false, predictionHistory: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const passcodeRequestBySubAdminReducer = (state = {}, action) => {
+    switch (action.type) {
+        case PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST:
+            return { loading: true};
+        case PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS:
+            return { loading: false, passcodeRequest: action.payload};
         default:
             return state;
     }
