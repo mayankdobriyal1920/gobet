@@ -9,8 +9,9 @@ import {countries as countriesList} from 'countries-list';
 import {useDispatch, useSelector} from "react-redux";
 import {actionToSendOtpForLogin, actionToVerifyLoginUserOtp} from "../redux/CommonAction";
 import {useHistory} from "react-router";
-import {USER_GET_OTP_REQUEST_FAIL} from "../redux/CommonConstants";
+import {USER_GET_OTP_REQUEST_FAIL, USER_SIGNUP_SIGNIN_ERROR} from "../redux/CommonConstants";
 
+let otpInterval = null;
 export default function LoginPage(){
     const [otp,setOtp] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
@@ -57,29 +58,27 @@ export default function LoginPage(){
             dispatch(actionToVerifyLoginUserOtp(phone, otp))
         }
     }
-    const callFunctionToLoginUser = ()=>{
+    const callFunctionToSendOtp = ()=>{
         const isValidate = validateFields('get otp');
         if (isValidate){
-            dispatch(actionToSendOtpForLogin(phone))
+            dispatch(actionToSendOtpForLogin(phone,callFunctionToSendOtpTimeInterval))
         }
     }
 
-    useEffect(()=>{
-        if (userOtpDetails.loading){
-            setIsOtpExpired(false);
-            const interval = setInterval(() => {
-                setTimer(prevTimer => {
-                    if (prevTimer <= 1) {
-                        clearInterval(interval);
-                        setIsOtpExpired(true); // OTP expired
-                        dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
-                        return 0;
-                    }
-                    return prevTimer - 1;
-                });
-            }, 1000);
-        }
-    },[userOtpDetails])
+    const callFunctionToSendOtpTimeInterval = ()=>{
+        setIsOtpExpired(false);
+        otpInterval = setInterval(() => {
+            setTimer(prevTimer => {
+                if (prevTimer <= 1) {
+                    clearInterval(otpInterval);
+                    setIsOtpExpired(true); // OTP expired
+                    dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
+                    return 0;
+                }
+                return prevTimer - 1;
+            });
+        }, 1000);
+    }
 
     useEffect(()=>{
         if (loginFormError?.error && loginFormError?.message){
@@ -91,8 +90,18 @@ export default function LoginPage(){
                 setOtpError(true);
                 setOtpErrorMessage(loginFormError?.message);
             }
+        }else{
+            setPhoneError(false);
+            setPhoneErrorMessage('');
         }
     },[loginFormError])
+
+    useEffect(()=>{
+        if (otpInterval){
+            clearInterval(otpInterval);
+        }
+        dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {}});
+    },[])
 
     /**
      * This function is used to validate the form for get otp and signup actions
@@ -135,7 +144,7 @@ export default function LoginPage(){
     };
 
     return (
-        <IonPage>
+        <IonPage aria-hidden={false}>
             <IonContent>
             <div className={"login_main_container_outer"}>
                 <div className={"login_main_container_inner"}>
@@ -216,16 +225,24 @@ export default function LoginPage(){
                                        placeholder={"Enter OTP"} type={"text"} required={true}/>
                             </IonCol>
                             <IonCol size={3}>
-                                <button onClick={callFunctionToLoginUser} disabled={phone?.trim().length !== 10 || userOtpDetails?.loading} type={"button"}
-                                        className={"otp_button_main_form"}>
-                                    GET
-                                </button>
+                                {isOtpExpired && !userOtpDetails.loading ?
+                                    <button onClick={callFunctionToSendOtp}
+                                            type={"button"}
+                                            className={"otp_button_main_form"}>
+                                        GET
+                                    </button>
+                                    :
+                                    <button type={"button"}
+                                            className={"otp_button_main_form"}>
+                                        WAIT
+                                    </button>
+                                }
                             </IonCol>
                         </IonRow>
                             {otpError && <p className="error fontsize2">{otpErrorMessage}</p>}
                             {!isOtpExpired
                                 ? <>
-                                    <IonRow>
+                                <IonRow>
                                         <IonCol size={12}>
                                             <p>Get new OTP in: {timer} seconds</p>
                                         </IonCol>

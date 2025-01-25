@@ -35,7 +35,7 @@ import {
     PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
     PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
     GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS
+    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, USER_GET_OTP_REQUEST
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -72,13 +72,16 @@ export const actionToLoginUserAndSendOtp = (phone) => async (dispatch) => {
     // }
 }
 
-export const actionToSendOtp = (phone) => async (dispatch) => {
+export const actionToSendOtp = (phone,callFunctionToSendOtpTimeInterval) => async (dispatch) => {
+    dispatch({ type: USER_GET_OTP_REQUEST});
     try {
         api.post(`actionToSendOtpApiCall`, {phone}).then(responseData => {
             if(responseData?.data?.success){
-                dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS, payload: {}});
+                if(callFunctionToSendOtpTimeInterval)
+                    callFunctionToSendOtpTimeInterval();
+                dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS});
             }else{
-                dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
+                dispatch({ type: USER_GET_OTP_REQUEST_FAIL});
                 dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
             }
         })
@@ -87,13 +90,15 @@ export const actionToSendOtp = (phone) => async (dispatch) => {
     }
 }
 
-export const actionToSendOtpForLogin = (phone) => async (dispatch) => {
+export const actionToSendOtpForLogin = (phone,callFunctionToSendOtpTimeInterval) => async (dispatch) => {
+    dispatch({ type: USER_GET_OTP_REQUEST});
     try {
         api.post(`actionToSendOtpForLoginApiCall`, {phone}).then(responseData => {
+            dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS});
             if(responseData?.data?.success){
-                dispatch({ type: USER_GET_OTP_REQUEST_SUCCESS, payload: {}});
+                if(callFunctionToSendOtpTimeInterval)
+                    callFunctionToSendOtpTimeInterval();
             }else{
-                dispatch({ type: USER_GET_OTP_REQUEST_FAIL, payload: {}});
                 dispatch({ type: USER_SIGNUP_SIGNIN_ERROR, payload: {error: responseData?.data?.error, message: responseData?.data?.message}});
             }
         })

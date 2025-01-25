@@ -34,7 +34,7 @@ import {
     USER_GAME_HISTORY_SUCCESS,
     PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
     PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST, GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS
+    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST, GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, USER_GET_OTP_REQUEST
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -193,8 +193,10 @@ export const userBetPredictionStatusReducer = (state = {}, action) => {
 
 export const userOtpReducer = (state = {}, action) => {
     switch (action.type) {
-        case USER_GET_OTP_REQUEST_SUCCESS:
+        case USER_GET_OTP_REQUEST:
             return { loading: true };
+        case USER_GET_OTP_REQUEST_SUCCESS:
+            return { loading: false };
         case USER_GET_OTP_REQUEST_FAIL:
             return { loading: false };
         default:
