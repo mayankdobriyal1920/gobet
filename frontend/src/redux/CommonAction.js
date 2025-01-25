@@ -38,7 +38,9 @@ import {
     GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
     USER_GET_OTP_REQUEST,
     PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
-    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS
+    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -418,6 +420,17 @@ export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
     try {
         api.post(`actionToGetAllUsersUnderSubAdminListApiCall`, {}).then(responseData => {
             dispatch({ type: ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetAllUsersNormalAndSubAdminList = () => async (dispatch) => {
+    dispatch({type: ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST});
+    try {
+        api.post(`actionToGetAllUsersNormalAndSubAdminListApiCall`, {}).then(responseData => {
+            dispatch({ type: ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);

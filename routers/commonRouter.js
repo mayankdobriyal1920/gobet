@@ -30,7 +30,9 @@ import {
     actionToGetGameHistoryDataApiCall,
     actionToGetPendingDepositRequestListDataApiCall,
     actionToGetAdminUserPasscodeListDataListApiCall,
-    actionToGetPasscodeRequestBySubAdminApiCall, actionToGeneratePasscodeRequestBySubAdminApiCall
+    actionToGetPasscodeRequestBySubAdminApiCall,
+    actionToGeneratePasscodeRequestBySubAdminApiCall,
+    actionToGetAllUsersNormalAndSubAdminListApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -504,6 +506,22 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetAllUsersUnderSubAdminListApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetAllUsersNormalAndSubAdminListApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetAllUsersNormalAndSubAdminListApiCall(req?.session?.userSessionData?.id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

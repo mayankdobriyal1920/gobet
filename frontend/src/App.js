@@ -49,6 +49,7 @@ import PendingWithdrawalRequestListPage from "./pages/admin/PendingWithdrawalReq
 import PendingDepositRequestListPage from "./pages/admin/PendingDepositRequestListPage";
 import GeneratedPasscodeListPage from "./pages/admin/GeneratedPasscodeListPage";
 import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
+import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -86,6 +87,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-deposit-pending-request" component={PendingDepositRequestListPage}/>
                 <Route exact={true} path="/admin-generated-passcode-list" component={GeneratedPasscodeListPage}/>
                 <Route exact={true} path="/admin-sub-admin-users-list" component={AllUsersUnderSubAdminPage}/>
+                <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

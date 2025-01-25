@@ -37,7 +37,9 @@ import {
     GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
     GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
     USER_GET_OTP_REQUEST,
-    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST, PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS
+    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST, ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -146,6 +148,17 @@ export const allUsersUnsetSubAdminListReducer = (state = {}, action) => {
         case ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST:
             return { loading: true};
         case ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS:
+            return { loading: false, userData: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const allUsersNormalAndSunAdminListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST:
+            return { loading: true};
+        case ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS:
             return { loading: false, userData: action.payload};
         default:
             return state;
