@@ -292,6 +292,16 @@ export const actionToGeneratePasscodeRequestBySubAdmin = (count,callFunctionToRe
     }
 }
 
+export const actionToUpdateUserRole = (role,userId,callFunctionToResetPasscodeRequest) => async () => {
+    try {
+        api.post(`actionToUpdateUserRoleApiCall`, {role,userId}).then(() => {
+            callFunctionToResetPasscodeRequest();
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToGetWithdrawalRequestHistoryData = (isLoading = true,payload = {}) => async (dispatch) => {
     if(isLoading) {
         dispatch({type: USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST});

@@ -228,6 +228,17 @@ export const actionToGetPasscodeRequestBySubAdminApiCall = (userId) => {
     })
 }
 
+export const actionToUpdateUserRoleApiCall = (body) => {
+    const {userId,role} = body;
+    return new Promise(function(resolve) {
+        let setData = `role = $1`;
+        const whereCondition = `id = $2`;
+        let dataToSend = {column: setData, value: [role,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            resolve({status:1});
+        })
+    })
+}
 export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         const {count} = body;

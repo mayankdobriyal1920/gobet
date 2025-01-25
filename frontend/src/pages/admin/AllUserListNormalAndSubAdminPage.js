@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {
+    IonCol,
     IonContent,
     IonHeader,
-    IonIcon,
-    IonPage,
+    IonIcon, IonLoading, IonModal,
+    IonPage, IonRow, IonSelect, IonSelectOption,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
@@ -11,11 +12,15 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToGetAllUsersNormalAndSubAdminList
+    actionToGeneratePasscodeRequestBySubAdmin,
+    actionToGetAllUsersNormalAndSubAdminList, actionToUpdateUserRole,
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 export default function AllUserListNormalAndSubAdminPage() {
     const history = useHistory();
+    const [changeUserRoleData,setChangeUserRoleData] = useState(null);
+    const [userRoleData,setUserRoleData] = useState(null);
+    const [updateLoading,setUpdateLoading] = useState(false);
     const {loading,userData} = useSelector((state) => state.allUsersNormalAndSunAdminList);
     const dispatch = useDispatch();
     const goBack = ()=>{
@@ -26,6 +31,26 @@ export default function AllUserListNormalAndSubAdminPage() {
         dispatch(actionToGetAllUsersNormalAndSubAdminList())
     },[])
 
+
+    const callFunctionToResetRequest = () => {
+        dispatch(actionToGetAllUsersNormalAndSubAdminList());
+        setTimeout(()=>{
+            setUpdateLoading(false);
+        })
+    }
+
+    const callFunctionToSetChangeUserData = (userData) => {
+        setUserRoleData(userData?.role);
+    }
+
+    const callFunctionToSubmitPasscodeRequest = () => {
+        setUpdateLoading(true);
+        dispatch(actionToUpdateUserRole(userRoleData,changeUserRoleData?.id,callFunctionToResetRequest));
+        setTimeout(()=> {
+            setChangeUserRoleData(null);
+        })
+    }
+
     const renderVirtualElement = (dataItems)=>{
         return (
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
@@ -33,7 +58,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                     <div>
                         <span className={"title"}>{dataItems?.name}</span>
                     </div>
-                    <span className={`action_button update`}>update role</span>
+                    <span onClick={()=>callFunctionToSetChangeUserData(dataItems)} className={`action_button update`}>update role</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>Mobile</strong> : {dataItems?.phone_number}
@@ -104,6 +129,38 @@ export default function AllUserListNormalAndSubAdminPage() {
                     </div>
                 </div>
             </IonContent>
+
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={!!changeUserRoleData}
+                onDidDismiss={() => setChangeUserRoleData(null)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Change Role</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <IonRow>
+                            <IonCol size="12">
+                                <IonSelect label={"Passcode count"} value={requestPasscodeCount} onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
+                                    <IonSelectOption value={1}>ADMIN</IonSelectOption>
+                                    <IonSelectOption value={3}>SUB ADMIN</IonSelectOption>
+                                    <IonSelectOption value={2}>USER</IonSelectOption>
+                                </IonSelect>
+                            </IonCol>
+                        </IonRow>
+                        <IonRow>
+                            <IonCol size="12">
+                                <button onClick={callFunctionToSubmitPasscodeRequest} type={"button"}
+                                        className={"submit-transfer-btn"}>
+                                    Submit
+                                </button>
+                            </IonCol>
+                        </IonRow>
+                    </div>
+                </IonContent>
+            </IonModal>
+            <IonLoading isOpen={updateLoading} message={"Updating Role..."}/>
         </IonPage>
     )
 }
