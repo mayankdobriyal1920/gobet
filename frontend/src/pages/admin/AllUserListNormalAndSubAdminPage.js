@@ -142,7 +142,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                     <div className={"list_status_type"}>
                         <IonRow>
                             <IonCol size="12">
-                                <IonSelect label={"Passcode count"} value={requestPasscodeCount} onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
+                                <IonSelect label={"Passcode count"} value={userRoleData} onIonChange={(e)=>setUserRoleData(e.detail.value)}>
                                     <IonSelectOption value={1}>ADMIN</IonSelectOption>
                                     <IonSelectOption value={3}>SUB ADMIN</IonSelectOption>
                                     <IonSelectOption value={2}>USER</IonSelectOption>
