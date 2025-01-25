@@ -41,6 +41,7 @@ export default function AllUserListNormalAndSubAdminPage() {
 
     const callFunctionToSetChangeUserData = (userData) => {
         setUserRoleData(userData?.role);
+        setChangeUserRoleData(userData);
     }
 
     const callFunctionToSubmitPasscodeRequest = () => {
@@ -62,9 +63,13 @@ export default function AllUserListNormalAndSubAdminPage() {
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>Mobile</strong> : {dataItems?.phone_number}
-                    <strong>Role</strong> : {dataItems?.role === 1 ? 'ADMIN' :dataItems?.role === 2 ? 'SUB ADMIN' : 'USER'}
+                    <br/>
+                    <strong>Role</strong> : {dataItems?.role === 1 ? 'ADMIN' : dataItems?.role === 2 ? 'SUB ADMIN' : 'USER'}
+                    <br/>
                     <strong>Game Balance</strong> : ₹{dataItems?.game_balance ? dataItems?.game_balance : '0.00'}
+                    <br/>
                     <strong>Wallet Balance</strong> : ₹{dataItems?.wallet_balance ? dataItems?.wallet_balance : '0.00'}
+                    <br/>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}

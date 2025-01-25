@@ -667,7 +667,7 @@ export const actionToGetAllUsersNormalAndSubAdminListApiCall = (userId) => {
         let responseData = [];
         const query = `SELECT app_user.id,app_user.name,app_user.phone_number,app_user.created_at,app_user.wallet_balance,app_user.game_balance,app_user.role,sub_admin_user.name as sub_admin_name from app_user 
                                LEFT JOIN app_user as sub_admin_user ON sub_admin_user.id = app_user.id                                                             
-                               WHERE app_user.id != $1`;
+                               WHERE app_user.id != $1 ORDER BY app_user.id desc`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
