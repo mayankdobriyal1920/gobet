@@ -183,7 +183,7 @@ export default function GeneratedPasscodeListPage() {
                     <div className={"list_status_type"}>
                         <IonRow>
                             <IonCol size="12">
-                                <IonSelect onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
+                                <IonSelect label={"Passcode count"} value={requestPasscodeCount} onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
                                     <IonSelectOption value={1}>1</IonSelectOption>
                                     <IonSelectOption value={2}>2</IonSelectOption>
                                     <IonSelectOption value={3}>3</IonSelectOption>

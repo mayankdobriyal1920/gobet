@@ -2079,3 +2079,19 @@ ion-toast {
     padding: .1rem .2rem;
     background: #177400;
 }
+
+ion-alert .alert-wrapper .alert-title {
+    font-size: .41rem!important;
+}
+
+.alert-radio-label.sc-ion-alert-md {}
+
+ion-alert .alert-wrapper .alert-radio-label {
+    font-size: .4rem!important;
+}
+
+ion-alert .alert-button-group {}
+
+ion-alert .alert-button-group .alert-button {
+    font-size: .41rem!important;
+}

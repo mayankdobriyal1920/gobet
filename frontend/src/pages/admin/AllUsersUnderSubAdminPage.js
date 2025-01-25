@@ -90,7 +90,7 @@ export default function AllUsersUnderSubAdminPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Pass Codes</span>
+                                        <span>My User List</span>
                                     </div>
                                 </div>
                             </div>
