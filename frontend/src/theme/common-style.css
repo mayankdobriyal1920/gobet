@@ -1768,6 +1768,11 @@ figure.icon {
     padding: 0 .26667rem;
     z-index: 10;
 }
+
+.ar-searchbar__selector>div.transaction-type-dropdown {
+overflow: hidden;
+}
+
 .ar-searchbar__selector>div {
     width: 100%;
     line-height: 1.3rem;

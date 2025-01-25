@@ -1,9 +1,14 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    checkMobNumberAlreadyExistQuery, getAdminPassCodeListQuery,
-    getDepositHistoryQuery, getGameHistoryQuery,
-    getGameResultListQuery, getPendingDepositRequestListQuery, getPendingWithdrawalRequestListQuery,
+    checkMobNumberAlreadyExistQuery,
+    getAdminPassCodeListQuery,
+    getDepositHistoryQuery,
+    getGameHistoryQuery,
+    getGameResultListQuery,
+    getMoneyTransactionsQuery,
+    getPendingDepositRequestListQuery,
+    getPendingWithdrawalRequestListQuery,
     getUserByIdQuery,
     getWithdrawalHistoryQuery,
     isPassCodeValidQuery,
@@ -567,6 +572,23 @@ export const actionToGetGameHistoryDataApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
         const {query,values} = getGameHistoryQuery(userId,payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.rows?.length){
+                responseData = results?.rows;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetMoneyTransactionDataApiCall = (userId,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getMoneyTransactionsQuery(userId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

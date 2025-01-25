@@ -34,7 +34,7 @@ import {
     actionToGeneratePasscodeRequestBySubAdminApiCall,
     actionToGetAllUsersNormalAndSubAdminListApiCall,
     actionToUpdateUserRoleApiCall,
-    actionToApprovePasscodeRequestAndGeneratePasscodeApiCall
+    actionToApprovePasscodeRequestAndGeneratePasscodeApiCall, actionToGetMoneyTransactionDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -475,6 +475,19 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetGameHistoryDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetMoneyTransactionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetMoneyTransactionDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

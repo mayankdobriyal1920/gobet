@@ -12,7 +12,7 @@ import {
     userBetPredictionHistoryReducer,
     userBetPredictionStatusReducer,
     userDepositAmountHistoryReducer,
-    userGameHistoryReducer,
+    userGameHistoryReducer, userMoneyTransactionsReducer,
     userOtpReducer,
     userSessionReducer,
     userWalletAndGameBalanceReducer,
@@ -28,6 +28,7 @@ const initialState = {
     userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0},
     userBetPredictionHistory: {loading:true,predictionHistory:[]},
     userGameHistory: {loading:true,gameHistory:[]},
+    userMoneyTransactions: {loading:true,moneyTransactions:[]},
     userWithdrawalAmountHistory: {loading:true,withdrawalHistory:[]},
     userDepositAmountHistory: {loading:true,depositHistory:[]},
     adminGameResultList: {loading:true,gameResult:[]},
@@ -58,6 +59,7 @@ export const rootReducer = combineReducers({
     userBetPredictionHistory: userBetPredictionHistoryReducer,
     passcodeRequestBySubAdmin: passcodeRequestBySubAdminReducer,
     userGameHistory: userGameHistoryReducer,
+    userMoneyTransactions: userMoneyTransactionsReducer,
 });
 
 declare global {

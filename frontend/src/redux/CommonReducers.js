@@ -39,7 +39,9 @@ import {
     USER_GET_OTP_REQUEST,
     PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
     PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
-    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST, ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
+    USER_MONEY_TRANSACTIONS_REQUEST, USER_MONEY_TRANSACTIONS_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -127,6 +129,17 @@ export const userGameHistoryReducer = (state = {}, action) => {
             return { loading: true};
         case USER_GAME_HISTORY_SUCCESS:
             return { loading: false, gameHistory: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const userMoneyTransactionsReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_MONEY_TRANSACTIONS_REQUEST:
+            return { loading: true};
+        case USER_MONEY_TRANSACTIONS_SUCCESS:
+            return { loading: false, moneyTransactions: action.payload};
         default:
             return state;
     }

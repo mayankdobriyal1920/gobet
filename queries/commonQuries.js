@@ -159,6 +159,29 @@ export const getGameHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
+export const getMoneyTransactionsQuery = (userId, body) => {
+    let { type, created_at } = body;
+    let values = [userId];  // Initial values array with userId
+    let condition = `user_id = $1`;  // Initial condition with userId
+
+    // Add condition for type if provided
+    if (type && type !== 'All') {
+        values.push(type);
+        condition += ` AND type = $${values.length}`;  // Add 'type' condition
+    }
+
+    // Add condition for created_at if provided
+    if (created_at) {
+        values.push(created_at);  // Append the created_at value
+        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+    }
+
+    // Final query
+    let query = `SELECT * FROM user_transaction_history WHERE ${condition} order by created_at desc`;
+
+    return { values, query };
+};
+
 export const getGameResultListQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [];  // Initial values array with userId

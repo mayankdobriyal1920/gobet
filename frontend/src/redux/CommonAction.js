@@ -40,7 +40,7 @@ import {
     PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
     PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS, USER_MONEY_TRANSACTIONS_REQUEST, USER_MONEY_TRANSACTIONS_SUCCESS
 } from "./CommonConstants";
 const api = Axios.create({
     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
@@ -345,6 +345,19 @@ export const actionToGetGameHistoryData = (isLoading = true,payload = {}) => asy
     try {
         api.post(`actionToGetGameHistoryDataApiCall`, {payload}).then(responseData => {
             dispatch({ type: USER_GAME_HISTORY_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetMoneyTransactionData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: USER_MONEY_TRANSACTIONS_REQUEST});
+    }
+    try {
+        api.post(`actionToGetMoneyTransactionDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: USER_MONEY_TRANSACTIONS_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);
