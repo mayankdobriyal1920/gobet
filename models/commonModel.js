@@ -1,7 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
-    CheckMobNumberAlreadyExistQuery, getAdminPassCodeListQuery,
+    checkMobNumberAlreadyExistQuery, getAdminPassCodeListQuery,
     getDepositHistoryQuery, getGameHistoryQuery,
     getGameResultListQuery, getPendingDepositRequestListQuery, getPendingWithdrawalRequestListQuery,
     getUserByIdQuery,
@@ -15,7 +15,7 @@ import {
     userProfileDataQuery
 } from "../queries/commonQuries.js";
 import {
-    actionToGetAliveUserAndStartTimerOnIt, bulkUpdateCommonApiCall,
+    actionToGetAliveUserAndStartTimerOnIt, bulkInsertCommonApiCall,
     insertCommonApiCall,
     updateCommonApiCall
 } from "./helpers/commonModelHelper.js";
@@ -37,7 +37,7 @@ export const actionToSendOtpApiCall = (body) => {
     const {phone} = body;
     return new Promise(function(resolve, reject) {
         let userData = {};
-        const query = CheckMobNumberAlreadyExistQuery();
+        const query = checkMobNumberAlreadyExistQuery();
         pool.query(query,[phone], (error, results) => {
             if (error) {
                 reject(error)
@@ -259,6 +259,68 @@ export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) =>
             }
             resolve({status:0});
         })
+    })
+}
+
+export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (adminUserId,body) => {
+    return new Promise(function(resolve, reject) {
+        const {id,user_id,count} = body;
+        if (id) {
+            let setData = `status = $1, updated_by = $2`;
+            const whereCondition = `id = $3`;
+            let dataToSend = {
+                column: setData,
+                value: [1, adminUserId, id],
+                whereCondition: whereCondition,
+                returnColumnName: 'id',
+                tableName: 'passcode_request'
+            };
+
+            updateCommonApiCall(dataToSend).then(() => {
+                let lengthLoop = count || 1; // Default to 1 if count is not provided
+                let valuesArray = [];
+
+                for (let i = 0; i < lengthLoop; i++) {
+                    valuesArray.push([user_id, Math.floor(100000 + Math.random() * 900000), adminUserId]);
+                }
+
+                const insertData = {
+                    column: ["user_id", "code", "created_by"],
+                    valuesArray: valuesArray,
+                    tableName: 'pass_code'
+                };
+
+                bulkInsertCommonApiCall(insertData).then(() => {
+                    resolve({ status: 1 });
+                }).catch((err) => {
+                    console.error('Error during bulk insert:', err);
+                    reject({ status: 0, error: err });
+                });
+            }).catch((err) => {
+                console.error('Error during update:', err);
+                reject({ status: 0, error: err });
+            });
+        } else {
+            let lengthLoop = 5; // Default length loop to 5 if id is not provided
+            let valuesArray = [];
+
+            for (let i = 0; i < lengthLoop; i++) {
+                valuesArray.push([adminUserId, Math.floor(100000 + Math.random() * 900000), adminUserId]);
+            }
+
+            const insertData = {
+                column: ["user_id", "code", "created_by"],
+                valuesArray: valuesArray,
+                tableName: 'pass_code'
+            };
+
+            bulkInsertCommonApiCall(insertData).then(() => {
+                resolve({ status: 1 });
+            }).catch((err) => {
+                console.error('Error during bulk insert:', err);
+                reject({ status: 0, error: err });
+            });
+        }
     })
 }
 

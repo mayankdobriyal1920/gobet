@@ -44,7 +44,7 @@ export const userProfileDataQuery = () => {
     `;
 };
 
-export const CheckMobNumberAlreadyExistQuery = () => {
+export const checkMobNumberAlreadyExistQuery = () => {
     return `
         SELECT
             app_user.id,
