@@ -21,10 +21,32 @@ export default function AllUserListNormalAndSubAdminPage() {
     const [changeUserRoleData,setChangeUserRoleData] = useState(null);
     const [userRoleData,setUserRoleData] = useState(null);
     const [updateLoading,setUpdateLoading] = useState(false);
+    const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
+    const [statusTypeFilter,setStatusTypeFilter] = useState('All');
+    const [optionFilter,setOptionFilter] = useState('All');
     const {loading,userData} = useSelector((state) => state.allUsersNormalAndSunAdminList);
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
+    }
+
+    const callFunctionClearToAddFilterAndGetData = () => {
+        setStatusTypeFilter('All');
+        setOptionFilter('All');
+        callFunctionToGetAllUsersNormalAndSubAdminList('All')
+    }
+
+    const callFunctionToApplyTypeFilter = (filter, optionValue) => {
+        if (statusTypeFilter !== filter) {
+            setStatusTypeFilter(filter);
+            setOptionFilter(optionValue);
+            setIsTypeFilterOpen(false);
+            callFunctionToGetAllUsersNormalAndSubAdminList(filter);
+        }
+    }
+
+    const callFunctionToGetAllUsersNormalAndSubAdminList = (typeFilter) => {
+        dispatch(actionToGetAllUsersNormalAndSubAdminList( {type: typeFilter}))
     }
 
     useEffect(() => {
@@ -33,7 +55,7 @@ export default function AllUserListNormalAndSubAdminPage() {
 
 
     const callFunctionToResetRequest = () => {
-        dispatch(actionToGetAllUsersNormalAndSubAdminList());
+        dispatch(actionToGetAllUsersNormalAndSubAdminList( {type: statusTypeFilter}));
         setTimeout(()=>{
             setUpdateLoading(false);
         })
@@ -91,7 +113,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>My User List</span>
+                                        <span>My User List56</span>
                                     </div>
                                 </div>
                             </div>
@@ -99,6 +121,44 @@ export default function AllUserListNormalAndSubAdminPage() {
                     </div>
                 </div>
             </IonHeader>
+
+            <div className={"bet-container-sticky"}>
+                <div className={"van-sticky"}>
+                    <div style={{background: "var(--bg_color_L1)"}}>
+                        <div className="bet-container-searchBar">
+                            <div className="ar-searchbar">
+                                <div onClick={() => setIsTypeFilterOpen(true)} className="ar-searchbar__selector">
+                                    <div className="transaction-type-dropdown">
+                                        <span
+                                            className="ar-searchbar__selector-default">{optionFilter}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             className="van-badge__wrapper van-icon van-icon-arrow"
+                                             fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
+                                             id="Layer_1"
+                                             viewBox="0 0 330 330">
+                                            <path id="XMLID_222_"
+                                                  d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                {(statusTypeFilter !== 'All') ?
+                                    <div onClick={() => callFunctionClearToAddFilterAndGetData('All')}
+                                         className="ar-searchbar__selector_clear">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
+                                             viewBox="0 0 24 24" fill="var(--main-color)">
+                                            <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
+                                                  strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                    </div> : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
@@ -137,6 +197,32 @@ export default function AllUserListNormalAndSubAdminPage() {
 
             <IonModal
                 className="add-money-to-game-wallet-modal"
+                isOpen={isTypeFilterOpen}
+                onDidDismiss={() => setIsTypeFilterOpen(false)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Transaction Type</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter('All', 'All')}>All
+                        </div>
+                        <div className={`list_status_type_item ${statusTypeFilter === 1 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(1, 'Admin')}>Admin
+                        </div>
+                        <div className={`list_status_type_item ${statusTypeFilter === 2 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(2, 'Sub Admin')}>Sub Admin
+                        </div>
+                        <div className={`list_status_type_item ${statusTypeFilter === 3 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(3, 'User')}>User
+                        </div>
+                    </div>
+                </IonContent>
+            </IonModal>
+
+            <IonModal
+                className="add-money-to-game-wallet-modal"
                 isOpen={!!changeUserRoleData}
                 onDidDismiss={() => setChangeUserRoleData(null)}
                 initialBreakpoint={0.5} breakpoints={[0.5]}>
@@ -147,7 +233,8 @@ export default function AllUserListNormalAndSubAdminPage() {
                     <div className={"list_status_type"}>
                         <IonRow>
                             <IonCol size="12">
-                                <IonSelect label={"Passcode count"} value={userRoleData} onIonChange={(e)=>setUserRoleData(e.detail.value)}>
+                                <IonSelect label={"Passcode count"} value={userRoleData}
+                                           onIonChange={(e) => setUserRoleData(e.detail.value)}>
                                     <IonSelectOption value={1}>ADMIN</IonSelectOption>
                                     <IonSelectOption value={3}>SUB ADMIN</IonSelectOption>
                                     <IonSelectOption value={2}>USER</IonSelectOption>
