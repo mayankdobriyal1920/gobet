@@ -26,6 +26,7 @@
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.1",
     "generic-pool": "^3.9.0",
+    "mysql": "^2.18.1",
     "mysql2": "^3.11.5",
     "pg": "^8.13.1",
     "redis": "^4.7.0",

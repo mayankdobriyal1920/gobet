@@ -303,41 +303,6 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
     }
 
-
-
-
-
-    // userPayloadData?.map((userPredData)=>{
-    //     let aliasArray = ['$1','$2','$3','$4','$6'];
-    //     let columnArray = ["user_id", "min","betting_active_users_id","option_name","amount","bet_id"];
-    //     let valuesArray = [userPredData.user_id,userPredData?.min,userPredData?.betting_active_users_id,userPredData?.option_name,userPredData?.amount,userPredData?.bet_id];
-    //     let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'bet_prediction_history'};
-    //     console.log('insertData',insertData)
-    //
-    //     insertCommonApiCall(insertData).then(()=>{
-    //
-    //         ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-    //         let setData = `game_balance = $1`;
-    //         const whereCondition = `id = '${userId}'`;
-    //         let dataToSend = {column: setData, value: [Number(userPredData?.balance)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
-    //         updateCommonApiCall(dataToSend).then(()=>{
-    //             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-    //             aliasArray = ['$1','$2','$3'];
-    //             columnArray = ["amount", "user_id","type"];
-    //             valuesArray = [userPredData?.amount,userPredData?.user_id,'game_play_deduct'];
-    //             insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
-    //             insertCommonApiCall(insertData).then(()=>{
-    //
-    //             })
-    //             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-    //         })
-    //
-    //
-    //     })
-    // })
-
-
-
 }
 
 export const actionToDeactivateSingleBetting = () => {

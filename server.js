@@ -12,7 +12,7 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-const PORT = 4000;
+const PORT = 4003;
 
 // Define allowed origins
 const allowedOrigins = [
@@ -111,10 +111,10 @@ const io = new Server(server, {
 });
 
 // Routes
-app.use('/api-call/common', commonRouter);
+app.use('/api-get-bet/common', commonRouter);
 
 // Basic route
-app.get('/', (req, res) => {
+app.get('/api-get-bet/', (req, res) => {
     res.send('Server is running!');
 });
 

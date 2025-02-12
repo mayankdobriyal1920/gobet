@@ -7,7 +7,7 @@ export const loginUserQuery = () => {
             app_user.role,
             app_user.phone_number,
             app_user.wallet_balance,
-            jsonb_build_object(
+            JSON_OBJECT(
                     'id', sub_admin_users.id,
                     'name', sub_admin_users.name,
                     'profile_picture', sub_admin_users.profile_url,
@@ -17,7 +17,7 @@ export const loginUserQuery = () => {
         FROM app_user
                  LEFT JOIN app_user AS sub_admin_users
                            ON sub_admin_users.id = app_user.sub_admin
-        WHERE app_user.phone_number = $1;
+        WHERE app_user.phone_number = ?;
     `;
 };
 
@@ -30,7 +30,7 @@ export const userProfileDataQuery = () => {
             app_user.role,
             app_user.phone_number,
             app_user.wallet_balance,
-            jsonb_build_object(
+            JSON_OBJECT(
                     'id', sub_admin_users.id,
                     'name', sub_admin_users.name,
                     'profile_picture', sub_admin_users.profile_url,
@@ -40,7 +40,7 @@ export const userProfileDataQuery = () => {
         FROM app_user
                  LEFT JOIN app_user AS sub_admin_users
                            ON sub_admin_users.id = app_user.sub_admin
-        WHERE app_user.id = $1;
+        WHERE app_user.id = ?;
     `;
 };
 
@@ -50,7 +50,7 @@ export const checkMobNumberAlreadyExistQuery = () => {
             app_user.id,
             app_user.name
         FROM app_user
-        WHERE app_user.phone_number = $1;
+        WHERE app_user.phone_number = ?;
     `;
 };
 
@@ -61,54 +61,54 @@ export const isPassCodeValidQuery = () => {
             pass_code.user_id,
             pass_code.code
         FROM pass_code
-        WHERE pass_code.allot_to is null and pass_code.code = $1;
+        WHERE pass_code.allot_to IS NULL AND pass_code.code = ?;
     `;
 };
 
 export const signupQuery = () => {
-    return `INSERT INTO app_user(id,name,phone_number,profile_url,sub_admin,wallet_balance,role,created_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+    return `INSERT INTO app_user(id, name, phone_number, profile_url, sub_admin, wallet_balance, role, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
 };
 
 export const updatePassCodeQuery = () => {
     return `
-        UPDATE pass_code set allot_to = $1
-        WHERE id = $2;
+        UPDATE pass_code SET allot_to = ?
+        WHERE id = ?;
     `;
 };
 
 export const updateUserAvatarQuery = () => {
     return `
-        UPDATE app_user set profile_url = $1
-        WHERE id = $2;
+        UPDATE app_user SET profile_url = ?
+        WHERE id = ?;
     `;
 };
 
 export const updateUserUserNameQuery = () => {
     return `
-        UPDATE app_user set name = $1
-        WHERE id = $2;
+        UPDATE app_user SET name = ?
+        WHERE id = ?;
     `;
 };
 
 export const getWithdrawalHistoryQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1`;  // Initial condition with userId
+    let condition = `user_id = ?`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
         values.push(status === 'Pending' ? 0 : 1);  // Append the status value (1 for 'Pending', 0 otherwise)
-        condition += ` AND status = $${values.length}`;  // Add 'status' condition
+        condition += ` AND status = ?`;  // Add 'status' condition
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM withdrawal_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM withdrawal_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
@@ -116,22 +116,22 @@ export const getWithdrawalHistoryQuery = (userId, body) => {
 export const getDepositHistoryQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1`;  // Initial condition with userId
+    let condition = `user_id = ?`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
         values.push(status === 'Pending' ? 0 : 1);  // Append the status value (1 for 'Pending', 0 otherwise)
-        condition += ` AND status = $${values.length}`;  // Add 'status' condition
+        condition += ` AND status = ?`;  // Add 'status' condition
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM deposit_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM deposit_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
@@ -139,22 +139,22 @@ export const getDepositHistoryQuery = (userId, body) => {
 export const getGameHistoryQuery = (userId, body) => {
     let { status, created_at } = body;
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1`;  // Initial condition with userId
+    let condition = `user_id = ?`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
-        values.push(status);  // Append the status value (1 for 'Pending', 0 otherwise)
-        condition += ` AND game_type = $${values.length}`;  // Add 'status' condition
+        values.push(status);  // Append the status value
+        condition += ` AND game_type = ?`;  // Add 'status' condition
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM bet_prediction_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM bet_prediction_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
@@ -162,22 +162,22 @@ export const getGameHistoryQuery = (userId, body) => {
 export const getMoneyTransactionsQuery = (userId, body) => {
     let { type, created_at } = body;
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1`;  // Initial condition with userId
+    let condition = `user_id = ?`;  // Initial condition with userId
 
     // Add condition for type if provided
     if (type && type !== 'All') {
         values.push(type);
-        condition += ` AND type = $${values.length}`;  // Add 'type' condition
+        condition += ` AND type = ?`;  // Add 'type' condition
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM user_transaction_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM user_transaction_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
@@ -191,86 +191,74 @@ export const getGameResultListQuery = (userId, body) => {
     if (status && status !== 'All') {
         status = status.toLowerCase();
         status = status.replace(' ','_');
-        values.push(status);  // Append the status value (1 for 'Pending', 0 otherwise)
-        condition += ` AND game_type = $${values.length}`;  // Add 'status' condition
+        values.push(status);  // Append the status value
+        condition += ` AND game_type = ?`;  // Add 'status' condition
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM game_result WHERE ${condition} order by game_id desc`;
+    let query = `SELECT * FROM game_result WHERE ${condition} ORDER BY game_id DESC`;
 
     return { values, query };
 };
 
 export const getPendingWithdrawalRequestListQuery = (userId, body) => {
     let { status, created_at } = body;
-    let values = [userId,0];  // Initial values array with userId
-    let condition = `sub_admin_id = $1 AND status = $2`;  // Initial condition with userId
+    let values = [userId, 0];  // Initial values array with userId
+    let condition = `sub_admin_id = ? AND status = ?`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
         values.push(status);
-        condition += ` AND user_id = $${values.length}`;
+        condition += ` AND user_id = ?`;
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM withdrawal_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM withdrawal_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
 
 export const getPendingDepositRequestListQuery = (userId, body) => {
     let { status, created_at } = body;
-    let values = [userId,0];  // Initial values array with userId
-    let condition = `sub_admin_id = $1 AND status = $2`;  // Initial condition with userId
+    let values = [userId, 0];  // Initial values array with userId
+    let condition = `sub_admin_id = ? AND status = ?`;  // Initial condition with userId
 
     // Add condition for status if provided
     if (status && status !== 'All') {
         values.push(status);
-        condition += ` AND user_id = $${values.length}`;
+        condition += ` AND user_id = ?`;
     }
 
     // Add condition for created_at if provided
     if (created_at) {
         values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
+        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
     }
 
     // Final query
-    let query = `SELECT * FROM deposit_history WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM deposit_history WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
 
 export const getAdminPassCodeListQuery = (userId) => {
     let values = [userId];  // Initial values array with userId
-    let condition = `user_id = $1 AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
-
-    // // Add condition for status if provided
-    // if (status && status !== 'All') {
-    //     values.push(status);
-    //     condition += ` AND user_id = $${values.length}`;
-    // }
-    //
-    // // Add condition for created_at if provided
-    // if (created_at) {
-    //     values.push(created_at);  // Append the created_at value
-    //     condition += ` AND DATE(created_at) = $${values.length}`;  // Add 'created_at' condition
-    // }
+    let condition = `user_id = ? AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
 
     // Final query
-    let query = `SELECT * FROM pass_code WHERE ${condition} order by created_at desc`;
+    let query = `SELECT * FROM pass_code WHERE ${condition} ORDER BY created_at DESC`;
 
     return { values, query };
 };
@@ -284,7 +272,7 @@ export const getUserByIdQuery = () => {
             app_user.role,
             app_user.phone_number,
             app_user.wallet_balance,
-            jsonb_build_object(
+            JSON_OBJECT(
                     'id', sub_admin_users.id,
                     'name', sub_admin_users.name,
                     'profile_picture', sub_admin_users.profile_url,
@@ -294,18 +282,20 @@ export const getUserByIdQuery = () => {
         FROM app_user
                  LEFT JOIN app_user AS sub_admin_users
                            ON sub_admin_users.id = app_user.sub_admin
-        WHERE app_user.id = $1;
+        WHERE app_user.id = ?;
     `;
 };
 
 export const getAliveUsersQuery = () => {
-    return `SELECT DISTINCT ON (betting_active_users.user_id)
+    return `
+        SELECT
             betting_active_users.id as betting_active_users_id,
             app_user.id as id,
             app_user.game_balance as balance
-            FROM betting_active_users
-            LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
-        WHERE betting_active_users.status = $1
-        ORDER BY betting_active_users.user_id, betting_active_users.created_at DESC`;
+        FROM betting_active_users
+                 LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
+        WHERE betting_active_users.status = ?
+        GROUP BY betting_active_users.user_id
+        ORDER BY betting_active_users.created_at DESC;
+    `;
 };
-
