@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 16, 2025 at 08:25 AM
+-- Generation Time: Feb 16, 2025 at 11:48 AM
 -- Server version: 10.5.26-MariaDB
 -- PHP Version: 8.3.15
 
@@ -35,28 +35,29 @@ CREATE TABLE `app_user` (
   `otp` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `sub_admin` varchar(255) DEFAULT NULL,
-  `wallet_balance` int(11) DEFAULT NULL,
+  `wallet_balance` bigint(20) DEFAULT NULL,
   `role` smallint(6) DEFAULT 3,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `game_balance` int(11) DEFAULT 0
+  `game_balance` bigint(20) DEFAULT 0,
+  `betting_balance` bigint(20) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `app_user`
 --
 
-INSERT INTO `app_user` (`id`, `name`, `phone_number`, `profile_url`, `otp`, `password`, `sub_admin`, `wallet_balance`, `role`, `created_at`, `game_balance`) VALUES
-('132te13-ef65gfd-gffgfgs', 'Neeraj Payal', '9876543210', 'avatar-6', '1234', NULL, '3213213-efgfd-435245', 127121, 1, '2024-12-22 13:43:52', 16750),
-('23349-4baeb0f4-d0a546ec', 'krishna', '7830717827', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 534432, 1, '2024-12-26 14:06:58', 34353),
-('272199-476b63ff-10f5e15c', 'krishna', '8976543210', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-26 14:16:40', 0),
-('3213213-efgfd-435245', 'Mayank Dobriyal', '7017935899', 'avatar-2', '1234', NULL, '', 85447, 1, '2024-12-22 13:43:52', 5000),
-('324qwe-536uyrt-546jhgj', 'Sumit', '9615150000', 'avatar-4', '1234', NULL, NULL, 194340, 1, '2024-12-22 13:43:52', 0),
-('347343-c64c783a-e08ce0c2', 'krishna', '9458320945', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-27 16:14:52', 0),
-('435324-rtthyfgh-ljkhersf', 'Amit Negi', '7123456780', 'avatar-6', '1234', NULL, '3213213-efgfd-435245', 114000, 3, '2024-12-22 13:43:52', 5000),
-('45486yhgf-gfhgfudf-ykhjgj', 'Nirmal Gaur', '8123456780', 'avatar-5', '1234', NULL, '3213213-efgfd-435245', 110000, 3, '2024-12-22 13:43:52', 6000),
-('542155-e04d3e2e-7978d1d0', 'krishna', '7830717789', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-25 16:18:01', 0),
-('672389-775bab30-5a7099a8', 'Krishna bhatti', '7830717727', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 170000, 1, '2024-12-25 13:48:12', 40000),
-('errsae92-5435345-gfgfg', 'Manmohan', '9123456780', 'avatar-2', '1234', NULL, '3213213-efgfd-435245', 190000, 2, '2024-12-22 13:43:52', 0);
+INSERT INTO `app_user` (`id`, `name`, `phone_number`, `profile_url`, `otp`, `password`, `sub_admin`, `wallet_balance`, `role`, `created_at`, `game_balance`, `betting_balance`) VALUES
+('132te13-ef65gfd-gffgfgs', 'Neeraj Payal', '9876543210', 'avatar-6', '1234', NULL, '3213213-efgfd-435245', 2989900, 1, '2024-12-22 13:43:52', 392, 1840),
+('23349-4baeb0f4-d0a546ec', 'krishna', '7830717827', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 534432, 1, '2024-12-26 14:06:58', 34353, 0),
+('272199-476b63ff-10f5e15c', 'krishna', '8976543210', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-26 14:16:40', 0, 0),
+('3213213-efgfd-435245', 'Mayank Dobriyal', '7017935899', 'avatar-2', '1234', NULL, '132te13-ef65gfd-gffgfgs', 289447, 1, '2024-12-22 13:43:52', 7600, 91840),
+('324qwe-536uyrt-546jhgj', 'Sumit', '9615150000', 'avatar-4', '1234', NULL, '3213213-efgfd-435245', 193340, 1, '2024-12-22 13:43:52', 350, 0),
+('347343-c64c783a-e08ce0c2', 'krishna', '9458320945', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-27 16:14:52', 0, 0),
+('435324-rtthyfgh-ljkhersf', 'Amit Negi', '7123456780', 'avatar-6', '1234', NULL, '3213213-efgfd-435245', 114000, 3, '2024-12-22 13:43:52', 5000, 0),
+('45486yhgf-gfhgfudf-ykhjgj', 'Nirmal Gaur', '8123456780', 'avatar-5', '1234', NULL, '3213213-efgfd-435245', 110000, 3, '2024-12-22 13:43:52', 6000, 0),
+('542155-e04d3e2e-7978d1d0', 'krishna', '7830717789', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 0, 3, '2024-12-25 16:18:01', 0, 0),
+('672389-775bab30-5a7099a8', 'Krishna bhatti', '7830717727', 'avatar-3', NULL, NULL, '324qwe-536uyrt-546jhgj', 170000, 1, '2024-12-25 13:48:12', 40000, 0),
+('errsae92-5435345-gfgfg', 'Manmohan', '9123456780', 'avatar-2', '1234', NULL, '3213213-efgfd-435245', 190000, 2, '2024-12-22 13:43:52', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -71,15 +72,6 @@ CREATE TABLE `betting_active_users` (
   `status` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `betting_active_users`
---
-
-INSERT INTO `betting_active_users` (`id`, `user_id`, `created_at`, `status`) VALUES
-('1TF67F4X-8DsWBXNs-O4C1bIpO', '132te13-ef65gfd-gffgfgs', '2025-02-16 06:40:09', 4),
-('MFfRtLn7-rfEOZKxT-tjenCJZ8', '324qwe-536uyrt-546jhgj', '2025-02-16 08:17:15', 2),
-('VLeXyYZz-kIHKtzJI-dC7IEO8x', '3213213-efgfd-435245', '2025-02-16 06:39:59', 4);
-
 -- --------------------------------------------------------
 
 --
@@ -91,9 +83,17 @@ CREATE TABLE `betting_percentage` (
   `amount` int(11) NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `deposit_history_id` varchar(255) NOT NULL,
+  `user_transaction_history_id` varchar(255) NOT NULL,
   `status` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `betting_percentage`
+--
+
+INSERT INTO `betting_percentage` (`id`, `amount`, `user_id`, `created_at`, `user_transaction_history_id`, `status`) VALUES
+('27HUVixU-4iOP01AQ-UhcgRuA1', 100, '132te13-ef65gfd-gffgfgs', '2025-02-16 10:22:38', 'pTe9b3RA-xLLrZUfW-yVty2BBk', 0),
+('i6WDF52Q-BnDkRn8N-QTOmlmWN', 1000, '3213213-efgfd-435245', '2025-02-16 11:11:45', 'CClGsbHT-vKUaFUdd-MsC9MHTz', 0);
 
 -- --------------------------------------------------------
 
@@ -123,8 +123,14 @@ CREATE TABLE `bet_prediction_history` (
 INSERT INTO `bet_prediction_history` (`id`, `amount`, `user_id`, `bet_id`, `created_at`, `option_name`, `game_type`, `min`, `status`, `betting_active_users_id`, `game_result_id`, `win_status`) VALUES
 ('5Uq0JZgU-6F7t1cjp-shArNZgm', 1900, '3213213-efgfd-435245', '20250216100010402', '2025-02-16 06:41:01', 'SMALL', 'win_go', 1, 0, 'VLeXyYZz-kIHKtzJI-dC7IEO8x', '4Lc4ozdx-lDnX32eN-jJH7F4Yp', NULL),
 ('A9CPDBCg-ADLQpb3M-2YoqBhEn', 1900, '132te13-ef65gfd-gffgfgs', '20250216100010402', '2025-02-16 06:41:01', 'BIG', 'win_go', 1, 0, '1TF67F4X-8DsWBXNs-O4C1bIpO', '4Lc4ozdx-lDnX32eN-jJH7F4Yp', NULL),
+('EpA1dkEy-m0E6VX9Q-iB6DozWd', 400, '132te13-ef65gfd-gffgfgs', '20250216100010706', '2025-02-16 11:45:01', 'SMALL', 'win_go', 1, 0, 'E2Q58vn4-2l00KLaQ-pMKLZnm8', 'm9KMmuyw-eXxjvr3d-aMQyeGQt', 0),
 ('g3l8Lxic-DZcntrYY-JXe7b5da', 1150, '3213213-efgfd-435245', '20250216100010394', '2025-02-16 06:33:01', 'SMALL', 'win_go', 1, 0, 'u4xvloCI-iyTas75I-3LqwvgWR', 'R3MCH3T9-ldw4DFxq-6xCB6ZHO', NULL),
-('UJXAzCjp-jZz50ADy-i4DmFE4Y', 1150, '132te13-ef65gfd-gffgfgs', '20250216100010394', '2025-02-16 06:33:01', 'BIG', 'win_go', 1, 0, '2PhEYA5L-UEV2Ymr7-Bb3rGEAN', 'R3MCH3T9-ldw4DFxq-6xCB6ZHO', NULL);
+('jsMS0ck1-yOLlWRTJ-jHxsKfNY', 7600, '132te13-ef65gfd-gffgfgs', '20250216100010678', '2025-02-16 11:17:01', 'SMALL', 'win_go', 1, 0, 'femK3THf-8F7KyXv6-HIJaC509', 'zdc48Tw3-UKFNFHtA-HqXorhwN', 1),
+('quwKiObi-1E5S0eIV-snjmiswn', 650, '3213213-efgfd-435245', '20250216100010520', '2025-02-16 08:39:01', 'BIG', 'win_go', 1, 0, 'ueGu3QU3-Ao5sLciD-QY0CKN7X', '5w8U2yc4-2QOF0ygw-PZgaVa5g', NULL),
+('SiEEBB1q-RkrzkTou-tbpbx6sV', 650, '324qwe-536uyrt-546jhgj', '20250216100010520', '2025-02-16 08:39:01', 'SMALL', 'win_go', 1, 0, 'Ee7eJ3pw-A75GfX6Z-YvR5HaBH', '5w8U2yc4-2QOF0ygw-PZgaVa5g', NULL),
+('tLFqTiPb-OyQEP1AM-1g8oLvYk', 400, '3213213-efgfd-435245', '20250216100010706', '2025-02-16 11:45:01', 'BIG', 'win_go', 1, 0, 'jxMqWoGi-K8fDrMrY-vsUqkrKi', 'm9KMmuyw-eXxjvr3d-aMQyeGQt', 1),
+('UJXAzCjp-jZz50ADy-i4DmFE4Y', 1150, '132te13-ef65gfd-gffgfgs', '20250216100010394', '2025-02-16 06:33:01', 'BIG', 'win_go', 1, 0, '2PhEYA5L-UEV2Ymr7-Bb3rGEAN', 'R3MCH3T9-ldw4DFxq-6xCB6ZHO', NULL),
+('uubFsYNX-tnAiwnwD-wRxDeL76', 7600, '3213213-efgfd-435245', '20250216100010678', '2025-02-16 11:17:01', 'BIG', 'win_go', 1, 0, 'WR5WCuL7-l6w2PYaV-MxhciLDL', 'zdc48Tw3-UKFNFHtA-HqXorhwN', 0);
 
 -- --------------------------------------------------------
 
@@ -141,6 +147,13 @@ CREATE TABLE `deposit_history` (
   `status` smallint(6) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `deposit_history`
+--
+
+INSERT INTO `deposit_history` (`id`, `amount`, `user_id`, `sub_admin_id`, `created_at`, `status`) VALUES
+('IuAcCR9S-pDwneovy-AcjbOMOL', 300000, '3213213-efgfd-435245', '132te13-ef65gfd-gffgfgs', '2025-02-16 11:11:07', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -153,22 +166,27 @@ CREATE TABLE `game_result` (
   `result` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_by` varchar(255) DEFAULT NULL,
-  `game_id` varchar(255) NOT NULL
+  `game_id` varchar(255) NOT NULL,
+  `total_bet_amount` bigint(20) NOT NULL DEFAULT 0,
+  `bet_distribution_json` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `game_result`
 --
 
-INSERT INTO `game_result` (`id`, `game_type`, `result`, `created_at`, `updated_by`, `game_id`) VALUES
-('1', 'win_go', 'BIG', '2025-01-19 07:06:00', '3213213-efgfd-435245', '20250119100010427'),
-('2', 'win_go', 'BIG', '2025-01-19 07:11:00', '132te13-ef65gfd-gffgfgs', '20250119100010432'),
-('3', 'win_go', 'SMALL', '2025-01-19 07:16:00', '132te13-ef65gfd-gffgfgs', '20250119100010437'),
-('3KIbfZmY-fT85gFeM-QQnAEaxR', 'win_go', 'SMALL', '2025-02-16 06:21:01', '132te13-ef65gfd-gffgfgs', '20250216100010382'),
-('4Lc4ozdx-lDnX32eN-jJH7F4Yp', 'win_go', 'SMALL', '2025-02-16 06:41:01', '3213213-efgfd-435245', '20250216100010402'),
-('QzOjIpa3-zDmw7RPW-xEO2QeEL', 'win_go', NULL, '2025-02-16 05:41:01', NULL, '20250216100010342'),
-('R3MCH3T9-ldw4DFxq-6xCB6ZHO', 'win_go', 'BIG', '2025-02-16 06:33:01', '132te13-ef65gfd-gffgfgs', '20250216100010394'),
-('yQAzFMlC-nFzOWngQ-1USNEG25', 'win_go', NULL, '2025-02-16 06:17:01', NULL, '20250216100010378');
+INSERT INTO `game_result` (`id`, `game_type`, `result`, `created_at`, `updated_by`, `game_id`, `total_bet_amount`, `bet_distribution_json`) VALUES
+('1', 'win_go', 'BIG', '2025-01-19 07:06:00', '3213213-efgfd-435245', '20250119100010427', 0, NULL),
+('2', 'win_go', 'BIG', '2025-01-19 07:11:00', '132te13-ef65gfd-gffgfgs', '20250119100010432', 0, NULL),
+('3', 'win_go', 'SMALL', '2025-01-19 07:16:00', '132te13-ef65gfd-gffgfgs', '20250119100010437', 0, NULL),
+('3KIbfZmY-fT85gFeM-QQnAEaxR', 'win_go', 'SMALL', '2025-02-16 06:21:01', '132te13-ef65gfd-gffgfgs', '20250216100010382', 0, NULL),
+('4Lc4ozdx-lDnX32eN-jJH7F4Yp', 'win_go', 'SMALL', '2025-02-16 06:41:01', '3213213-efgfd-435245', '20250216100010402', 0, NULL),
+('5w8U2yc4-2QOF0ygw-PZgaVa5g', 'win_go', 'SMALL', '2025-02-16 08:39:01', '132te13-ef65gfd-gffgfgs', '20250216100010520', 0, NULL),
+('m9KMmuyw-eXxjvr3d-aMQyeGQt', 'win_go', 'BIG', '2025-02-16 11:45:01', '132te13-ef65gfd-gffgfgs', '20250216100010706', 800, '[{\"user_id\":\"132te13-ef65gfd-gffgfgs\",\"name\":\"Neeraj Payal\",\"min\":1,\"betting_active_users_id\":\"E2Q58vn4-2l00KLaQ-pMKLZnm8\",\"option_name\":\"SMALL\",\"amount\":400,\"balance\":1848,\"balance_after_deduct_percentage\":1840,\"bet_id\":\"20250216100010706\",\"total_bet_amount\":800},{\"user_id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"min\":1,\"betting_active_users_id\":\"jxMqWoGi-K8fDrMrY-vsUqkrKi\",\"option_name\":\"BIG\",\"amount\":400,\"balance\":91848,\"balance_after_deduct_percentage\":91840,\"bet_id\":\"20250216100010706\",\"total_bet_amount\":800}]'),
+('QzOjIpa3-zDmw7RPW-xEO2QeEL', 'win_go', NULL, '2025-02-16 05:41:01', NULL, '20250216100010342', 0, NULL),
+('R3MCH3T9-ldw4DFxq-6xCB6ZHO', 'win_go', 'BIG', '2025-02-16 06:33:01', '132te13-ef65gfd-gffgfgs', '20250216100010394', 0, NULL),
+('yQAzFMlC-nFzOWngQ-1USNEG25', 'win_go', NULL, '2025-02-16 06:17:01', NULL, '20250216100010378', 0, NULL),
+('zdc48Tw3-UKFNFHtA-HqXorhwN', 'win_go', 'SMALL', '2025-02-16 11:17:01', '132te13-ef65gfd-gffgfgs', '20250216100010678', 15200, '[{\"user_id\":\"132te13-ef65gfd-gffgfgs\",\"name\":\"Neeraj Payal\",\"min\":1,\"betting_active_users_id\":\"femK3THf-8F7KyXv6-HIJaC509\",\"option_name\":\"SMALL\",\"amount\":7600,\"balance\":2400,\"balance_after_deduct_percentage\":2248,\"bet_id\":\"20250216100010678\",\"total_bet_amount\":15200},{\"user_id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"min\":1,\"betting_active_users_id\":\"WR5WCuL7-l6w2PYaV-MxhciLDL\",\"option_name\":\"BIG\",\"amount\":7600,\"balance\":92400,\"balance_after_deduct_percentage\":92248,\"bet_id\":\"20250216100010678\",\"total_bet_amount\":15200}]');
 
 -- --------------------------------------------------------
 
@@ -259,6 +277,7 @@ INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
 ('427BtTkcWHe4dNfLEsEsGsOw_vU7ZvVv', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:29:15.179Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910155),
 ('4AkTJzZlaur-aRW3ImI_u_stRxLpgqnP', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:40:30.230Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910830),
 ('4DWfuElPiTIBm9qdejj-pwJUpF8tncBL', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T06:10:44.124Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1770963044),
+('4JL6tdeQzKW37J_HH4kx1Ya6XtFgG1M3', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-16T11:03:53.056Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":85447,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1771242405),
 ('4RxzQlFEX1GCDpmmbDTgNoqp_Z_BrAV3', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T06:24:45.134Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1770963885),
 ('5DHO1qVUDNnA5Crs227Cm_N-bX8UsG_Z', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T14:31:59.563Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":93820,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1770906719),
 ('5xxeD2YolrPcskUKz5ZoT1HLbqbp50t4', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T02:51:39.044Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771123899),
@@ -331,7 +350,7 @@ INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
 ('Iz-YT0zxH6KLlcgIscIjWJbKl93VAWss', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:26:09.717Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771125970),
 ('J8Bk96G7n99gA6szhG22mUhb13V9zkbw', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T11:05:44.173Z\",\"secure\":false,\"httpOnly\":false,\"path\":\"/\",\"sameSite\":\"None\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771153544),
 ('jBglQa30FpQo1Y0WyCNmyVwoijlumgoV', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:18:19.799Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771125500),
-('JC7L1S68KvyNqmDe4ftfp3Ouj1RSzqFi', '{\"cookie\":{\"originalMaxAge\":31535999999,\"expires\":\"2026-02-16T06:51:17.920Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal 12\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":81497,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1771230307),
+('JC7L1S68KvyNqmDe4ftfp3Ouj1RSzqFi', '{\"cookie\":{\"originalMaxAge\":31535999999,\"expires\":\"2026-02-16T06:51:17.920Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal 12\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":81497,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1771239192),
 ('JFfeAJY3Jt6ymCkOfy93LXvQC5gOLkh_', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:05:00.159Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771124700),
 ('JKGHmAWkmNlhQpUt1YLmIwbe3kle6R12', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:40:48.697Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910849),
 ('k9C9k77BveouwgTJzxEPl4JdAwVxlQQH', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T06:10:44.129Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1770963044),
@@ -343,7 +362,7 @@ INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
 ('KxNquypSTAH4eog_9RVXYQ-urz3DPV9N', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T11:08:18.257Z\",\"secure\":false,\"httpOnly\":false,\"path\":\"/\",\"sameSite\":\"Lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771153698),
 ('KxUTn8DB4lIUsjSrMe6zTai2xGe6oXaW', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T06:32:00.240Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1770964320),
 ('KXuv3BAQ20Dfgsqf6Wmub1QTpx3CurDK', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:40:48.693Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910849),
-('lBrLUF32pKJyNqkjRksuSMbYJ9IxHh3e', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-16T05:15:00.782Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"132te13-ef65gfd-gffgfgs\",\"name\":\"Neeraj Payal\",\"profile_url\":\"avatar-6\",\"role\":3,\"phone_number\":\"9876543210\",\"wallet_balance\":127121,\"sub_admin\":\"{\\\"id\\\": \\\"3213213-efgfd-435245\\\", \\\"name\\\": \\\"Mayank Dobriyal 12\\\", \\\"profile_picture\\\": \\\"avatar-2\\\", \\\"role\\\": 1, \\\"phone_number\\\": \\\"7017935899\\\"}\"}}', 1771225498),
+('lBrLUF32pKJyNqkjRksuSMbYJ9IxHh3e', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-16T05:15:00.782Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"132te13-ef65gfd-gffgfgs\",\"name\":\"Neeraj Payal\",\"profile_url\":\"avatar-6\",\"role\":3,\"phone_number\":\"9876543210\",\"wallet_balance\":127121,\"sub_admin\":\"{\\\"id\\\": \\\"3213213-efgfd-435245\\\", \\\"name\\\": \\\"Mayank Dobriyal 12\\\", \\\"profile_picture\\\": \\\"avatar-2\\\", \\\"role\\\": 1, \\\"phone_number\\\": \\\"7017935899\\\"}\"}}', 1771242409),
 ('lNiSjWkYQv8vHVEX6oljefgiQwPMA2O7', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T16:56:41.873Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"}}', 1770915402),
 ('lOFHq5bFX3Fiu46QrjRhf9QAUybBbCDS', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T16:08:34.092Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":93820,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1770912514),
 ('LSgXuTBj7CIDoZ4Xe4lBrm3lgwRinog7', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T06:07:06.451Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"}}', 1770962826),
@@ -381,7 +400,7 @@ INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
 ('slDvp21-CW51dYP-SR6iM3V1yF-WK84_', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T11:22:17.566Z\",\"secure\":true,\"httpOnly\":false,\"path\":\"/\",\"sameSite\":\"None\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771154538),
 ('sPu1q2k3omuBf84Tq3gbGk8546XRN0-F', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:33:47.311Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910427),
 ('srzWjHWnHJfK65OXUHWCh0uAhCepXkyq', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:04:07.241Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771124647),
-('sZ0n2W26-35b2ovTX-aiRGmp6AShDE1i', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-16T08:14:43.691Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"324qwe-536uyrt-546jhgj\",\"name\":\"Sumit\",\"profile_url\":\"avatar-4\",\"role\":1,\"phone_number\":\"9615150000\",\"wallet_balance\":155340,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1771230184),
+('sZ0n2W26-35b2ovTX-aiRGmp6AShDE1i', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-16T08:14:43.691Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"none\"},\"userSessionData\":{\"id\":\"324qwe-536uyrt-546jhgj\",\"name\":\"Sumit\",\"profile_url\":\"avatar-4\",\"role\":1,\"phone_number\":\"9615150000\",\"wallet_balance\":155340,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1771231203),
 ('TcFPq9td9Rx5KWd7njVv8Tjyll0nqjK9', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T14:46:21.616Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1,\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":93820,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1770907581),
 ('TCz-Mcp_kDDKp9KiP_AEYZ_7hxPoFtdF', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:51:19.412Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770911479),
 ('TMstDGJL5V3WkndnLgJPSQcVdlIOwzx9', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:33:47.142Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1,\"userSessionData\":{\"id\":\"3213213-efgfd-435245\",\"name\":\"Mayank Dobriyal\",\"profile_url\":\"avatar-2\",\"role\":1,\"phone_number\":\"7017935899\",\"wallet_balance\":93820,\"sub_admin\":\"{\\\"id\\\": null, \\\"name\\\": null, \\\"profile_picture\\\": null, \\\"role\\\": null, \\\"phone_number\\\": null}\"}}', 1770910427),
@@ -400,10 +419,10 @@ INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
 ('vUiYlHaZ7sNaR265-tKmGvdYsoeWHOwc', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T02:51:39.042Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771123899),
 ('VwmiknbTXafqY-t5ia2RixDTYS3CGdN2', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:33:38.174Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910418),
 ('W6ozbz8OEkHp7V1przG0BxJPaZ3Mkv1t', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T11:05:44.176Z\",\"secure\":false,\"httpOnly\":false,\"path\":\"/\",\"sameSite\":\"None\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771153544),
-('Wf5ty20Lt4o1fUgamVidRvkRzfPhhU6e', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:40:48.694Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910849),
-('WgeAQl-S3i3SdIFgXTWhk1lWx5UnFii-', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:11:56.807Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771125117),
-('Wpfg34kLVlUiWTkAZQqS4f7zLcErs0WX', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:54:23.397Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770911663);
+('Wf5ty20Lt4o1fUgamVidRvkRzfPhhU6e', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:40:48.694Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770910849);
 INSERT INTO `sessions` (`session_id`, `data`, `expires`) VALUES
+('WgeAQl-S3i3SdIFgXTWhk1lWx5UnFii-', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:11:56.807Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771125117),
+('Wpfg34kLVlUiWTkAZQqS4f7zLcErs0WX', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T15:54:23.397Z\",\"secure\":true,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"views\":1}', 1770911663),
 ('WYyVQiHTsB0z1Xy5x36VBJgruQ3qpTqo', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-13T07:06:21.932Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1770966382),
 ('x8ujLrp9LoSBGnys4JXWXX4M6VSDg22t', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-15T03:09:45.557Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"testcookie\":\"test-coolie--------------------test\"}', 1771124986),
 ('xCanUVcBfs06UZnutAA4P0PnFMKvVobH', '{\"cookie\":{\"originalMaxAge\":31536000000,\"expires\":\"2026-02-12T16:52:35.615Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"}}', 1770915156),
@@ -464,19 +483,33 @@ INSERT INTO `user_transaction_history` (`id`, `amount`, `user_id`, `type`, `crea
 ('30', 10, '672389-775bab30-5a7099a8', 'wallet_to_game_wallet_transfer', '2025-01-11 06:45:59'),
 ('31', 0, '672389-775bab30-5a7099a8', 'game_percentage_deduct', '2025-01-11 06:45:59'),
 ('4', 100, '3213213-efgfd-435245', 'game_play_deduct', '2025-01-05 08:07:22'),
+('4Q3XmDjZ-e1y5CxSi-c0jmPBib', 100, '132te13-ef65gfd-gffgfgs', 'game_percentage_deduct', '2025-02-16 10:22:38'),
 ('4RjgNxGN-Kk1fqTuM-Wx5RuAIc', 1150, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 06:33:01'),
 ('5', 100, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-01-05 08:07:22'),
 ('5HPcTzL1-Mx8HFvmm-Xy6miHRv', 850, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-02-16 06:21:01'),
 ('6', 300, '3213213-efgfd-435245', 'game_play_deduct', '2025-01-05 08:20:26'),
 ('7', 300, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-01-05 08:20:26'),
 ('8', 2150, '3213213-efgfd-435245', 'game_play_deduct', '2025-01-05 08:42:25'),
+('8KNuw1w2-tDL7FHqA-IxcyVxP2', 1000, '3213213-efgfd-435245', 'game_percentage_deduct', '2025-02-16 11:11:45'),
 ('9', 2150, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-01-05 08:42:25'),
 ('96', 12000, '3213213-efgfd-435245', 'wallet_to_game_wallet_transfer', '2025-02-15 11:10:21'),
 ('97', 12, '3213213-efgfd-435245', 'game_percentage_deduct', '2025-02-15 11:12:16'),
+('b1ms09EX-bzlyH8rB-seaFxVJz', 392, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 11:45:01'),
 ('BXIjF6fD-8YRjBzx1-a490S9fm', 5000, '3213213-efgfd-435245', 'wallet_to_game_wallet_transfer', '2025-02-16 08:22:58'),
+('CClGsbHT-vKUaFUdd-MsC9MHTz', 100000, '3213213-efgfd-435245', 'wallet_to_betting_wallet_transfer', '2025-02-16 11:11:45'),
+('D7MzdYVK-brRGoco0-ZhKN2tH7', 7600, '3213213-efgfd-435245', 'game_loose_amount_credit', '2025-02-16 11:18:23'),
 ('EtsVWalF-J9RjACW5-GSiVtLb0', 1150, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-02-16 06:33:01'),
+('HFmZ86bh-E49rdD6W-eJsGIlmw', 7448, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 11:17:01'),
+('jMUtRp8L-zXEEos4C-L96jIAZq', 7448, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-02-16 11:17:01'),
 ('JtqG34MR-OmisWpcz-o1amvS5t', 1900, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 06:41:01'),
+('kIS8HSZQ-225hLqrO-6Mg4gDAr', 650, '324qwe-536uyrt-546jhgj', 'game_play_deduct', '2025-02-16 08:39:01'),
+('OE5yDPAL-kSIUmLVe-3a1pC5o5', 101000, '132te13-ef65gfd-gffgfgs', 'wallet_to_betting_wallet_transfer', '2025-02-16 09:50:28'),
+('PpIUo6Y0-ImjXI2Ru-5cvKNTr8', 1000, '324qwe-536uyrt-546jhgj', 'wallet_to_game_wallet_transfer', '2025-02-16 08:38:17'),
+('pTe9b3RA-xLLrZUfW-yVty2BBk', 10000, '132te13-ef65gfd-gffgfgs', 'wallet_to_betting_wallet_transfer', '2025-02-16 10:22:38'),
+('QOtdrKGK-wsJBhYty-h5ZecukB', 392, '132te13-ef65gfd-gffgfgs', 'game_loose_amount_credit', '2025-02-16 11:46:33'),
 ('TXMqjkyC-28ejejpv-NiUAHV65', 2000, '324qwe-536uyrt-546jhgj', 'wallet_to_game_wallet_transfer', '2025-02-16 08:22:58'),
+('u2z3TB10-v3cBoZ1h-JhpvMh2o', 650, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 08:39:01'),
+('W8ECcNvl-TT6cOPIt-r7dNvqrN', 392, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-02-16 11:45:01'),
 ('WXkSsSiN-UF5X1T1z-NSJnh0Hv', 850, '3213213-efgfd-435245', 'game_play_deduct', '2025-02-16 06:21:01'),
 ('ynk45olt-T5ifhwVr-A5t5VUW7', 95340, '324qwe-536uyrt-546jhgj', 'wallet_to_game_wallet_transfer', '2025-02-16 08:20:55'),
 ('ZFroCsj5-MquW0otz-OO7NCMQm', 1900, '132te13-ef65gfd-gffgfgs', 'game_play_deduct', '2025-02-16 06:41:01');
