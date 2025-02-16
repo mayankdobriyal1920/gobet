@@ -25,7 +25,7 @@ const initialState = {
     userOtpDetails: {loading: false},
     signupSigninFormError: {},
     changeUserAvatarModal: {open:false},
-    userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0},
+    userWalletAndGameBalance: {loading:true,walletBalance:0,gameBalance:0,bettingBalance:0},
     userBetPredictionHistory: {loading:true,predictionHistory:[]},
     userGameHistory: {loading:true,gameHistory:[]},
     userMoneyTransactions: {loading:true,moneyTransactions:[]},

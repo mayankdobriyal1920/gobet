@@ -286,7 +286,7 @@ ion-header {
 
 .totalSavings__container-header {
     width: 100%;
-    padding: .37333rem .52rem 0 .36rem;
+    display: flex;
 }
 
 .totalSavings__container-header-box {
@@ -305,7 +305,7 @@ ion-header {
     -webkit-justify-content: space-between;
     justify-content: space-between;
 }
-.totalSavings__container-header__title span {
+ .totalSavings__container-header__title .acc_balance_title_tip {
     font-weight: 400;
     font-size: .41rem;
     color: var(--text_color_L2);
@@ -2094,9 +2094,31 @@ ion-alert .alert-wrapper .alert-title {
 ion-alert .alert-wrapper .alert-radio-label {
     font-size: .4rem!important;
 }
+.error_amount_betting_transfer {
+    padding: 0px 21px;
+}
 
-ion-alert .alert-button-group {}
 
 ion-alert .alert-button-group .alert-button {
     font-size: .41rem!important;
+}
+.validate_add_betting_balance{
+    font-size: .33rem;
+    color: #555;
+    padding: 4px 15px;
+}
+.acc_balance_tip{
+    display: flex;
+    font-size: .44rem;
+    font-weight: 700;
+    color: var(--text_color_L1);
+}
+.totalSavings__container-header-box.re_svg {
+    display: flex;
+    width: 15%;
+    padding: 0 0.1rem;
+}
+.totalSavings__container-header-box.blanc_title {
+    width: 85%;
+    padding: 0.3rem;
 }

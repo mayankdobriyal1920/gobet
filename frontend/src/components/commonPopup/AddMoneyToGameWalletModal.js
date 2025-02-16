@@ -5,7 +5,7 @@ import {actionAddMoneyToGameWallet} from "../../redux/CommonAction";
 
 const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingAddAmountSuccess}) => {
     const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState(null);
     const [amountError,setAmountError] = useState(false);
     const [amountErrorMessage,setAmountErrorMessage] = useState('');
     const dispatch = useDispatch();
@@ -16,7 +16,7 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
     const openModal = () =>{
         setAmountErrorMessage('');
         setAmountError(false);
-        setAmount('');
+        setAmount(null);
         setIsAddMoneyOpen(true);
     }
 
@@ -24,15 +24,20 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
         let isFormValid = true;
         setAmountError(false);
         setAmountErrorMessage('');
-        if (amount.trim() === ''){
+        if (!amount){
             isFormValid = false;
             setAmountError(true);
             setAmountErrorMessage('Please enter amount');
         }
-        if (amount > walletBalance){
+        if (amount + Math.round((0.01 * amount)) > walletBalance){
             isFormValid = false;
             setAmountError(true);
             setAmountErrorMessage('Amount is greater than wallet balance');
+        }
+        if (amount + Math.round((0.01 * amount)) > 300000){
+            isFormValid = false;
+            setAmountError(true);
+            setAmountErrorMessage('Transfers above ₹3,00,000 are not allowed. Please enter a lower amount.');
         }
         return isFormValid;
     }
@@ -47,12 +52,12 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
     };
 
     useEffect(() => {
-        setAmount('');
+        setAmount(null);
         setAmountError(false);
         setAmountErrorMessage('');
         setTimeout(()=>{
             document.querySelector('#deposit_game_input_cont')?.focus();
-        },500)
+        },200)
     }, [isAddMoneyOpen]);
 
     return (
@@ -64,24 +69,44 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
                 className="add-money-to-game-wallet-modal"
                 isOpen={isAddMoneyOpen}
                 onDidDismiss={handleCloseModal}
-                initialBreakpoint={0.5} breakpoints={[0.5, 1]}>
+                initialBreakpoint={0.5} breakpoints={[0,0.5, 1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Add money to game wallet</h2>
+                        <h2>Add money to betting wallet</h2>
                     </div>
                     <IonGrid>
                         <IonRow>
                             <IonCol size="12">
                                 <IonItem>
-                                    <IonLabel position="stacked" className="enter_amount_label">Game Amount</IonLabel>
-                                    <input className={"add-money-input input"}
-                                           onChange={(e)=>setAmount(e.target.value)}
-                                           value={amount}
-                                           id={"deposit_game_input_cont"}
-                                           placeholder={"Enter Amount"} type={"text"} required={true}/>
+                                    <IonLabel position="stacked" className="enter_amount_label">Betting
+                                        Amount</IonLabel>
+                                    <input
+                                        className="add-money-input input"
+                                        onChange={(e) => {
+                                            // Remove non-digit characters using a regular expression
+                                            const value = e.target.value.replace(/\D/g, '');
+                                            // Update the state with the numeric value
+                                            setAmount(value ? Number(value) : null);
+                                        }}
+                                        value={amount}
+                                        id="deposit_game_input_cont"
+                                        placeholder="Enter Amount"
+                                        type="text"
+                                    />
                                 </IonItem>
                             </IonCol>
-                            {amountError && <p className="error fontsize2">{amountErrorMessage}</p>}
+                            {amountError && <p className="error fontsize2 error_amount_betting_transfer">{amountErrorMessage}</p>}
+                        </IonRow>
+                        <IonRow>
+                            <IonCol size="12">
+                                {amount ? (
+                                    <p className={"validate_add_betting_balance"}>
+                                        To transfer <strong>₹{amount}</strong> to your betting wallet, we will deduct <strong>₹{Math.round(amount + (0.01 * amount))}</strong> from your main wallet.
+                                        <br />
+                                        A <strong>1%</strong> fee <strong>₹{Math.round(0.01 * amount)}</strong> will be deducted for transferring the balance to your betting account, and this fee is non-refundable.
+                                    </p>
+                                ) : ''}
+                            </IonCol>
                         </IonRow>
                         <IonRow>
                             <IonCol size="12">

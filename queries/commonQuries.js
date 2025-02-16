@@ -268,7 +268,8 @@ export const getAliveUsersQuery = () => {
         SELECT
             betting_active_users.id as betting_active_users_id,
             app_user.id as id,
-            app_user.game_balance as balance
+            app_user.name as name,
+            app_user.betting_balance as balance
         FROM betting_active_users
                  LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
         WHERE betting_active_users.status = ?

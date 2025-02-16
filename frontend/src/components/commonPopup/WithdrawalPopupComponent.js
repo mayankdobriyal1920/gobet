@@ -17,7 +17,7 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
         let isFormValid = true;
         setAmountError(false);
         setAmountErrorMessage('');
-        if (amount.trim() === ''){
+        if (!amount){
             isFormValid = false;
             setAmountError(true);
             setAmountErrorMessage('Please enter amount');
@@ -45,7 +45,7 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
         setAmountErrorMessage('');
         setTimeout(()=>{
             document.querySelector('#withdrawal_input_cont')?.focus();
-        },500)
+        },200)
     }, [isWithdrawalPopupOpen]);
 
     return (
@@ -63,11 +63,19 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
                         <IonCol size="12">
                             <IonItem>
                                 <IonLabel position="stacked" className="enter_amount_label">Withdrawal Amount</IonLabel>
-                                <input className={"add-money-input input"}
-                                       onChange={(e)=>setAmount(e.target.value)}
-                                       value={amount}
-                                       id={"withdrawal_input_cont"}
-                                       placeholder={"Enter Amount"} type={"text"} required={true}/>
+                                <input
+                                    className="add-money-input input"
+                                    onChange={(e) => {
+                                        // Remove non-digit characters using a regular expression
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        // Update the state with the numeric value
+                                        setAmount(value ? Number(value) : null);
+                                    }}
+                                    value={amount}
+                                    id="withdrawal_input_cont"
+                                    placeholder="Enter Amount"
+                                    type="text"
+                                />
                             </IonItem>
                         </IonCol>
                         {amountError && <p className="error fontsize2">{amountErrorMessage}</p>}

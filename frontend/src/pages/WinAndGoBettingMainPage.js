@@ -10,7 +10,7 @@ import {_formatTimeMMSS} from "../redux/CommonHelper";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
-    const {gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const {bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const {loading,status,prediction,timer,readyState} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const dispatch = useDispatch();
@@ -99,7 +99,7 @@ export default function WinAndGoBettingMainPage() {
                             <div className="Wallet__C inner_page">
                                 <div className="Wallet__C-balance">
                                     <div className="Wallet__C-balance-l1">
-                                        <div>₹{gameBalance}</div>
+                                        <div>₹{bettingBalance}</div>
                                     </div>
                                     <div className="Wallet__C-balance-l2">
                                         <svg className="svg-icon icon-lottyWallet" viewBox="0 0 40 40" fill="none"

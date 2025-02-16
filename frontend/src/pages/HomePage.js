@@ -10,7 +10,7 @@ import {actionToUpdateUserAliveForGame} from "../redux/CommonAction";
 import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
 
 export default function HomePage() {
-    const {walletBalance,gameBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const history = useHistory();
     const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
@@ -26,7 +26,7 @@ export default function HomePage() {
         setUserEnterLoading(false);
     }
     const callFunctionToSetUserEnterInGameConfirm = ()=>{
-        if(gameBalance >= 100) {
+        if(bettingBalance >= 100) {
             setUserEnterInGameConfirm(true);
         }else{
             setLowBalanceAlert(true)
@@ -67,7 +67,7 @@ export default function HomePage() {
                 <div className="Wallet__C">
                     <div className="Wallet__C-balance">
                         <div className="Wallet__C-balance-l1">
-                            <div>₹{gameBalance ? gameBalance : '0.00'}</div>
+                            <div>₹{bettingBalance ? bettingBalance : '0.00'}</div>
                         </div>
                         <div className="Wallet__C-balance-l2">
                             <svg className="svg-icon icon-lottyWallet" viewBox="0 0 40 40" fill="none"
@@ -113,11 +113,11 @@ export default function HomePage() {
                         <div className="orange">1%</div>
                     </div>
                     <div className="description">
-                        We deduct 1% of the amount when you transfer funds from your main wallet to your game wallet. You will receive 99% of the transferred amount in your game wallet, which can be used for betting predictions.
+                        We deduct 1% of the amount when you transfer funds from your main wallet to your betting wallet. You will receive 99% of the transferred amount in your game wallet, which can be used for betting predictions.
                     </div>
                     <div className="foot">
                         <div className="progress">
-                            <div className="step">Eligible bet ₹{gameBalance}</div>
+                            <div className="step">Eligible bet ₹{bettingBalance}</div>
                         </div>
                     </div>
                 </div>

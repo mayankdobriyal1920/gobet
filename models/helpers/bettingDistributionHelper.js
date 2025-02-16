@@ -128,24 +128,30 @@ function distributeBetAmount(members, distributionBetAmount) {
     resultMemberInBet.small.forEach((member, index) => {
         finalMemberBetDistributionObject.push({
             user_id: member.id,
+            name: member.name,
             min:1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'SMALL',
             amount: smallRandomDivide[index],
             balance: member.balance - smallRandomDivide[index],
+            balance_after_deduct_percentage: Number(member.balance) - Math.round(0.02 * Number(smallRandomDivide[index])) - Number(smallRandomDivide[index]),
             bet_id:generateTimeBasedId(),
+            total_bet_amount:distributionBetAmount.total,
         });
     });
 
     resultMemberInBet.big.forEach((member, index) => {
         finalMemberBetDistributionObject.push({
             user_id: member.id,
+            name: member.name,
             min:1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'BIG',
             amount: bigRandomDivide[index],
-            balance: member.balance - smallRandomDivide[index],
+            balance: member.balance - bigRandomDivide[index],
+            balance_after_deduct_percentage: Number(member.balance) - Math.round(0.02 * Number(bigRandomDivide[index])) - Number(bigRandomDivide[index]),
             bet_id:generateTimeBasedId(),
+            total_bet_amount:distributionBetAmount.total,
         });
     });
 

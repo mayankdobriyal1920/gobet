@@ -73,9 +73,9 @@ export const userSessionReducer = (state = {}, action) => {
 export const userWalletAndGameBalanceReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_WALLET_AND_GAME_BALANCE_REQUEST:
-            return { loading: true,walletBalance:0,gameBalance:0};
+            return { loading: true,walletBalance:0,gameBalance:0,bettingBalance:0};
         case USER_WALLET_AND_GAME_BALANCE_SUCCESS:
-            return { loading: false, walletBalance: action.payload.wallet_balance,gameBalance:action.payload.game_balance };
+            return { loading: false, walletBalance: action.payload.wallet_balance,gameBalance:action.payload.game_balance,bettingBalance:action.payload.betting_balance };
         default:
             return state;
     }

@@ -184,9 +184,10 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let userData = {
             wallet_balance:0,
-            game_balance:0
+            game_balance:0,
+            betting_balance:0
         };
-        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = ?`;
+        const query = `SELECT wallet_balance,game_balance,betting_balance from app_user WHERE id = ?`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
@@ -386,32 +387,50 @@ export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
 
 export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (userId,body) => {
     const {amount} = body;
+
     return new Promise(function(resolve, reject) {
-        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = ?`;
+        const query = `SELECT wallet_balance,betting_balance from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
             if (error) {
                 reject(error)
             }
             if (results?.length) {
                 let userWalletBalance = results[0]?.wallet_balance;
-                if(Number(amount) > Number(userWalletBalance)){
+                let totalAmountWithPercentage = amount + Math.round((0.01 * amount));
+                let percentageOfDeposit = Math.round((0.01 * amount));
+
+                if(Number(totalAmountWithPercentage) > Number(userWalletBalance)){
                     resolve({status:0,error:'Given amount is greater then wallet balance'});
                 }else{
-                     let userGameBalance = results[0]?.game_balance;
-                    // let percentageOfGame = Math.round(amount / 100);
-                    // let userTotalGameBalance = amount - percentageOfGame;
-                    let setData = `game_balance = ?,wallet_balance = ?`;
+                    let userBettingBalance = results[0]?.betting_balance;
+                    let setData = `betting_balance = ?,wallet_balance = ?`;
                     const whereCondition = `id = ?`;
-                    let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(amount),Number(userWalletBalance)-Number(amount),userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    let dataToSend = {column: setData, value: [Number(userBettingBalance)+Number(amount),Number(userWalletBalance)-Number(totalAmountWithPercentage),userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                         const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                         let aliasArray = ['?','?','?','?'];
                         let columnArray = ["id","amount", "user_id","type"];
-                        let valuesArray = [user_transaction_history_id,amount,userId,'wallet_to_game_wallet_transfer'];
+                        let valuesArray = [user_transaction_history_id,amount,userId,'wallet_to_betting_wallet_transfer'];
                         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
                         insertCommonApiCall(insertData).then(()=>{
-                            resolve({status:1});
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                            const betting_percentage_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                            aliasArray = ['?','?','?','?','?'];
+                            columnArray = ["id","amount", "user_id", "user_transaction_history_id", "status"];
+                            valuesArray = [betting_percentage_id,percentageOfDeposit,userId,user_transaction_history_id,0];
+                            insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
+                            insertCommonApiCall(insertData).then(()=>{
+                                const user_transaction_history_id_2 = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                                aliasArray = ['?','?','?','?'];
+                                columnArray = ["id","amount", "user_id","type"];
+                                valuesArray = [user_transaction_history_id_2,percentageOfDeposit,userId,'game_percentage_deduct'];
+                                insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
+                                insertCommonApiCall(insertData).then(()=>{
+                                    resolve({status:1});
+                                })
+                            })
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                         })
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                     })
@@ -477,12 +496,7 @@ export const actionToCompleteStatusOfDepositRequestApiCall = (userId,body) => {
                     whereCondition = `id = ?`;
                     dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'deposit_history'};
                     updateCommonApiCall(dataToSend).then(()=>{
-                        setData = `status = ?`;
-                        whereCondition = `deposit_history_id = ?`;
-                        dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_percentage'};
-                        updateCommonApiCall(dataToSend).then(()=> {
-                            resolve({status: 1});
-                        })
+                        resolve({status: 1});
                     })
                 })
             }
@@ -511,38 +525,14 @@ export const actionToGenerateDepositRequestApiCall = (userId,body) => {
             }
             if (results?.length) {
                 let userSubAdminId = results[0]?.sub_admin;
-
-
-                ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-                let percentageOfDeposit = Math.round(amount / 100);
-                let userBalanceAmount = amount - percentageOfDeposit;
-                ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-
-
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
                 const deposit_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 let aliasArray = ['?','?','?','?','?'];
                 let columnArray = ["id","amount", "user_id","sub_admin_id","status"];
-                let valuesArray = [deposit_history_id,userBalanceAmount,userId,userSubAdminId,0];
+                let valuesArray = [deposit_history_id,amount,userId,userSubAdminId,0];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'deposit_history'};
                 insertCommonApiCall(insertData).then(()=>{
-                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                    const betting_percentage_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                    aliasArray = ['?','?','?','?','?'];
-                    columnArray = ["id","amount", "user_id", "deposit_history_id", "status"];
-                    valuesArray = [betting_percentage_id,percentageOfDeposit,userId,deposit_history_id,0];
-                    insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
-                    insertCommonApiCall(insertData).then(()=>{
-                        const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                        aliasArray = ['?','?','?','?'];
-                        columnArray = ["id","amount", "user_id","type"];
-                        valuesArray = [user_transaction_history_id,percentageOfDeposit,userId,'game_percentage_deduct'];
-                        insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
-                        insertCommonApiCall(insertData).then(()=>{
-                            resolve({status:1});
-                        })
-                    })
-                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                    resolve({status:1});
                 })
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
             }
@@ -728,109 +718,108 @@ export const actionToGetAllUsersNormalAndSubAdminListApiCall = (userId, body) =>
 }
 
 export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
-    let { id, result } = body;
+    const { id, result } = body;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         // Step 1: Update the `game_result` table with the provided result
-        let setData = `result = ? , updated_by = ?`;
-        let whereCondition = `id = ?`;
-        let dataToSend = {
-            column: setData,
-            value: [result,userId,id],
-            whereCondition: whereCondition,
-            returnColumnName: 'id',
-            tableName: 'game_result'
+        const updateGameResult = () => {
+            const setData = `result = ?, updated_by = ?`;
+            const whereCondition = `id = ?`;
+            const dataToSend = {
+                column: setData,
+                value: [result, userId, id],
+                whereCondition: whereCondition,
+                returnColumnName: 'id',
+                tableName: 'game_result',
+            };
+
+            return updateCommonApiCall(dataToSend);
         };
 
-        updateCommonApiCall(dataToSend)
-            .then(() => {
-                // Step 2: Fetch users who lost the bet (those whose option_name != result)
-                const query = `SELECT user_id, amount 
-                               FROM bet_prediction_history 
-                               WHERE game_result_id = ? AND option_name != ?`;
+        // Step 2: Fetch users who lost the bet (those whose option_name != result)
+        const fetchLosingBets = () => {
+            const query = `SELECT user_id, amount 
+                            FROM bet_prediction_history 
+                            WHERE game_result_id = ? AND option_name != ?`;
 
+            return new Promise((resolve, reject) => {
                 pool.query(query, [id, result], (error, results) => {
                     if (error) {
-                        return reject(error); // Handle database query error
-                    }
-
-                    if (results?.length) {
-                        // Step 3: Update wallet balances for users who lost the bet
-                        let updatePromises = results.map((looseBetData) => {
-                            setData = `wallet_balance = wallet_balance + ?`;
-                            whereCondition = `id = ?`;
-                            dataToSend = {
-                                column: setData,
-                                value: [looseBetData?.amount, looseBetData?.user_id],
-                                whereCondition: whereCondition,
-                                returnColumnName: 'id',
-                                tableName: 'app_user'
-                            };
-
-                            // Return a promise for each update
-                            return updateCommonApiCall(dataToSend);
-                        });
-
-                        // Wait for all wallet updates to complete
-                        Promise.all(updatePromises)
-                            .then(() => {
-                                // Step 4: Update win_status for all bets related to the game_result_id
-                                ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
-                                setData = `win_status = CASE 
-                                           WHEN option_name = ? THEN 1 
-                                           ELSE 0 
-                                           END`;
-                                whereCondition = `game_result_id = ?`;
-                                dataToSend = {
-                                    column: setData,
-                                    value: [id, result],
-                                    whereCondition: whereCondition,
-                                    returnColumnName: 'id',
-                                    tableName: 'bet_prediction_history'
-                                };
-
-                                updateCommonApiCall(dataToSend)
-                                    .then(() => {
-                                        resolve({ status: 1 }); // Resolve after all updates are complete
-                                    })
-                                    .catch((error) => {
-                                        reject(error); // Handle error during win_status update
-                                    });
-                                ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
-                            })
-                            .catch((error) => {
-                                reject(error); // Handle error during wallet updates
-                            });
-                    }else {
-                        ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
-                        // No losing bets, directly update win_status
-                        setData = `win_status = CASE 
-                                   WHEN option_name = ? THEN 1 
-                                   ELSE 0 
-                                   END`;
-                        whereCondition = `game_result_id = ?`;
-                        dataToSend = {
-                            column: setData,
-                            value: [id, result],
-                            whereCondition: whereCondition,
-                            returnColumnName: 'id',
-                            tableName: 'bet_prediction_history'
-                        };
-
-                        updateCommonApiCall(dataToSend)
-                            .then(() => {
-                                resolve({status: 1}); // Resolve after win_status update
-                            })
-                            .catch((error) => {
-                                reject(error); // Handle error during win_status update
-                            });
-                        ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
+                        reject(error);
+                    } else {
+                        resolve(results);
                     }
                 });
-            })
-            .catch((error) => {
-                reject(error); // Handle error during game_result update
             });
+        };
+
+        // Step 3: Update wallet balances for users who lost the bet
+        const updateWalletBalances = (losingBets) => {
+            const updatePromises = losingBets.map((looseBetData) => {
+                // Update user's game balance
+                const setData = `game_balance = game_balance + ?`;
+                const whereCondition = `id = ?`;
+                const dataToSend = {
+                    column: setData,
+                    value: [Number(looseBetData.amount) - Math.round(0.02 * Number(looseBetData.amount)), looseBetData.user_id],
+                    whereCondition: whereCondition,
+                    returnColumnName: 'id',
+                    tableName: 'app_user',
+                };
+
+                // Insert transaction history
+                const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                const aliasArray = ['?', '?', '?', '?'];
+                const columnArray = ['id', 'amount', 'user_id', 'type'];
+                const amountToDeduct = Number(looseBetData.amount) - Math.round(0.02 * Number(looseBetData.amount));
+                const valuesArray = [user_transaction_history_id, amountToDeduct, looseBetData.user_id, 'game_loose_amount_credit'];
+                const insertData = {
+                    alias: aliasArray,
+                    column: columnArray,
+                    values: valuesArray,
+                    tableName: 'user_transaction_history',
+                };
+
+                return Promise.all([
+                    updateCommonApiCall(dataToSend),
+                    insertCommonApiCall(insertData),
+                ]);
+            });
+
+            return Promise.all(updatePromises);
+        };
+
+        // Step 4: Update win_status for all bets related to the game_result_id
+        const updateWinStatus = () => {
+            const setData = `win_status = CASE 
+                              WHEN option_name = ? THEN 1 
+                              ELSE 0 
+                              END`;
+            const whereCondition = `game_result_id = ?`;
+            const dataToSend = {
+                column: setData,
+                value: [result, id],
+                whereCondition: whereCondition,
+                returnColumnName: 'id',
+                tableName: 'bet_prediction_history',
+            };
+
+            return updateCommonApiCall(dataToSend);
+        };
+
+        // Execute the steps in sequence
+        updateGameResult()
+            .then(() => fetchLosingBets())
+            .then((losingBets) => {
+                if (losingBets.length > 0) {
+                    return updateWalletBalances(losingBets);
+                } else {
+                    return Promise.resolve(); // No losing bets, skip wallet updates
+                }
+            })
+            .then(() => updateWinStatus())
+            .then(() => resolve({ status: 1 })) // Resolve after all updates are complete
+            .catch((error) => reject(error)); // Handle any errors
     });
 };
 

@@ -212,7 +212,7 @@ export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async 
 
 export const actionAddMoneyToGameWallet = (amount,setLoadingAddAmountSuccess) => async (dispatch) => {
     try {
-        api.post(`actionToTransferAmountFromUserMainWalletToGameWalletApiCall`, {amount}).then(responseData => {
+        api.post(`actionToTransferAmountFromUserMainWalletToGameWalletApiCall`, {amount}).then(() => {
             dispatch(actionToGetUserWalletAndGameBalance());
             setTimeout(()=>{
                 setLoadingAddAmountSuccess(false);
@@ -237,9 +237,9 @@ export const actionToGenerateWithdrawalRequestAndDeductAmount = (amount,setLoadi
     }
 }
 
-export const actionToGenerateDepositRequest = (amount,setLoadingDepositAmountSuccess,setShowSuccessAlertToDepositRequest) => async (dispatch) => {
+export const actionToGenerateDepositRequest = (amount,setLoadingDepositAmountSuccess,setShowSuccessAlertToDepositRequest) => async () => {
     try {
-        api.post(`actionToGenerateDepositRequestApiCall`, {amount}).then(responseData => {
+        api.post(`actionToGenerateDepositRequestApiCall`, {amount}).then(() => {
             setTimeout(()=>{
                 setLoadingDepositAmountSuccess(false);
                 setShowSuccessAlertToDepositRequest(true);

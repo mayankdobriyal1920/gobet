@@ -19,15 +19,15 @@ const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPop
         let isFormValid = true;
         setAmountError(false);
         setAmountErrorMessage('');
-        if (amount.trim() === ''){
+        if (!amount){
             isFormValid = false;
             setAmountError(true);
             setAmountErrorMessage('Please enter amount');
         }
-        if (amount > 100000000){
+        if (amount > 300000){
             isFormValid = false;
             setAmountError(true);
-            setAmountErrorMessage('Amount is greater 100000000');
+            setAmountErrorMessage('Deposit above ₹3,00,000 are not allowed. Please enter a lower amount.');
         }
         return isFormValid;
     }
@@ -47,7 +47,7 @@ const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPop
         setAmountErrorMessage('');
         setTimeout(()=>{
             document.querySelector('#deposit_input_cont')?.focus();
-        },500)
+        },200)
     }, [isDepositPopupOpen]);
 
     return (
@@ -65,15 +65,22 @@ const DepositPopupComponent = ({setShowSuccessAlertToDepositRequest,isDepositPop
                         <IonCol size="12">
                             <IonItem>
                                 <IonLabel position="stacked" className="enter_amount_label">Deposit Amount</IonLabel>
-                                <input className={"add-money-input input"}
-                                       onChange={(e)=>setAmount(e.target.value)}
-                                       value={amount}
-                                       autoFocus={true}
-                                       id={"deposit_input_cont"}
-                                       placeholder={"Enter Amount"} type={"text"} required={true}/>
+                                <input
+                                    className="add-money-input input"
+                                    onChange={(e) => {
+                                        // Remove non-digit characters using a regular expression
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        // Update the state with the numeric value
+                                        setAmount(value ? Number(value) : null);
+                                    }}
+                                    value={amount}
+                                    id="deposit_input_cont"
+                                    placeholder="Enter Amount"
+                                    type="text"
+                                />
                             </IonItem>
                         </IonCol>
-                        {amountError && <p className="error fontsize2">{amountErrorMessage}</p>}
+                        {amountError && <p className="error fontsize2 error_amount_betting_transfer">{amountErrorMessage}</p>}
                     </IonRow>
                     <IonRow>
                         <IonCol size="12">

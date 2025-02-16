@@ -262,14 +262,18 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
 
     if(userPayloadData?.length) {
         let gameBetId = userPayloadData[0]?.bet_id;
+        let totalBetAmount = userPayloadData[0]?.total_bet_amount;
         if(!gameBetId){
+            return;
+        }
+        if(!totalBetAmount){
             return;
         }
         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
         const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-        let aliasResultArray = ['?','?', '?'];
-        let columnResultArray = ["id","game_type", "game_id"];
-        let valuesResultArray = [game_result_id,'win_go', gameBetId];
+        let aliasResultArray = ['?','?','?','?','?'];
+        let columnResultArray = ["id","game_type", "game_id","total_bet_amount","bet_distribution_json"];
+        let valuesResultArray = [game_result_id,'win_go', gameBetId,Number(totalBetAmount),JSON.stringify(userPayloadData)];
         let insertResultData = {
             alias: aliasResultArray,
             column: columnResultArray,
@@ -278,21 +282,21 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
         };
         insertCommonApiCall(insertResultData).then(() => {
             userPayloadData?.map((userPredData)=> {
+                const amountToDeduct = Number(userPredData?.amount) - Math.round(0.02 * Number(userPredData?.amount));
                 const bet_prediction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 const user_transaction_history = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 betPredictionHistoryIdsArray.push(bet_prediction_history_id);
                 valuesArray.push([bet_prediction_history_id,userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go',game_result_id]);
-                updatesArray.push({conditionValue:userPredData.user_id,set:{game_balance:Number(userPredData?.balance)}});
+                updatesArray.push({conditionValue:userPredData.user_id,set:{betting_balance:Number(userPredData?.balance_after_deduct_percentage)}});
                 updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
                 betActiveUserIds.push(userPredData.betting_active_users_id);
-                valuesArrayUserTransaction.push([user_transaction_history,userPredData?.amount,userPredData?.user_id,'game_play_deduct']);
+                valuesArrayUserTransaction.push([user_transaction_history,amountToDeduct,userPredData?.user_id,'game_play_deduct']);
             })
             const insertData = {column: ["id","user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_type","game_result_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
 
             bulkInsertCommonApiCall(insertData)
                 .then(() => {
                     console.log('Inserted IDs:', betPredictionHistoryIdsArray);
-                    let currentSecond = new Date().getSeconds();
                     const currentTime = new Date();
                     const currentSeconds = currentTime.getSeconds();
                     const currentMilliseconds = currentTime.getMilliseconds();
@@ -325,19 +329,16 @@ const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
                                 console.error('Error updating status:', error);
                             });
 
-                        //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
-                        setData = `status = ?`; // Update the status column to 0
+                        //////// GET GAME BALANCE AND DELETE ACTIVE USERS ///////////
                         whereCondition = `id IN (${betActiveUserIds.map(() => '?').join(',')})`;
-                        dataToSend = {column: setData, value: [4,...betActiveUserIds], whereCondition: whereCondition, tableName: 'betting_active_users'};
-                        // Perform the update
-                        updateCommonApiCall(dataToSend)
+                        deleteCommonApiCall({ condition:whereCondition, tableName:'betting_active_users', values: [...betActiveUserIds] })
                             .then(() => {
-                                console.log('Status updated to 0 for IDs:', betPredictionHistoryIdsArray);
+                                console.log('Status updated to 0 for IDs:', betActiveUserIds);
                             })
                             .catch((error) => {
                                 console.error('Error updating status:', error);
                             });
-                        //////// GET GAME BALANCE AND MAKE USER INACTIVE ///////////
+                        //////// GET GAME BALANCE AND DELETE ACTIVE USERS ///////////
                     }, totalTimeUntilNextMinute); // Delay of 1 minute from now
                     /////// UPDATE BET DATA AFTER 1 MINUTE //////////
 
