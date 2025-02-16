@@ -17,9 +17,9 @@ import {
     updatePassCodeQuery,
     updateUserAvatarQuery,
     updateUserUserNameQuery,
-    userProfileDataQuery
 } from "../queries/commonQuries.js";
 import {
+    _getRandomUniqueIdBackendServer,
     actionToGetAliveUserAndStartTimerOnIt, bulkInsertCommonApiCall,
     insertCommonApiCall,
     updateCommonApiCall
@@ -47,8 +47,8 @@ export const actionToSendOtpApiCall = (body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -72,8 +72,8 @@ export const actionSignupApiCall = (body) => {
                 console.log(error)
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -89,8 +89,8 @@ export const actionValidatePassCodeApiCall = (body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -100,7 +100,6 @@ export const actionValidatePassCodeApiCall = (body) => {
 export const actionUpdatePassCodeApiCall = (body) => {
     const {passCodeId, newUserId} = body;
     return new Promise(function(resolve, reject) {
-        let userData = {};
         const query = updatePassCodeQuery();
         pool.query(query,[newUserId, passCodeId], (error, results) => {
             if (error) {
@@ -129,8 +128,8 @@ export const actionToVerifyLoginUserOtpApiCall = (body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -187,13 +186,13 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
             wallet_balance:0,
             game_balance:0
         };
-        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = ?`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -201,31 +200,44 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
 }
 
 export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let userData = {};
-        const query = userProfileDataQuery();
-        pool.query(query,[userId], (error, results) => {
+        const query = getUserByIdQuery();
+
+        pool.query(query, [userId], (error, results) => {
             if (error) {
-                reject(error)
+                reject(error);
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+
+            if (results?.length) {
+                userData = results[0];
+                // Parse the JSON string in the `sub_admin` field
+                if (userData.sub_admin) {
+                    try {
+                        userData.sub_admin = JSON.parse(userData.sub_admin);
+                    } catch (parseError) {
+                        console.error("Error parsing sub_admin JSON:", parseError);
+                        // If parsing fails, keep the original string or set it to null
+                        userData.sub_admin = null;
+                    }
+                }
             }
+
             resolve(userData);
-        })
-    })
+        });
+    });
 }
 
 export const actionToGetPasscodeRequestBySubAdminApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let userData = {};
-        const query = `SELECT id from passcode_request WHERE user_id = $1 AND status = $2`;
+        const query = `SELECT id from passcode_request WHERE user_id = ? AND status = ?`;
         pool.query(query,[userId,0], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+            if(results?.length){
+                userData = results[0];
             }
             resolve(userData);
         })
@@ -235,8 +247,8 @@ export const actionToGetPasscodeRequestBySubAdminApiCall = (userId) => {
 export const actionToUpdateUserRoleApiCall = (body) => {
     const {userId,role} = body;
     return new Promise(function(resolve) {
-        let setData = `role = $1`;
-        const whereCondition = `id = $2`;
+        let setData = `role = ?`;
+        const whereCondition = `id = ?`;
         let dataToSend = {column: setData, value: [role,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
         updateCommonApiCall(dataToSend).then(()=>{
             resolve({status:1});
@@ -246,14 +258,14 @@ export const actionToUpdateUserRoleApiCall = (body) => {
 export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         const {count} = body;
-        const query = `SELECT id from passcode_request WHERE user_id = $1 AND status = $2`;
+        const query = `SELECT id from passcode_request WHERE user_id = ? AND status = ?`;
         pool.query(query,[userId,0], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(!results?.rows?.length){
+            if(!results?.length){
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                let aliasArray = ['$1','$2'];
+                let aliasArray = ['?','?'];
                 let columnArray = ["user_id","count"];
                 let valuesArray = [userId,count];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'passcode_request'};
@@ -271,8 +283,8 @@ export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (adminUs
     return new Promise(function(resolve, reject) {
         const {id,user_id,count} = body;
         if (id) {
-            let setData = `status = $1, updated_by = $2`;
-            const whereCondition = `id = $3`;
+            let setData = `status = ?, updated_by = ?`;
+            const whereCondition = `id = ?`;
             let dataToSend = {
                 column: setData,
                 value: [1, adminUserId, id],
@@ -341,14 +353,14 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
                            bph.option_name AS option_name,
                            bph.min AS min
                        FROM betting_active_users bau
-                       LEFT JOIN bet_prediction_history bph ON bau.id = bph.betting_active_users_id AND bph.status = $2 AND bph.game_type = $3
-                       WHERE bau.id = $1`;
-        pool.query(query,[betting_active_users_id,1,'win_go'], (error, results) => {
+                       LEFT JOIN bet_prediction_history bph ON bau.id = bph.betting_active_users_id AND bph.status = ? AND bph.game_type = ?
+                       WHERE bau.id = ?`;
+        pool.query(query,[1,'win_go',betting_active_users_id], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                predData = {success:1,prediction:results?.rows[0]}
+            if(results?.length){
+                predData = {success:1,prediction:results[0]}
             }
             resolve(predData);
         })
@@ -359,13 +371,13 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
 export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let predData = [];
-        const query = `SELECT * from bet_prediction_history WHERE user_id = $1 AND status = $2 AND game_type = $3`;
+        const query = `SELECT * from bet_prediction_history WHERE user_id = ? AND status = ? AND game_type = ?`;
         pool.query(query,[userId,0,'win_go'], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                predData = results?.rows;
+            if(results?.length){
+                predData = results;
             }
             resolve(predData);
         })
@@ -375,27 +387,28 @@ export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
 export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (userId,body) => {
     const {amount} = body;
     return new Promise(function(resolve, reject) {
-        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if (results?.rows?.length) {
-                let userWalletBalance = results?.rows[0]?.wallet_balance;
+            if (results?.length) {
+                let userWalletBalance = results[0]?.wallet_balance;
                 if(Number(amount) > Number(userWalletBalance)){
                     resolve({status:0,error:'Given amount is greater then wallet balance'});
                 }else{
-                     let userGameBalance = results?.rows[0]?.game_balance;
+                     let userGameBalance = results[0]?.game_balance;
                     // let percentageOfGame = Math.round(amount / 100);
                     // let userTotalGameBalance = amount - percentageOfGame;
-                    let setData = `game_balance = $1,wallet_balance = $2`;
-                    const whereCondition = `id = '${userId}'`;
-                    let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(amount),Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    let setData = `game_balance = ?,wallet_balance = ?`;
+                    const whereCondition = `id = ?`;
+                    let dataToSend = {column: setData, value: [Number(userGameBalance)+Number(amount),Number(userWalletBalance)-Number(amount),userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                        let aliasArray = ['$1','$2','$3'];
-                        let columnArray = ["amount", "user_id","type"];
-                        let valuesArray = [amount,userId,'wallet_to_game_wallet_transfer'];
+                        const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                        let aliasArray = ['?','?','?','?'];
+                        let columnArray = ["id","amount", "user_id","type"];
+                        let valuesArray = [user_transaction_history_id,amount,userId,'wallet_to_game_wallet_transfer'];
                         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
                         insertCommonApiCall(insertData).then(()=>{
                             resolve({status:1});
@@ -412,26 +425,27 @@ export const actionToTransferAmountFromUserMainWalletToGameWalletApiCall = (user
 export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,body) => {
     const {amount} = body;
     return new Promise(function(resolve, reject) {
-        const query = `SELECT wallet_balance,sub_admin from app_user WHERE id = $1`;
+        const query = `SELECT wallet_balance,sub_admin from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if (results?.rows?.length) {
-                let userWalletBalance = results?.rows[0]?.wallet_balance;
-                let userSubAdminId = results?.rows[0]?.sub_admin;
+            if (results?.length) {
+                let userWalletBalance = results[0]?.wallet_balance;
+                let userSubAdminId = results[0]?.sub_admin;
 
                 if(Number(amount) > Number(userWalletBalance)){
                     resolve({status:0,error:'Given amount is greater then wallet balance'});
                 }else{
-                    let setData = `wallet_balance = $1`;
-                    const whereCondition = `id = '${userId}'`;
-                    let dataToSend = {column: setData, value: [Number(userWalletBalance)-Number(amount)], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    let setData = `wallet_balance = ?`;
+                    const whereCondition = `id = ?`;
+                    let dataToSend = {column: setData, value: [Number(userWalletBalance)-Number(amount),userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                        let aliasArray = ['$1','$2','$3','$4'];
-                        let columnArray = ["amount", "user_id","sub_admin_id","status"];
-                        let valuesArray = [amount,userId,userSubAdminId,0];
+                        const withdrawal_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                        let aliasArray = ['?','?','?','?','?'];
+                        let columnArray = ["id","amount", "user_id","sub_admin_id","status"];
+                        let valuesArray = [withdrawal_history_id,amount,userId,userSubAdminId,0];
                         let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'withdrawal_history'};
                         insertCommonApiCall(insertData).then(()=>{
                             resolve({status:1});
@@ -447,24 +461,24 @@ export const actionToGenerateWithdrawalRequestAndDeductAmountApiCall = (userId,b
 export const actionToCompleteStatusOfDepositRequestApiCall = (userId,body) => {
     const {id} = body;
     return new Promise(function(resolve, reject) {
-        const query = `SELECT * from deposit_history WHERE id = $1`;
+        const query = `SELECT * from deposit_history WHERE id = ?`;
         pool.query(query, [id], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if (results?.rows?.length) {
-                let userId = results?.rows[0]?.user_id;
-                let userDepositAmount = results?.rows[0]?.amount;
-                let setData = `wallet_balance = wallet_balance + $1`;
-                let whereCondition = `id = $2`;
+            if (results?.length) {
+                let userId = results[0]?.user_id;
+                let userDepositAmount = results[0]?.amount;
+                let setData = `wallet_balance = wallet_balance + ?`;
+                let whereCondition = `id = ?`;
                 let dataToSend = {column: setData, value: [userDepositAmount,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                 updateCommonApiCall(dataToSend).then(()=>{
-                    setData = `status = $1`;
-                    whereCondition = `id = $2`;
+                    setData = `status = ?`;
+                    whereCondition = `id = ?`;
                     dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'deposit_history'};
                     updateCommonApiCall(dataToSend).then(()=>{
-                        setData = `status = $1`;
-                        whereCondition = `deposit_history_id = $2`;
+                        setData = `status = ?`;
+                        whereCondition = `deposit_history_id = ?`;
                         dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_percentage'};
                         updateCommonApiCall(dataToSend).then(()=> {
                             resolve({status: 1});
@@ -479,8 +493,8 @@ export const actionToCompleteStatusOfDepositRequestApiCall = (userId,body) => {
 export const actionToCompleteStatusOfWithdrawalRequestApiCall = (userId,body) => {
     const {id} = body;
     return new Promise(function(resolve) {
-        let setData = `status = $1`;
-        let whereCondition = `id = $2`;
+        let setData = `status = ?`;
+        let whereCondition = `id = ?`;
         let dataToSend = {column: setData, value: [1,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'withdrawal_history'};
         updateCommonApiCall(dataToSend).then(()=>{
             resolve({status:1});
@@ -490,13 +504,13 @@ export const actionToCompleteStatusOfWithdrawalRequestApiCall = (userId,body) =>
 export const actionToGenerateDepositRequestApiCall = (userId,body) => {
     const {amount} = body;
     return new Promise(function(resolve, reject) {
-        const query = `SELECT sub_admin from app_user WHERE id = $1`;
+        const query = `SELECT sub_admin from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if (results?.rows?.length) {
-                let userSubAdminId = results?.rows[0]?.sub_admin;
+            if (results?.length) {
+                let userSubAdminId = results[0]?.sub_admin;
 
 
                 ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
@@ -506,20 +520,23 @@ export const actionToGenerateDepositRequestApiCall = (userId,body) => {
 
 
                 ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                let aliasArray = ['$1','$2','$3','$4'];
-                let columnArray = ["amount", "user_id","sub_admin_id","status"];
-                let valuesArray = [userBalanceAmount,userId,userSubAdminId,0];
+                const deposit_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                let aliasArray = ['?','?','?','?','?'];
+                let columnArray = ["id","amount", "user_id","sub_admin_id","status"];
+                let valuesArray = [deposit_history_id,userBalanceAmount,userId,userSubAdminId,0];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'deposit_history'};
-                insertCommonApiCall(insertData).then((id)=>{
+                insertCommonApiCall(insertData).then(()=>{
                     ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                    aliasArray = ['$1','$2','$3','$4'];
-                    columnArray = ["amount", "user_id", "deposit_history_id", "status"];
-                    valuesArray = [percentageOfDeposit,userId,id,0];
+                    const betting_percentage_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                    aliasArray = ['?','?','?','?','?'];
+                    columnArray = ["id","amount", "user_id", "deposit_history_id", "status"];
+                    valuesArray = [betting_percentage_id,percentageOfDeposit,userId,deposit_history_id,0];
                     insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_percentage'};
                     insertCommonApiCall(insertData).then(()=>{
-                        aliasArray = ['$1','$2','$3'];
-                        columnArray = ["amount", "user_id","type"];
-                        valuesArray = [percentageOfDeposit,userId,'game_percentage_deduct'];
+                        const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                        aliasArray = ['?','?','?','?'];
+                        columnArray = ["id","amount", "user_id","type"];
+                        valuesArray = [user_transaction_history_id,percentageOfDeposit,userId,'game_percentage_deduct'];
                         insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'user_transaction_history'};
                         insertCommonApiCall(insertData).then(()=>{
                             resolve({status:1});
@@ -542,8 +559,8 @@ export const actionToGetWithdrawalRequestHistoryDataApiCall = (userId,body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -559,8 +576,8 @@ export const actionToGetDepositRequestHistoryDataApiCall = (userId,body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -576,8 +593,8 @@ export const actionToGetGameHistoryDataApiCall = (userId,body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -593,8 +610,8 @@ export const actionToGetMoneyTransactionDataApiCall = (userId,body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -610,8 +627,8 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -627,8 +644,8 @@ export const actionToGetPendingWithdrawalRequestListDataApiCall = (userId,body) 
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -643,8 +660,8 @@ export const actionToGetPendingDepositRequestListDataApiCall = (userId,body) => 
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -660,8 +677,8 @@ export const actionToGetAdminUserPasscodeListDataListApiCall = (userId,body) => 
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -671,13 +688,13 @@ export const actionToGetAdminUserPasscodeListDataListApiCall = (userId,body) => 
 export const actionToGetAllUsersUnderSubAdminListApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const query = `SELECT id,name,phone_number,created_at,wallet_balance from app_user WHERE sub_admin = $1`;
+        const query = `SELECT id,name,phone_number,created_at,wallet_balance from app_user WHERE sub_admin = ?`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -697,13 +714,13 @@ export const actionToGetAllUsersNormalAndSubAdminListApiCall = (userId, body) =>
 
         const query = `SELECT app_user.id,app_user.name,app_user.phone_number,app_user.created_at,app_user.wallet_balance,app_user.game_balance,app_user.role,sub_admin_user.name as sub_admin_name from app_user 
                                LEFT JOIN app_user as sub_admin_user ON sub_admin_user.id = app_user.id                                                             
-                               WHERE app_user.id != $1 ${condition} ORDER BY app_user.id desc`;
+                               WHERE app_user.id != ? ${condition} ORDER BY app_user.id desc`;
         pool.query(query,[userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if(results?.rows?.length){
-                responseData = results?.rows;
+            if(results?.length){
+                responseData = results;
             }
             resolve(responseData);
         })
@@ -715,8 +732,8 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 
     return new Promise(function (resolve, reject) {
         // Step 1: Update the `game_result` table with the provided result
-        let setData = `result = $1 , updated_by = $2`;
-        let whereCondition = `id = $3`;
+        let setData = `result = ? , updated_by = ?`;
+        let whereCondition = `id = ?`;
         let dataToSend = {
             column: setData,
             value: [result,userId,id],
@@ -730,18 +747,18 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                 // Step 2: Fetch users who lost the bet (those whose option_name != result)
                 const query = `SELECT user_id, amount 
                                FROM bet_prediction_history 
-                               WHERE game_result_id = $1 AND option_name != $2`;
+                               WHERE game_result_id = ? AND option_name != ?`;
 
                 pool.query(query, [id, result], (error, results) => {
                     if (error) {
                         return reject(error); // Handle database query error
                     }
 
-                    if (results?.rows?.length) {
+                    if (results?.length) {
                         // Step 3: Update wallet balances for users who lost the bet
-                        let updatePromises = results.rows.map((looseBetData) => {
-                            setData = `wallet_balance = wallet_balance + $1`;
-                            whereCondition = `id = $2`;
+                        let updatePromises = results.map((looseBetData) => {
+                            setData = `wallet_balance = wallet_balance + ?`;
+                            whereCondition = `id = ?`;
                             dataToSend = {
                                 column: setData,
                                 value: [looseBetData?.amount, looseBetData?.user_id],
@@ -760,10 +777,10 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                                 // Step 4: Update win_status for all bets related to the game_result_id
                                 ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
                                 setData = `win_status = CASE 
-                                           WHEN option_name = $2 THEN 1 
+                                           WHEN option_name = ? THEN 1 
                                            ELSE 0 
                                            END`;
-                                whereCondition = `game_result_id = $1`;
+                                whereCondition = `game_result_id = ?`;
                                 dataToSend = {
                                     column: setData,
                                     value: [id, result],
@@ -788,10 +805,10 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                         ///////////////// UPDATE BET PREDICTION WIN STATUS /////////////
                         // No losing bets, directly update win_status
                         setData = `win_status = CASE 
-                                   WHEN option_name = $2 THEN 1 
+                                   WHEN option_name = ? THEN 1 
                                    ELSE 0 
                                    END`;
-                        whereCondition = `game_result_id = $1`;
+                        whereCondition = `game_result_id = ?`;
                         dataToSend = {
                             column: setData,
                             value: [id, result],
@@ -819,20 +836,21 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
-        const query = 'SELECT id from betting_active_users WHERE user_id = $1 AND status = $2';
+        const query = 'SELECT id from betting_active_users WHERE user_id = ? AND status = ?';
         pool.query(query,[userId,2], (error, results) => {
-            if(results?.rows?.length){
-                resolve({success:1,betting_active_users_id:results?.rows[0]?.id});
+            if(results?.length){
+                resolve({success:1,betting_active_users_id:results[0]?.id});
             }else{
-                let aliasArray = ['$1','$2'];
-                let columnArray = ["user_id", "status"];
-                let valuesArray = [userId,2]; // 3 = WAIT
+                let getRandomAliveUserId = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                let aliasArray = ['?','?','?'];
+                let columnArray = ["id","user_id", "status"];
+                let valuesArray = [getRandomAliveUserId,userId,2];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
-                insertCommonApiCall(insertData).then((id)=>{
+                insertCommonApiCall(insertData).then(()=>{
                     ///////// BETTING DISTRIBUTION FUNCTION ////////
                     actionToGetAliveUserAndStartTimerOnIt(userId);
                     ///////// BETTING DISTRIBUTION FUNCTION ////////
-                    resolve({success:1,betting_active_users_id:id});
+                    resolve({success:1,betting_active_users_id:getRandomAliveUserId});
                 })
             }
         })
@@ -840,42 +858,54 @@ export const actionToUpdateUserAliveForGameApiCall = (userId) => {
 }
 
 
-export const actionGetUserByIdApiCall = (body) => {
-    const userId = body;
-    return new Promise(function(resolve, reject) {
+export const actionGetUserByIdApiCall = (userId) => {
+    return new Promise(function (resolve, reject) {
         let userData = {};
         const query = getUserByIdQuery();
-        pool.query(query,[userId], (error, results) => {
+
+        pool.query(query, [userId], (error, results) => {
             if (error) {
-                reject(error)
+                reject(error);
             }
-            if(results?.rows?.length){
-                userData = results?.rows[0];
+
+            if (results?.length) {
+                userData = results[0];
+                // Parse the JSON string in the `sub_admin` field
+                if (userData.sub_admin) {
+                    try {
+                        userData.sub_admin = JSON.parse(userData.sub_admin);
+                    } catch (parseError) {
+                        console.error("Error parsing sub_admin JSON:", parseError);
+                        // If parsing fails, keep the original string or set it to null
+                        userData.sub_admin = null;
+                    }
+                }
             }
+
             resolve(userData);
-        })
-    })
-}
+        });
+    });
+};
 
 export const actionTransferMoneyToMainWalletApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
-        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = $1`;
+        const query = `SELECT wallet_balance,game_balance from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
             if (error) {
                 reject(error)
             }
-            if (results?.rows?.length) {
-                let userGameBalance = results?.rows[0]?.game_balance;
-                let userWalletBalance = results?.rows[0]?.wallet_balance;
+            if (results?.length) {
+                let userGameBalance = results[0]?.game_balance;
+                let userWalletBalance = results[0]?.wallet_balance;
 
                 if(Number(userGameBalance) < 1){
                     resolve({status:0,error:'Game wallet does not has any balance'});
                 }else{
                     let userNewWalletBalance = Number(userWalletBalance) + Number(userGameBalance);
                     ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
-                    let setData = `game_balance = $1,wallet_balance = $2`;
-                    const whereCondition = `id = '${userId}'`;
-                    let dataToSend = {column: setData, value: [0, userNewWalletBalance], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                    let setData = `game_balance = ?,wallet_balance = ?`;
+                    const whereCondition = `id = ?`;
+                    let dataToSend = {column: setData, value: [0, userNewWalletBalance,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
                     updateCommonApiCall(dataToSend).then(()=>{
                         resolve({status:1});
                     })

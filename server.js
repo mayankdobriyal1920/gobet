@@ -3,100 +3,91 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import session from 'express-session';
+import MySQLStore from 'express-mysql-session';
+import pool from './models/connection.js'; // MySQL connection
+import dotenv from 'dotenv';
 import commonRouter from './routers/commonRouter.js';
-import pgSession from 'connect-pg-simple';
-import pool from "./models/connection.js";
-import EventEmitter from 'events';
-import dotenv  from 'dotenv';
-dotenv.config();
+import cookieParser from 'cookie-parser';
+
+dotenv.config(); // Load environment variables
 
 // Initialize Express app
 const app = express();
-const PORT = 4003;
+const PORT = process.env.PORT || 4003;
 
-// Define allowed origins
+// Define allowed origins from environment variables or default to localhost
 const allowedOrigins = [
-    'http://localhost',
-    'http://localhost:3000',
-    'https://localhost',
-    'https://localhost:3000',
-    'http://192.168.1.6:3000'
-];
+        'http://localhost',
+        'http://localhost:3000',
+        'https://localhost',
+        'https://getbet.in',
+        'https://localhost:3000',
+        'http://192.168.1.6:3000',
+    ];
 
 // Middleware to parse the request body
 app.use(express.urlencoded({ extended: true, limit: '250mb' }));
 app.use(express.json({ limit: '250mb' }));
-const PgSessionStore = pgSession(session);
+app.use(cookieParser());
 
-///////// ADDING SESSION POOL FOR USER SESSION /////////////////
-EventEmitter.defaultMaxListeners = 0;
-const UserDataSessionPgStore = new PgSessionStore({
-    pool: pool, ///// Use the pool you created /////
-    tableName: 'sessions', //// Your table for storing sessions /////
-});
-UserDataSessionPgStore.setMaxListeners(0);
-///////// ADDING SESSION POOL FOR USER SESSION /////////////////
-
-//This is the middleware function which will be called before any routes get hit which are defined after this point, i.e. in your index.js
-app.use(function (req, res, next) {
-    const origin = req.headers.origin;
-
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin); // Allow only specific origins
-    } else {
-        res.setHeader('Access-Control-Allow-Origin', '*'); // Block other origins
-    }
-
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204); // No Content
-    }
-    next();
-});
-
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        // Check if the origin is in the allowedOrigins array
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true); // Origin is allowed and can send credentials
-        } else {
-            // For other origins, allow access without credentials
-            return callback(null, '*'); // Allow all other origins without credentials
-        }
+// MySQL Session Store Configuration
+const MySQLSessionStore = MySQLStore(session);
+const sessionStore = new MySQLSessionStore(
+    {
+        clearExpired: true,
+        checkExpirationInterval: 900000, // Clear expired sessions every 15 mins
+        expiration: 86400000, // Sessions expire after 1 day (24 hours)
     },
-    credentials: true, // Allow cookies to be sent for allowed origins only
-    methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE', // Allowed methods
-    allowedHeaders: 'X-Requested-With, content-type, Accept' // Allowed headers
-}));
+    pool
+);
 
+// Trust proxy for secure cookies
 app.set('trust proxy', 1);
-app.use((req, res, next) => {
-    // Check for an existing session
-    if (req?.session && req?.session?.userSessionData) {
-        // If a session already exists, simply proceed to the next middleware
-        return next();
-    }
+
+// Session Middleware
+app.use(
     session({
-        store: UserDataSessionPgStore,
-        secret: 'get-bet-session-store',
+        store: sessionStore,
+        secret: process.env.SESSION_SECRET || 'get-bet-session-store', // Use environment variable for secret
         resave: false,
         saveUninitialized: false,
-        name: 'get-bet-mobile-app-session',  // Use dynamic session name
+        name: 'get-bet-mobile-app-session', // Use dynamic session name
         cookie: {
             expires: new Date(Date.now() + 31536000000),  // 1 year expiration
             httpOnly: true,
-            sameSite: process.env.NODE_ENV === 'PRODUCTION' ? 'none' :'lax',
-            secure: process.env.NODE_ENV === 'PRODUCTION',  // Ensure HTTPS for secure cookies
+            sameSite: 'none',
+            secure: true,  // Ensure HTTPS for secure cookies
             maxAge: 31536000000  // 1 year max age
-        }
-    })(req,res,next) // Call the next middleware
+        },
+    })
+);
+
+// CORS Middleware
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // Allow requests with no origin (like mobile apps or curl requests)
+            if (!origin) return callback(null, true);
+
+            // Check if the origin is in the allowedOrigins array
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true); // Origin is allowed and can send credentials
+            } else {
+                return callback(new Error('Not allowed by CORS')); // Block other origins
+            }
+        },
+        credentials: true, // Allow cookies to be sent for allowed origins only
+        methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE', // Allowed methods
+        allowedHeaders: 'X-Requested-With, content-type, Accept', // Allowed headers
+    })
+);
+
+
+// Routes
+app.use('/api-get-bet/common', commonRouter);
+
+app.get('/api-get-bet/', (req, res) => {
+    res.send(`Server is running!`);
 });
 
 // Create HTTP server
@@ -105,31 +96,31 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = new Server(server, {
     cors: {
-        origin: '*', // Allow all origins (adjust for security in production)
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
+        credentials: true,
     },
 });
 
-// Routes
-app.use('/api-get-bet/common', commonRouter);
-
-// Basic route
-app.get('/api-get-bet/', (req, res) => {
-    res.send('Server is running!');
+// Socket.IO Authentication Middleware
+io.use((socket, next) => {
+    const session = socket.request.session;
+    if (session && session.userSessionData) {
+        next(); // Allow connection if user is authenticated
+    } else {
+        next(new Error('Unauthorized')); // Deny connection if user is not authenticated
+    }
 });
 
 // Socket.IO connection
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    // Listen to events
     socket.on('message', (data) => {
         console.log('Message received:', data);
-        // Broadcast message to all connected clients
         io.emit('message', data);
     });
 
-    // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });

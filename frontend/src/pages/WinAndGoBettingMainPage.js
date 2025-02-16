@@ -20,7 +20,7 @@ export default function WinAndGoBettingMainPage() {
     }
 
     useEffect(() => {
-        dispatch(actionToGetUserBetPredictionData(Number(betting_active_users_id),true));
+        dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
         dispatch(actionToGetUserBetPredictionHistory());
     }, [betting_active_users_id]);
 

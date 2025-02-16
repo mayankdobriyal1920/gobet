@@ -103,11 +103,6 @@ export default function SignupPage(){
     const callFunctionToGoToLoginPage = ()=>{
         history.replace('/login');
     }
-    const callFunctionToValidateOtpAndLoginUser = ()=>{
-        if(otp) {
-            dispatch(actionToVerifyLoginUserOtp(phone, otp))
-        }
-    }
 
     const callFunctionToSignupUser = ()=>{
         const isValidate = validateFields('signup');

@@ -2,6 +2,7 @@
   "name": "getbet",
   "version": "0.0.1",
   "private": true,
+  "proxy": "https://121tuition.in",
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/app": "^6.0.2",

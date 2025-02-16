@@ -148,7 +148,7 @@ commonRouter.post(
         actionToVerifyLoginUserOtpApiCall(req.body.phone)
             .then(user => {
                 if(user?.id) {
-                    if (storeUserPhoneOtbObj[phone] == otp) {
+                    if (Number(storeUserPhoneOtbObj[phone]) === Number(otp)) {
                         createNewSessionWithUserDataAndRole(req, user).then(() => {
                             res.status(200).send({
                                 success: 1,
@@ -273,7 +273,6 @@ commonRouter.post(
 commonRouter.post(
     '/actionToGetCurrentUserSessionDataApiCall',
     expressAsyncHandler(async (req, res) => {
-        // Check if the session exists and the user is logged in
         if (req?.session?.userSessionData?.id) {
             actionToGetCurrentUserProfileDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
                 res.status(200).send({
@@ -711,9 +710,6 @@ commonRouter.post(
 commonRouter.post(
     '/actionUpdateAvatarApiCall',
     expressAsyncHandler(async (req, res) => {
-        let responseToSend = {
-            success:0,
-        }
         const userId = req.body.userId;
         actionUpdateAvatarApiCall(req.body)
             .then(responseData => {

@@ -9,7 +9,6 @@ import {
     USER_SIGNIN_SUCCESS,
     USER_SIGNUP_SIGNIN_ERROR,
     CHANGE_USER_AVATAR_MODAL,
-    USER_WALLET_AND_GAME_BALANCE_REQUEST,
     USER_WALLET_AND_GAME_BALANCE_SUCCESS,
     USER_BET_PREDICTION_STATUS,
     USER_BET_PREDICTION_STATUS_WAITING,
@@ -47,10 +46,15 @@ const api = Axios.create({
     withCredentials:true
 })
 
+// const api = Axios.create({
+//     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
+//     withCredentials:true
+// })
+
 export const actionToGetUserSessionData = () => async (dispatch) => {
     dispatch({type: USER_SESSION_REQUEST});
     try {
-        api.post(`actionToGetCurrentUserSessionDataApiCall`, {}).then(responseData => {
+        api.post(`actionToGetCurrentUserSessionDataApiCall`, {},{ withCredentials: true }).then(responseData => {
             if(responseData?.data?.success){
                 dispatch({ type: USER_SESSION_SUCCESS, payload: 1});
                 dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
@@ -194,7 +198,6 @@ export const actionUpdateUserName = (name) => async (dispatch) => {
 }
 
 export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async (dispatch) => {
-    //dispatch({type: USER_WALLET_AND_GAME_BALANCE_REQUEST});
     try {
         api.post(`actionToGetUserWalletAndGameBalanceApiCall`, {}).then(responseData => {
             dispatch({ type: USER_WALLET_AND_GAME_BALANCE_SUCCESS, payload: {...responseData.data}});
@@ -537,7 +540,6 @@ export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait 
     /////////// CHECK REGULAR FOR BET PROGRESS ////////
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
-console.log('actionToGetUserBetPredictionData',betting_active_users_id)
 
     function clearAllTimeOut(){
         if(getPredictionTimeOut) {
@@ -559,7 +561,7 @@ console.log('actionToGetUserBetPredictionData',betting_active_users_id)
         dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
     }
 
-    if(betting_active_users_id && !isNaN(betting_active_users_id)) {
+    if(betting_active_users_id) {
         try {
             api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
                 if (responseData?.data?.success === 5) {
@@ -615,11 +617,10 @@ console.log('actionToGetUserBetPredictionData',betting_active_users_id)
     }
 }
 
-export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => async (dispatch) => {
+export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => async () => {
     try {
         api.post(`actionToUpdateUserAliveForGameApiCall`, {}).then((responseData) => {
             if(callFunctionToEnterInGame) {
-                dispatch(actionToGetUserWalletAndGameBalance());
                 callFunctionToEnterInGame(responseData?.data?.betting_active_users_id);
             }
         })
