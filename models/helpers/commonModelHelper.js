@@ -3,6 +3,8 @@ import {getAliveUsersQuery} from "../../queries/commonQuries.js";
 import {calculateUserBetAmount} from "./bettingDistributionHelper.js";
 import {Vonage} from "@vonage/server-sdk";
 import pool from "../connection.js";
+import {actionToRunCheckForAliveUsers} from "../commonModel.js";
+import {userSocketIdsObject} from "../../server.js";
 
 const vonage = new Vonage({
     apiKey: "93669403",
@@ -235,186 +237,309 @@ export async function storeNewSessionFileFromSessionStore(req, userSessionData) 
     }
 }
 
-export const actionToGetAliveUserAndStartTimerOnIt = () => {
-    // Query to check if there are other active users
-    const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = ?`;
-    pool.query(getAliveUsersQuery, [2], (error, results) => {
-        // If there are other alive users, trigger the function
-        if (results?.length === 1) {
-            // More than 1 alive user, trigger the function
-            actionToStartUserAliveCheckTimer(); // Replace this with the function you want to trigger
+// export const actionToGetAliveUserAndStartTimerOnIt = () => {
+//     // Query to check if there are other active users
+//     const getAliveUsersQuery = `SELECT id FROM betting_active_users WHERE status = ?`;
+//     pool.query(getAliveUsersQuery, [3], (error, results) => {
+//         // If there are other alive users, trigger the function
+//         if (results?.length === 1) {
+//             // More than 1 alive user, trigger the function
+//             actionToStartUserAliveCheckTimer(); // Replace this with the function you want to trigger
+//         }
+//     });
+// }
+/**
+ * Selects a random group of live users for a game and ensures the group is unique.
+ * @param {Array} allLiveUsersData - Array of live users data.
+ * @returns {Promise<Array>} - Resolves with the selected group of users.
+ */
+const actionToCallProcedureToSelectRightGroup = (allLiveUsersData) => {
+    return new Promise((resolve, reject) => {
+        // Validate input
+        if (!Array.isArray(allLiveUsersData) || allLiveUsersData.length === 0) {
+            return reject("No live users available or invalid input.");
         }
-    });
-}
 
-const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData)=>{
-    // betting_active_users
-    //20250104100010878 25-01-04 20:07
-    let userPayloadData = calculateUserBetAmount(allLiveUsersData);
+        let attemptCount = 0;
+        const maxAttempts = 10;
 
-    let valuesArray = [];
-    let updatesArray = [];
-    let valuesArrayUserTransaction = [];
-    let updatesBerUserActiveArray = [];
-    let betActiveUserIds = [];
-    let betPredictionHistoryIdsArray = [];
+        /**
+         * Generates a random group of users and ensures it's unique.
+         */
+        const generateRandomGroup = () => {
+            if (attemptCount >= maxAttempts) {
+                return reject("Max attempts reached. Couldn't generate a unique group.");
+            }
+            attemptCount++;
 
+            /**
+             * Generates a random group size between minSize and maxSize.
+             * @param {number} minSize - Minimum group size.
+             * @param {number} maxSize - Maximum group size.
+             * @returns {number} - Random group size.
+             */
+            const getRandomGroupSize = (minSize, maxSize) => {
+                return Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+            };
 
-    if(userPayloadData?.length) {
-        let gameBetId = userPayloadData[0]?.bet_id;
-        let totalBetAmount = userPayloadData[0]?.total_bet_amount;
-        if(!gameBetId){
-            return;
-        }
-        if(!totalBetAmount){
-            return;
-        }
-        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-        const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-        let aliasResultArray = ['?','?','?','?','?'];
-        let columnResultArray = ["id","game_type", "game_id","total_bet_amount","bet_distribution_json"];
-        let valuesResultArray = [game_result_id,'win_go', gameBetId,Number(totalBetAmount),JSON.stringify(userPayloadData)];
-        let insertResultData = {
-            alias: aliasResultArray,
-            column: columnResultArray,
-            values: valuesResultArray,
-            tableName: 'game_result'
+            /**
+             * Selects a random group of users from the given array.
+             * @param {Array} users - Array of users.
+             * @param {number} groupSize - Size of the group to select.
+             * @returns {Array} - Randomly selected group of users.
+             */
+            const selectRandomGroup = (users, groupSize) => {
+                if (!users.length || groupSize <= 0) return [];
+                const shuffledUsers = [...users].sort(() => 0.5 - Math.random()); // Shuffle users
+                return shuffledUsers.slice(0, groupSize);
+            };
+
+            const minGroupSize = 2;
+            const maxGroupSize = allLiveUsersData.length;
+            const groupSize = getRandomGroupSize(minGroupSize, maxGroupSize);
+            console.log(`Random Group Size: ${groupSize}`);
+
+            const selectedGroup = selectRandomGroup(allLiveUsersData, groupSize);
+            if (selectedGroup.length === 0) {
+                return generateRandomGroup(); // Retry if no users are selected
+            }
+
+            // Generate a unique group ID based on sorted phone numbers
+            const phoneNumbers = selectedGroup.map(user => user.uid);
+            const betActiveUserIds = selectedGroup.map(user => user.betting_active_users_id);
+            const sortedPhoneNumbers = phoneNumbers.sort((a, b) => a.localeCompare(b));
+            const groupId = sortedPhoneNumbers.join("-");
+
+            // Check if the group already exists in the database
+            const query = `SELECT id FROM user_game_group_history WHERE group_id = ? AND game_type = ?`;
+            pool.query(query, [groupId, "win_go"], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
+                if (results?.length) {
+                    return generateRandomGroup(); // Retry if group already exists
+                }
+
+                // Update user status to inactive and insert the group into history
+                const setData = `status = ?`;
+                const whereCondition = `id IN (${betActiveUserIds.map(() => '?').join(',')})`;
+                const dataToSend = {
+                    column: setData,
+                    value: [2, ...betActiveUserIds],
+                    whereCondition: whereCondition,
+                    tableName: 'betting_active_users'
+                };
+
+                updateCommonApiCall(dataToSend)
+                    .then(() => {
+                        Object.keys(userSocketIdsObject).forEach((key) => {
+                            if (userSocketIdsObject[key] && Array.isArray(selectedGroup)) {
+                                userSocketIdsObject[key].emit('message', JSON.stringify({
+                                    selectedGroup: [...selectedGroup], // Ensure userIdsArray exists
+                                    type: "USER_DATA_FOR_READY_STATE",
+                                }));
+                            }
+                        });
+                        const insertData = {
+                            alias: ['?', '?', '?'],
+                            column: ["group_id", "game_type", "group_json"],
+                            values: [groupId, "win_go", JSON.stringify(selectedGroup)],
+                            tableName: 'user_game_group_history'
+                        };
+                        insertCommonApiCall(insertData)
+                            .then(() => resolve(selectedGroup))
+                            .catch(reject);
+                    })
+                    .catch((error) => {
+                        console.error('Error updating status:', error);
+                        reject(error);
+                    });
+            });
         };
-        insertCommonApiCall(insertResultData).then(() => {
-            userPayloadData?.map((userPredData)=> {
-                const amountToDeduct = Number(userPredData?.amount) - Math.round(0.02 * Number(userPredData?.amount));
-                const bet_prediction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                const user_transaction_history = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                betPredictionHistoryIdsArray.push(bet_prediction_history_id);
-                valuesArray.push([bet_prediction_history_id,userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id,1,'win_go',game_result_id]);
-                updatesArray.push({conditionValue:userPredData.user_id,set:{betting_balance:Number(userPredData?.balance_after_deduct_percentage)}});
-                updatesBerUserActiveArray.push({conditionValue:userPredData.betting_active_users_id,set:{status:1}});
-                betActiveUserIds.push(userPredData.betting_active_users_id);
-                valuesArrayUserTransaction.push([user_transaction_history,amountToDeduct,userPredData?.user_id,'game_play_deduct']);
-            })
-            const insertData = {column: ["id","user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id","status","game_type","game_result_id"], valuesArray: valuesArray, tableName: 'bet_prediction_history'};
 
-            bulkInsertCommonApiCall(insertData)
-                .then(() => {
-                    console.log('Inserted IDs:', betPredictionHistoryIdsArray);
-                    const currentTime = new Date();
-                    const currentSeconds = currentTime.getSeconds();
-                    const currentMilliseconds = currentTime.getMilliseconds();
+        generateRandomGroup();
+    });
+};
 
-                    // Calculate the time until the next minute mark
-                    const secondsUntilNextMinute = (60 - currentSeconds) % 60;
-                    const millisecondsUntilNextMinute = (1000 - currentMilliseconds) % 1000;
+/**
+ * Distributes betting amounts among selected users and updates their balances.
+ * @param {Array} allLiveUsersData - Array of live users data.
+ */
+export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) => {
+    actionToCallProcedureToSelectRightGroup(allLiveUsersData)
+        .then((allSelectedGroupUserData) => {
+            const currentTime = new Date();
+            const currentSeconds = currentTime.getSeconds();
+            const currentMilliseconds = currentTime.getMilliseconds();
 
-                    const totalTimeUntilNextMinute = (secondsUntilNextMinute * 1000) + millisecondsUntilNextMinute;
+            // Calculate the time until the next minute mark
+            const secondsUntilNextMinute = (60 - currentSeconds) % 60;
+            const millisecondsUntilNextMinute = (1000 - currentMilliseconds) % 1000;
+            const totalTimeUntilNextMinute = (secondsUntilNextMinute * 1000) + millisecondsUntilNextMinute;
 
-                    /////// UPDATE BET DATA AFTER 1 MINUTE //////////
-                    setTimeout(() => {
-                        // Prepare the update data
-                        let setData = `status = ?`; // Update the status column to 0
-                        let whereCondition = `id IN (${betPredictionHistoryIdsArray.map(() => '?').join(',')})`;
-                        let values = [0, ...betPredictionHistoryIdsArray];
-                        let dataToSend = {
-                            column: setData,
-                            value: values, // Value to update (status = 0)
-                            whereCondition: whereCondition,
-                            tableName: 'bet_prediction_history',
+            // Schedule the betting distribution after 1 minute
+            setTimeout(() => {
+                const userPayloadData = calculateUserBetAmount(allSelectedGroupUserData);
+
+                if (!userPayloadData?.length) {
+                    console.error("No user payload data available.");
+                    return;
+                }
+
+                const gameBetId = userPayloadData[0]?.bet_id;
+                const totalBetAmount = userPayloadData[0]?.total_bet_amount;
+
+                if (!gameBetId || !totalBetAmount) {
+                    console.error("Invalid gameBetId or totalBetAmount.");
+                    return;
+                }
+
+                // Insert game result into the database
+                const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                const insertResultData = {
+                    alias: ['?', '?', '?', '?', '?'],
+                    column: ["id", "game_type", "game_id", "total_bet_amount", "bet_distribution_json"],
+                    values: [game_result_id, 'win_go', gameBetId, Number(totalBetAmount), JSON.stringify(userPayloadData)],
+                    tableName: 'game_result'
+                };
+
+                insertCommonApiCall(insertResultData)
+                    .then(() => {
+                        const valuesArray = [];
+                        const updatesArray = [];
+                        const valuesArrayUserTransaction = [];
+                        const updatesBetUserActiveArray = [];
+                        const betActiveUserIds = [];
+                        const betPredictionHistoryIdsArray = [];
+
+                        userPayloadData.forEach((userPredData) => {
+                            const amountToDeduct = Number(userPredData?.amount) - Math.round(0.02 * Number(userPredData?.amount));
+                            const bet_prediction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                            const user_transaction_history = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+
+                            betPredictionHistoryIdsArray.push(bet_prediction_history_id);
+                            valuesArray.push([bet_prediction_history_id, userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id, 1, 'win_go', game_result_id]);
+                            updatesArray.push({
+                                conditionValue: userPredData.user_id,
+                                set: { betting_balance: Number(userPredData?.balance_after_deduct_percentage) }
+                            });
+                            updatesBetUserActiveArray.push({
+                                conditionValue: userPredData.betting_active_users_id,
+                                set: { status: 1 }
+                            });
+                            betActiveUserIds.push(userPredData.betting_active_users_id);
+                            valuesArrayUserTransaction.push([user_transaction_history, amountToDeduct, userPredData?.user_id, 'game_play_deduct']);
+                        });
+
+                        // Insert bet prediction history
+                        const insertData = {
+                            column: ["id", "user_id", "min", "betting_active_users_id", "option_name", "amount", "bet_id", "status", "game_type", "game_result_id"],
+                            valuesArray: valuesArray,
+                            tableName: 'bet_prediction_history'
                         };
 
-                        // Perform the update
-                        updateCommonApiCall(dataToSend)
+                        bulkInsertCommonApiCall(insertData)
                             .then(() => {
-                                console.log('Status updated to 0 for IDs:', betPredictionHistoryIdsArray);
+                                console.log('Inserted IDs:', betPredictionHistoryIdsArray);
+
+                                // Schedule status update after 1 minute
+                                setTimeout(() => {
+                                    const setData = `status = ?`;
+                                    const whereCondition = `id IN (${betPredictionHistoryIdsArray.map(() => '?').join(',')})`;
+                                    const values = [0, ...betPredictionHistoryIdsArray];
+                                    const dataToSend = {
+                                        column: setData,
+                                        value: values,
+                                        whereCondition: whereCondition,
+                                        tableName: 'bet_prediction_history',
+                                    };
+
+                                    updateCommonApiCall(dataToSend)
+                                        .then(() => {
+                                            console.log('Status updated to 0 for IDs:', betPredictionHistoryIdsArray);
+
+                                            // Update betting_active_users status
+                                            const setDataActive = `status = ?`;
+                                            const whereConditionActive = `id IN (${betActiveUserIds.map(() => '?').join(',')})`;
+                                            const dataToSendActive = {
+                                                column: setDataActive,
+                                                value: [3, ...betActiveUserIds],
+                                                whereCondition: whereConditionActive,
+                                                tableName: 'betting_active_users'
+                                            };
+
+                                            updateCommonApiCall(dataToSendActive)
+                                                .then(() => {
+
+                                                    Object.keys(userSocketIdsObject).forEach((key) => {
+                                                        if (userSocketIdsObject[key] && Array.isArray(allSelectedGroupUserData)) {
+                                                            userSocketIdsObject[key].emit('message', JSON.stringify({
+                                                                selectedGroup: [...allSelectedGroupUserData], // Ensure userIdsArray exists
+                                                                type: "USER_BETTING_TIME_END",
+                                                            }));
+                                                        }
+                                                    });
+
+                                                    actionToRunCheckForAliveUsers(); // Restart checking for alive users
+                                                })
+                                                .catch((error) => {
+                                                    console.error('Error updating status:', error);
+                                                });
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error updating status:', error);
+                                        });
+                                }, totalTimeUntilNextMinute);
                             })
                             .catch((error) => {
-                                console.error('Error updating status:', error);
+                                console.error('Error:', error);
                             });
 
-                        //////// GET GAME BALANCE AND DELETE ACTIVE USERS ///////////
-                        whereCondition = `id IN (${betActiveUserIds.map(() => '?').join(',')})`;
-                        deleteCommonApiCall({ condition:whereCondition, tableName:'betting_active_users', values: [...betActiveUserIds] })
+                        // Update user game balance
+                        const updateData = { tableName: "app_user", updates: updatesArray, conditionColumn: "id" };
+                        bulkUpdateCommonApiCall(updateData)
+                            .then((response) => console.log("Bulk update successful:", response))
+                            .catch((error) => console.error("Bulk update error:", error));
+
+                        // Insert user transaction history
+                        const insertUserTransData = {
+                            column: ["id", "amount", "user_id", "type"],
+                            valuesArray: valuesArrayUserTransaction,
+                            tableName: 'user_transaction_history'
+                        };
+                        bulkInsertCommonApiCall(insertUserTransData)
+                            .then(() => console.log("User transaction history inserted."))
+                            .catch((error) => console.error('Error:', error));
+
+                        // Update betting_active_users status
+                        const updateAllBetUserActiveData = {
+                            tableName: "betting_active_users",
+                            conditionColumn: "id",
+                            updates: updatesBetUserActiveArray
+                        };
+                        bulkUpdateCommonApiCall(updateAllBetUserActiveData)
                             .then(() => {
-                                console.log('Status updated to 0 for IDs:', betActiveUserIds);
+                                Object.keys(userSocketIdsObject).forEach((key) => {
+                                    if (userSocketIdsObject[key] && Array.isArray(allSelectedGroupUserData)) {
+                                        userSocketIdsObject[key].emit('message', JSON.stringify({
+                                            selectedGroup: [...allSelectedGroupUserData], // Ensure userIdsArray exists
+                                            type: "USER_BETTING_DATA_RECEIVED",
+                                        }));
+                                    }
+                                });
                             })
-                            .catch((error) => {
-                                console.error('Error updating status:', error);
-                            });
-                        //////// GET GAME BALANCE AND DELETE ACTIVE USERS ///////////
-                    }, totalTimeUntilNextMinute); // Delay of 1 minute from now
-                    /////// UPDATE BET DATA AFTER 1 MINUTE //////////
-
-                    //////////// UPDATE USER GAME BALANCE ///////////
-                    const updateData = {tableName: "app_user", updates: updatesArray,conditionColumn: "id"};
-                    bulkUpdateCommonApiCall(updateData)
-                        .then((response) => console.log("Bulk update successful:", response))
-                        .catch((error) => console.error("Bulk update error:", error));
-                    //////////// UPDATE USER GAME BALANCE ///////////
-
-                    /////////// INSERT USER TOTAL TRANSACTION DATA ////////
-                    const insertUserTransData = {column: ["id","amount", "user_id","type"], valuesArray: valuesArrayUserTransaction, tableName: 'user_transaction_history'};
-                    bulkInsertCommonApiCall(insertUserTransData)
-                        .then(() => {})
-                        .catch((error) => {console.error('Error:', error)});
-                    /////////// INSERT USER TOTAL TRANSACTION DATA ////////
-
-
-                    //////////// UPDATE USER GAME BALANCE ///////////
-                    const updateAllBetUserActiveData = {tableName: "betting_active_users", conditionColumn: "id", updates: updatesBerUserActiveArray};
-                    bulkUpdateCommonApiCall(updateAllBetUserActiveData)
-                        .then((response) => console.log("Bulk update successful:", response))
-                        .catch((error) => console.error("Bulk update error:", error));
-                    //////////// UPDATE USER GAME BALANCE ///////////
-
-
-                }).catch((error) => {
-                console.error('Error:', error);
-            });
+                            .catch((error) => console.error("Bulk update error:", error));
+                    })
+                    .catch((error) => {
+                        console.error('Error inserting game result:', error);
+                        actionToRunCheckForAliveUsers(); // Restart checking for alive users
+                    });
+            }, totalTimeUntilNextMinute);
         })
-        ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-    }
-
-}
-
-export const actionToDeactivateSingleBetting = () => {
-    let condition = `status = ?`; // Use parameterized placeholder
-    let tableName = "betting_active_users";
-    deleteCommonApiCall({ condition, tableName, values: [2] }).then(()=>{})
-}
-
-const actionToGetAllAliveUserDataFromBetLive = () => {
-    pool.query(getAliveUsersQuery(), [2], (error, results) => {
-        // If there are other alive users, trigger the function
-        if (results?.length > 1) {
-            // More than 1 alive user, trigger the function
-            actionToDistributeBettingFunctionAmongUsers(results); // Replace this with the function you want to trigger
-        }else{
-            actionToDeactivateSingleBetting();
-        }
-    });
-}
-
-// Function to start the timer when the first user becomes active
-const actionToStartUserAliveCheckTimer = () => {
-    const now = new Date();
-    const currentMinutes = now.getMinutes();
-    const currentSeconds = now.getSeconds();
-    const currentMilliseconds = now.getMilliseconds();
-
-    // Calculate the time until the next 2-minute mark
-    const minutesUntilNextMark = (2 - (currentMinutes % 2)) % 2;
-    const secondsUntilNextMark = (60 - currentSeconds) % 60;
-    const millisecondsUntilNextMark = (1000 - currentMilliseconds) % 1000;
-
-    const totalTimeUntilNextMark =
-        (minutesUntilNextMark * 60 * 1000) +
-        (secondsUntilNextMark * 1000) +
-        millisecondsUntilNextMark;
-
-    setTimeout(() => {
-        actionToGetAllAliveUserDataFromBetLive();
-    }, totalTimeUntilNextMark);
-}
-
-
+        .catch((error) => {
+            console.error('Error selecting group:', error);
+        });
+};
 
 export function _getRandomUniqueIdBackendServer(length = 8) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

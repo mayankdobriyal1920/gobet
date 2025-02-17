@@ -8,12 +8,14 @@ import pool from './models/connection.js'; // MySQL connection
 import dotenv from 'dotenv';
 import commonRouter from './routers/commonRouter.js';
 import cookieParser from 'cookie-parser';
+import {actionToRunCheckForAliveUsers} from "./models/commonModel.js";
 
 dotenv.config(); // Load environment variables
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 4003;
+export let userSocketIdsObject = {};
 
 // Define allowed origins from environment variables or default to localhost
 const allowedOrigins = [
@@ -100,33 +102,26 @@ const io = new Server(server, {
         methods: ['GET', 'POST'],
         credentials: true,
     },
-});
-
-// Socket.IO Authentication Middleware
-io.use((socket, next) => {
-    const session = socket.request.session;
-    if (session && session.userSessionData) {
-        next(); // Allow connection if user is authenticated
-    } else {
-        next(new Error('Unauthorized')); // Deny connection if user is not authenticated
-    }
+    path: '/api-get-bet-socket',
 });
 
 // Socket.IO connection
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    userSocketIdsObject[socket.id] = socket;
 
     socket.on('message', (data) => {
-        console.log('Message received:', data);
         io.emit('message', data);
     });
 
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
+        if(userSocketIdsObject[socket.id]){
+            delete userSocketIdsObject[socket.id];
+        }
     });
 });
 
 // Start server
 server.listen(PORT, () => {
+    actionToRunCheckForAliveUsers();
     console.log(`Server is running on http://localhost:${PORT}`);
 });

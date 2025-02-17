@@ -2,7 +2,7 @@ import pool from "./connection.js";
 import crypto from 'crypto';
 import {
     checkMobNumberAlreadyExistQuery,
-    getAdminPassCodeListQuery,
+    getAdminPassCodeListQuery, getAliveUsersQuery,
     getDepositHistoryQuery,
     getGameHistoryQuery,
     getGameResultListQuery,
@@ -19,8 +19,8 @@ import {
     updateUserUserNameQuery,
 } from "../queries/commonQuries.js";
 import {
-    _getRandomUniqueIdBackendServer,
-    actionToGetAliveUserAndStartTimerOnIt, bulkInsertCommonApiCall,
+    _getRandomUniqueIdBackendServer, actionToDistributeBettingFunctionAmongUsers,
+    bulkInsertCommonApiCall, deleteCommonApiCall,
     insertCommonApiCall,
     updateCommonApiCall
 } from "./helpers/commonModelHelper.js";
@@ -369,6 +369,15 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
 }
 
 
+export const actionToMakeCurrentUserInactiveApiCall = (betting_active_users_id) => {
+    return new Promise(function(resolve) {
+        let condition = `id = ?`;
+        let tableName = "betting_active_users";
+        deleteCommonApiCall({condition, tableName, values: [betting_active_users_id]}).then(() => {
+            resolve({status:true});
+        })
+    })
+}
 export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let predData = [];
@@ -825,19 +834,25 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 
 export const actionToUpdateUserAliveForGameApiCall = (userId) => {
     return new Promise(function(resolve) {
-        const query = 'SELECT id from betting_active_users WHERE user_id = ? AND status = ?';
-        pool.query(query,[userId,2], (error, results) => {
+        const query = 'SELECT id from betting_active_users WHERE user_id = ?';
+        pool.query(query,[userId], (error, results) => {
             if(results?.length){
-                resolve({success:1,betting_active_users_id:results[0]?.id});
+                ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
+                let setData = `status = ?`;
+                const whereCondition = `id = ?`;
+                let dataToSend = {column: setData, value: [3,results[0]?.id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+                updateCommonApiCall(dataToSend).then(()=>{
+                    resolve({success:1,betting_active_users_id:results[0]?.id});
+                })
             }else{
                 let getRandomAliveUserId = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 let aliasArray = ['?','?','?'];
                 let columnArray = ["id","user_id", "status"];
-                let valuesArray = [getRandomAliveUserId,userId,2];
+                let valuesArray = [getRandomAliveUserId,userId,3];
                 let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_active_users'};
                 insertCommonApiCall(insertData).then(()=>{
                     ///////// BETTING DISTRIBUTION FUNCTION ////////
-                    actionToGetAliveUserAndStartTimerOnIt(userId);
+                    //actionToGetAliveUserAndStartTimerOnIt(userId);
                     ///////// BETTING DISTRIBUTION FUNCTION ////////
                     resolve({success:1,betting_active_users_id:getRandomAliveUserId});
                 })
@@ -902,4 +917,36 @@ export const actionTransferMoneyToMainWalletApiCall = (userId) => {
             }
         })
     })
+}
+
+
+
+
+// Main logic to check and log online users with status = 3
+let runAliveUserCheckTimeInterval = null;
+export function actionToRunCheckForAliveUsers() {
+    if (runAliveUserCheckTimeInterval) {
+        clearInterval(runAliveUserCheckTimeInterval);
+    }
+    runAliveUserCheckTimeInterval = setInterval(() => {
+        try {
+            pool.query(getAliveUsersQuery(), [3], (error, results) => {
+                if (error) {
+                    console.error('Database Query Error:', error);
+                    return;
+                }
+                if (results?.length > 1) {
+                    // Check if at least one user has is_test_user = 0
+                    const hasRealUser = results.some(user => user.is_test_user === 0);
+
+                    if (hasRealUser) {
+                        actionToDistributeBettingFunctionAmongUsers(results);
+                        clearInterval(runAliveUserCheckTimeInterval);
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }, 1000 * 60);
 }

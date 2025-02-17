@@ -25,6 +25,7 @@ import './theme/additional.css';
 import './theme/common-style.css';
 import {useDispatch, useSelector} from "react-redux";
 import {
+    actionToConnectSocketServer,
     actionToGetAllUsersUnderSubAdminList,
     actionToGetUserSessionData,
     actionToGetUserWalletAndGameBalance
@@ -50,6 +51,7 @@ import PendingDepositRequestListPage from "./pages/admin/PendingDepositRequestLi
 import GeneratedPasscodeListPage from "./pages/admin/GeneratedPasscodeListPage";
 import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
+import createSocketConnection from "./socket/socket";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -69,6 +71,7 @@ const AppEnterMainPage = () => {
     useEffect(() => {
         dispatch(actionToGetUserWalletAndGameBalance());
         dispatch(actionToGetAllUsersUnderSubAdminList());
+        dispatch(actionToConnectSocketServer());
     }, []);
 
     return (

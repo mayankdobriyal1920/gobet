@@ -269,10 +269,12 @@ export const getAliveUsersQuery = () => {
             betting_active_users.id as betting_active_users_id,
             app_user.id as id,
             app_user.name as name,
+            app_user.phone_number as uid,
+            app_user.is_test_user as is_test_user,
             app_user.betting_balance as balance
         FROM betting_active_users
-                 LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
-        WHERE betting_active_users.status = ?
+        LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
+        WHERE betting_active_users.status = ? AND app_user.betting_balance > 100
         GROUP BY betting_active_users.user_id
         ORDER BY betting_active_users.created_at DESC;
     `;

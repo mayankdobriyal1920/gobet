@@ -1,8 +1,12 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {IonContent, IonHeader, IonPage} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetUserBetPredictionData, actionToGetUserBetPredictionHistory} from "../redux/CommonAction";
+import {
+    actionToGetUserBetPredictionData,
+    actionToGetUserBetPredictionHistory,
+    actionToMakeCurrentUserInactive
+} from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
 import LineLoaderComponent from "../components/LineLoaderComponent";
@@ -22,6 +26,9 @@ export default function WinAndGoBettingMainPage() {
     useEffect(() => {
         dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
         dispatch(actionToGetUserBetPredictionHistory());
+        return ()=>{
+            dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
+        }
     }, [betting_active_users_id]);
 
     return (
@@ -111,33 +118,39 @@ export default function WinAndGoBettingMainPage() {
                                                   d="M29.066 25.2993C28.966 24.2493 29.366 23.266 30.066 22.5827C30.6827 21.9493 31.5327 21.5827 32.466 21.5827H35.8327V19.1827C35.8327 15.7327 33.016 12.916 29.566 12.916H10.4327C6.98268 12.916 4.16602 15.7327 4.16602 19.1827V30.3993C4.16602 33.8493 6.98268 36.666 10.4327 36.666H29.566C33.016 36.666 35.8327 33.8493 35.8327 30.3993V28.416H32.666C30.866 28.416 29.216 27.0993 29.066 25.2993ZM22.4167 22.5H10.75C10.0667 22.5 9.5 21.9333 9.5 21.25C9.5 20.5667 10.0667 20 10.75 20H22.4167C23.1 20 23.6667 20.5667 23.6667 21.25C23.6667 21.9333 23.1 22.5 22.4167 22.5Z"
                                                   fill="var(--main-color)"></path>
                                         </svg>
-                                        <div>Current game play balance</div>
+                                        <div>Bsetting balance</div>
                                     </div>
                                 </div>
                             </div>
                             <div className="Betting__C">
                                 {/*///////// WAITING MODE SECTION /////////*/}
                                 {(status === 3) ?
-                                    <div className="Betting__C-mark">
-                                        <div>W</div>
-                                        <div>A</div>
-                                        <div>I</div>
-                                        <div>T</div>
-                                    </div>
+                                    <React.Fragment>
+                                        <div className="Betting__C-mark">
+                                            <div>W</div>
+                                            <div>A</div>
+                                            <div>I</div>
+                                            <div>T</div>
+                                            <button onClick={goBack} type={"button"}
+                                                    className={"exit-from-game-button"}>
+                                                EXIT GAME
+                                            </button>
+                                        </div>
+                                    </React.Fragment>
                                     : (status === 2) ?
                                         <div className="Betting__C-mark ready_state">
-                                            <div>{_formatTimeMMSS(readyState)[0]}</div>
-                                            <div>{_formatTimeMMSS(readyState)[1]}</div>
-                                            <div>{_formatTimeMMSS(readyState)[2]}</div>
-                                            <div>{_formatTimeMMSS(readyState)[3]}</div>
-                                            <div>{_formatTimeMMSS(readyState)[4]}</div>
+                                            <div>R</div>
+                                            <div>E</div>
+                                            <div>A</div>
+                                            <div>D</div>
+                                            <div>Y</div>
                                         </div>
                                         : ''
                                 }
                                 {/*///////// WAITING MODE SECTION /////////*/}
                                 <div className={"Betting__C-numC"}>
                                     <div className="Betting__C-numC-head">
-                                    Bet Prediction Tip
+                                        Bet Prediction Tip
                                     </div>
                                     <div className={"GameList__C"}>
                                         <div className={"GameList__C-item active"}>

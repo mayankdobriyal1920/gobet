@@ -41,6 +41,7 @@ import {
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS, USER_MONEY_TRANSACTIONS_REQUEST, USER_MONEY_TRANSACTIONS_SUCCESS
 } from "./CommonConstants";
+import createSocketConnection from "../socket/socket";
 const api = Axios.create({
     baseURL: 'https://121tuition.in/api-get-bet/common/',
     withCredentials:true
@@ -451,6 +452,7 @@ export const actionToCompleteStatusOfDepositRequest = (id,callFunctionToReloadLi
         console.log(error);
     }
 }
+
 export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
     dispatch({type: ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST});
     try {
@@ -489,9 +491,6 @@ export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => 
         if (elapsedSeconds >= 60) {
             clearInterval(betStateTimeInterval); // Stop the interval
             dispatch({ type: USER_BET_PREDICTION_STATUS_WAITING });
-            /////// call set timer for waiting state ///////
-            dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id, 0));
-            /////// call set timer for waiting state ///////
         } else {
             // Dispatch the remaining seconds as a countdown from 60
             dispatch({
@@ -502,54 +501,47 @@ export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => 
     }, 1000); // Execute the interval every 1 second
 }
 
-let readyStateTimeInterval = null
-
-export const actionToStartTimeIntervalReadyStateTimer = () => async (dispatch, getState) => {
-    // Retrieve the previous date-time from the Redux state
-    let prevDateTime = getState().userBetPredictionStatus.readyStateDateTime;
-
-    // Start an interval to calculate the seconds difference
-    readyStateTimeInterval = setInterval(() => {
-        // Get the current time
-        let currentDateTime = new Date();
-
-        // Calculate the difference in seconds between the current and previous time
-        let secondCount = Math.floor((currentDateTime - new Date(prevDateTime)) / 1000);
-
-        // Check if the interval has reached 120 seconds (2 minutes)
-        if (secondCount >= 120) {
-            clearInterval(readyStateTimeInterval); // Stop the interval
-        } else {
-            // Dispatch the remaining seconds as a countdown
-            dispatch({
-                type: USER_BET_PREDICTION_STATUS_READY_TIMER,
-                payload: 120 - secondCount, // Countdown to 120 seconds
-            });
-        }
-    }, 1000); // Execute the interval every 1 second
+export const actionToMakeCurrentUserInactive = (betting_active_users_id) => async () => {
+    api.post(`actionToMakeCurrentUserInactiveApiCall`, {betting_active_users_id});
 }
+export const actionToConnectSocketServer = () => async (dispatch,getState) => {
+    const socket = createSocketConnection();
+    socket.on('connect', () => {
+        console.log('Connected to socket server:', socket.id);
+    });
+
+    socket.on('message', (data) => {
+        let websocketData = JSON.parse(data);
+        console.log('websocketData ---- message received -----',websocketData)
+        switch (websocketData?.type) {
+            case 'USER_DATA_FOR_READY_STATE':
+            case 'USER_BETTING_DATA_RECEIVED':
+            case 'USER_BETTING_TIME_END':
+                if (websocketData?.selectedGroup?.length) {
+                    const userIdsArray = websocketData.selectedGroup.map(user => user.id);
+
+                    if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
+                        let currentUserBetData = websocketData.selectedGroup.find((user) =>
+                            user?.id === getState().userAuthDetail?.userInfo?.id
+                        );
+
+                        if (currentUserBetData?.betting_active_users_id) {
+                            dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
+                        }
+                    }
+                }
+                break;
+        }
+    });
 
 
-let getPredictionTimeOut = null;
-
-export const actionToRecallTimeoutForGetBetUser = (betting_active_users_id,wait = 1000) => async (dispatch) => {
-    /////////// CHECK REGULAR FOR BET PROGRESS ////////
-    getPredictionTimeOut = setTimeout(() => {
-        dispatch(actionToGetUserBetPredictionData(betting_active_users_id));
-    },wait)
-    /////////// CHECK REGULAR FOR BET PROGRESS ////////
+    socket.on('disconnect', () => {
+        console.log('Disconnected from socket server');
+    });
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
 
     function clearAllTimeOut(){
-        if(getPredictionTimeOut) {
-            clearTimeout(getPredictionTimeOut);
-            getPredictionTimeOut = null
-        }
-        if(readyStateTimeInterval) {
-            clearInterval(readyStateTimeInterval);
-            readyStateTimeInterval = null;
-        }
         if(betStateTimeInterval) {
             clearInterval(betStateTimeInterval);
             betStateTimeInterval = null;
@@ -571,36 +563,17 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                     if(responseData?.data.prediction?.status === 3){
                         clearAllTimeOut();
                         dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
-                        /////// call set timer for waiting state ///////////
-                        dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
-                        /////// call set timer for waiting state ///////////
                     }else if(responseData?.data.prediction?.status === 2){
                         if(betStateTimeInterval) {
                             clearInterval(betStateTimeInterval);
                             betStateTimeInterval = null;
                         }
-                        if(!readyStateTimeInterval) {
-                            dispatch({type: USER_BET_PREDICTION_STATUS_READY});
-                            dispatch(actionToStartTimeIntervalReadyStateTimer(betting_active_users_id));
-                        }
-                        /////// call set timer for waiting state ///////////
-                        dispatch(actionToRecallTimeoutForGetBetUser(betting_active_users_id));
-                        /////// call set timer for waiting state ///////////
+                        dispatch({type: USER_BET_PREDICTION_STATUS_READY});
                     }else if(responseData?.data.prediction?.status === 1) {
-                        if(readyStateTimeInterval) {
-                            clearInterval(readyStateTimeInterval);
-                            readyStateTimeInterval = null;
-                        }
                         if(!betStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
                             dispatch(actionToStartTimeIntervalOfUserTime(betting_active_users_id));
                         }
-                        ///////// REMOVE TIME OUT TIMER ON FOUND STATE ///////////
-                        if(getPredictionTimeOut){
-                            clearTimeout(getPredictionTimeOut);
-                            getPredictionTimeOut = null;
-                        }
-                        ///////// REMOVE TIME OUT TIMER ON FOUND STATE ///////////
                     }else if(responseData?.data.prediction?.status === 0 || responseData?.data.prediction?.status === 4) {
                         clearAllTimeOut();
                         dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});

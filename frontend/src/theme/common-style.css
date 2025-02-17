@@ -2122,3 +2122,15 @@ ion-alert .alert-button-group .alert-button {
     width: 85%;
     padding: 0.3rem;
 }
+.exit-from-game-button {
+    height: 74px;
+    background: var(--ion-color-primary);
+    position: absolute;
+    bottom: 35px;
+    width: 237px;
+    color: #ffffff;
+    font-size: .42rem;
+    display: block;
+    font-weight: 600;
+    border-radius: 8px;
+}

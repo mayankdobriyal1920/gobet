@@ -34,7 +34,9 @@ import {
     actionToGeneratePasscodeRequestBySubAdminApiCall,
     actionToGetAllUsersNormalAndSubAdminListApiCall,
     actionToUpdateUserRoleApiCall,
-    actionToApprovePasscodeRequestAndGeneratePasscodeApiCall, actionToGetMoneyTransactionDataApiCall
+    actionToApprovePasscodeRequestAndGeneratePasscodeApiCall,
+    actionToGetMoneyTransactionDataApiCall,
+    actionToMakeCurrentUserInactiveApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -422,6 +424,20 @@ commonRouter.post(
         }else{
             res.status(200).send({
                 success:5,
+            });
+        }
+    })
+);
+commonRouter.post(
+    '/actionToMakeCurrentUserInactiveApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id && req.body.betting_active_users_id) {
+            actionToMakeCurrentUserInactiveApiCall(req.body.betting_active_users_id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success:false,
             });
         }
     })
