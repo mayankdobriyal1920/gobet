@@ -477,29 +477,25 @@ export const actionToGetAllUsersNormalAndSubAdminList = (payload = {}) => async 
 
 let betStateTimeInterval = null;
 
-export const actionToStartTimeIntervalOfUserTime = (betting_active_users_id) => async (dispatch) => {
-    // Capture the starting time
-    const startTime = new Date();
+export const actionToStartTimeIntervalOfUserTime = (createdAt) => async (dispatch) => {
+    let dataOfCreation = new Date(createdAt);
+    const startTime = dataOfCreation.getTime(); // ✅ Correct way to get the timestamp
 
-    // Start an interval to calculate the seconds difference
     betStateTimeInterval = setInterval(() => {
-        const currentTime = new Date();
-        // Calculate the elapsed time in seconds
-        const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000); // ✅ Correct elapsed time calculation
 
-        // Check if the interval has reached 60 seconds
         if (elapsedSeconds >= 60) {
-            clearInterval(betStateTimeInterval); // Stop the interval
+            clearInterval(betStateTimeInterval);
             dispatch({ type: USER_BET_PREDICTION_STATUS_WAITING });
         } else {
-            // Dispatch the remaining seconds as a countdown from 60
             dispatch({
                 type: USER_BET_PREDICTION_STATUS_TIMER,
-                payload: 60 - elapsedSeconds, // Countdown from 60 seconds
+                payload: 60 - elapsedSeconds, // ✅ Countdown from 60 seconds
             });
         }
-    }, 1000); // Execute the interval every 1 second
+    }, 1000);
 }
+
 
 export const actionToMakeCurrentUserInactive = (betting_active_users_id) => async () => {
     api.post(`actionToMakeCurrentUserInactiveApiCall`, {betting_active_users_id});
@@ -512,7 +508,6 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
 
     socket.on('message', (data) => {
         let websocketData = JSON.parse(data);
-        console.log('websocketData ---- message received -----',websocketData)
         switch (websocketData?.type) {
             case 'USER_DATA_FOR_READY_STATE':
             case 'USER_BETTING_DATA_RECEIVED':
@@ -564,15 +559,12 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,loading
                         clearAllTimeOut();
                         dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
                     }else if(responseData?.data.prediction?.status === 2){
-                        if(betStateTimeInterval) {
-                            clearInterval(betStateTimeInterval);
-                            betStateTimeInterval = null;
-                        }
+                        clearAllTimeOut();
                         dispatch({type: USER_BET_PREDICTION_STATUS_READY});
                     }else if(responseData?.data.prediction?.status === 1) {
                         if(!betStateTimeInterval) {
                             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
-                            dispatch(actionToStartTimeIntervalOfUserTime(betting_active_users_id));
+                            dispatch(actionToStartTimeIntervalOfUserTime(responseData?.data?.prediction?.created_at));
                         }
                     }else if(responseData?.data.prediction?.status === 0 || responseData?.data.prediction?.status === 4) {
                         clearAllTimeOut();

@@ -129,6 +129,7 @@ function distributeBetAmount(members, distributionBetAmount) {
         finalMemberBetDistributionObject.push({
             user_id: member.id,
             name: member.name,
+            is_test_user: member.is_test_user,
             min:1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'SMALL',
@@ -144,6 +145,7 @@ function distributeBetAmount(members, distributionBetAmount) {
         finalMemberBetDistributionObject.push({
             user_id: member.id,
             name: member.name,
+            is_test_user: member.is_test_user,
             min:1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'BIG',

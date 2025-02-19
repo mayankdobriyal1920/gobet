@@ -304,6 +304,12 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData) => {
                 return generateRandomGroup(); // Retry if no users are selected
             }
 
+            const hasRealUser = selectedGroup.some(user => user.is_test_user === 0);
+
+            if (!hasRealUser) {
+                return generateRandomGroup(); // Retry if no users are selected
+            }
+
             // Generate a unique group ID based on sorted phone numbers
             const phoneNumbers = selectedGroup.map(user => user.uid);
             const betActiveUserIds = selectedGroup.map(user => user.betting_active_users_id);
@@ -419,10 +425,12 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) =>
 
                             betPredictionHistoryIdsArray.push(bet_prediction_history_id);
                             valuesArray.push([bet_prediction_history_id, userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id, 1, 'win_go', game_result_id]);
-                            updatesArray.push({
-                                conditionValue: userPredData.user_id,
-                                set: { betting_balance: Number(userPredData?.balance_after_deduct_percentage) }
-                            });
+                            if(!userPredData?.is_test_user) {
+                                updatesArray.push({
+                                    conditionValue: userPredData.user_id,
+                                    set: {betting_balance: Number(userPredData?.balance_after_deduct_percentage)}
+                                });
+                            }
                             updatesBetUserActiveArray.push({
                                 conditionValue: userPredData.betting_active_users_id,
                                 set: { status: 1 }
@@ -442,7 +450,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) =>
                             .then(() => {
                                 console.log('Inserted IDs:', betPredictionHistoryIdsArray);
 
-                                // Schedule status update after 1 minute
+                                /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
                                 setTimeout(() => {
                                     const setData = `status = ?`;
                                     const whereCondition = `id IN (${betPredictionHistoryIdsArray.map(() => '?').join(',')})`;
@@ -490,6 +498,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) =>
                                             console.error('Error updating status:', error);
                                         });
                                 }, totalTimeUntilNextMinute);
+                                /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
                             })
                             .catch((error) => {
                                 console.error('Error:', error);

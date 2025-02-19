@@ -925,28 +925,35 @@ export const actionTransferMoneyToMainWalletApiCall = (userId) => {
 // Main logic to check and log online users with status = 3
 let runAliveUserCheckTimeInterval = null;
 export function actionToRunCheckForAliveUsers() {
-    if (runAliveUserCheckTimeInterval) {
-        clearInterval(runAliveUserCheckTimeInterval);
-    }
-    runAliveUserCheckTimeInterval = setInterval(() => {
-        try {
-            pool.query(getAliveUsersQuery(), [3], (error, results) => {
-                if (error) {
-                    console.error('Database Query Error:', error);
-                    return;
-                }
-                if (results?.length > 1) {
-                    // Check if at least one user has is_test_user = 0
-                    const hasRealUser = results.some(user => user.is_test_user === 0);
-
-                    if (hasRealUser) {
-                        actionToDistributeBettingFunctionAmongUsers(results);
-                        clearInterval(runAliveUserCheckTimeInterval);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error:', error);
+    const currentTime = new Date();
+    const currentSeconds = currentTime.getSeconds();
+    const currentMilliseconds = currentTime.getMilliseconds();
+    const secondsUntilNextMinute = (60 - currentSeconds) % 60;
+    const millisecondsUntilNextMinute = (1000 - currentMilliseconds) % 1000;
+    const totalTimeUntilNextMinute = (secondsUntilNextMinute * 1000) + millisecondsUntilNextMinute;
+    setTimeout(()=> {
+        if (runAliveUserCheckTimeInterval) {
+            clearInterval(runAliveUserCheckTimeInterval);
         }
-    }, 1000 * 60);
+        runAliveUserCheckTimeInterval = setInterval(() => {
+            try {
+                pool.query(getAliveUsersQuery(), [3], (error, results) => {
+                    if (error) {
+                        console.error('Database Query Error:', error);
+                        return;
+                    }
+                    if (results?.length > 1) {
+                        // Check if at least one user has is_test_user = 0
+                        const hasRealUser = results.some(user => user.is_test_user === 0);
+                        if (hasRealUser) {
+                            actionToDistributeBettingFunctionAmongUsers(results);
+                            clearInterval(runAliveUserCheckTimeInterval);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }, 1000 * 60);
+    },totalTimeUntilNextMinute)
 }
