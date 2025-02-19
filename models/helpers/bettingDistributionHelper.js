@@ -1,116 +1,91 @@
-
 function generateTimeBasedId() {
     const now = new Date();
-
-    // Get components of the current date
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
-    const day = String(now.getDate()).padStart(2, '0'); // Pad day with leading zero
-
-    // Calculate minutes since midnight
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
     const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-
-    // Calculate the dynamic counter
     const counter = 10000 + minutesSinceMidnight;
-
-    // Combine components to form the ID
-    return `${year}${month}${day}1000${counter+1}`;
+    return `${year}${month}${day}1000${counter + 1}`;
 }
-
-
 
 export function calculateUserBetAmount(members) {
     if (!members || members.length === 0) {
         throw new Error('Members list cannot be empty.');
     }
 
-    // Extract balances from the member objects
-    const minBalance = Math.min(...members.map(member => member.balance));
-    const totalMembers = members.length; // Total number of members
+    // Ensure members have at least 100 balance
+    const validMembers = members.filter(member => member.balance >= 100);
+    if (validMembers.length === 0) {
+        throw new Error('No members have sufficient balance.');
+    }
 
-    // Calculate the valid range for the total bet amount
-    const minBetAmount = 100 * totalMembers; // Minimum bet amount
-    const maxBetAmount = Math.floor(minBalance / 100) * 100 * totalMembers; // Max bet, rounded to nearest 100
+    const totalMembers = validMembers.length;
+    const minBetAmount = 100 * totalMembers;
+    const maxBetAmount = Math.min(...validMembers.map(m => Math.floor(m.balance / 100) * 100)) * totalMembers;
 
     if (minBetAmount > maxBetAmount) {
         throw new Error('Invalid member balances: Minimum bet exceeds maximum bet range.');
     }
 
-    // Generate a random bet amount within the valid range, divisible by 100
     let totalBetAmount;
     do {
-        totalBetAmount =
-            Math.floor(Math.random() * ((maxBetAmount - minBetAmount) / 100 + 1)) * 100 + minBetAmount;
-    } while (totalBetAmount % 100 !== 0); // Ensure divisibility by 100
+        totalBetAmount = Math.floor(Math.random() * ((maxBetAmount - minBetAmount) / 100 + 1)) * 100 + minBetAmount;
+    } while (totalBetAmount % 100 !== 0);
 
-    // Calculate 50% for each option
     const smallBet = totalBetAmount / 2;
     const bigBet = totalBetAmount / 2;
 
-    return distributeBetAmount(members,{
+    return distributeBetAmount(validMembers, {
         total: totalBetAmount,
         small: smallBet,
         big: bigBet,
     });
 }
 
-export function divideAmount(amount, parts) {
-    let divisions = [];
+function divideAmount(amount, parts, members) {
+    let divisions = new Array(parts).fill(0);
     let remainingAmount = amount;
 
-    // Generate random parts that sum up to 'amount'
     for (let i = 0; i < parts - 1; i++) {
-        // Generate a random integer part between 1 and remainingAmount (exclusive)
-        let part = Math.floor(Math.random() * remainingAmount) + 1;
-        divisions.push(part);
+        let maxAllocatable = Math.min(remainingAmount, members[i].balance);
+        let part = Math.floor(Math.random() * maxAllocatable) + 1;
+        divisions[i] = part;
         remainingAmount -= part;
     }
-
-    // The last part takes whatever is left
-    divisions.push(remainingAmount);
-
+    divisions[parts - 1] = remainingAmount;
     return divisions;
 }
 
 function distributeBetAmount(members, distributionBetAmount) {
-
-    // Sort members by balance
     members.sort((a, b) => a.balance - b.balance);
-
-    // Split members into two groups: 'small' and 'big'
     let resultMemberInBet = { small: [], big: [] };
     let curIndex = Math.random() < 0.5 ? 'small' : 'big';
-    members.forEach((member) => {
+
+    members.forEach(member => {
         resultMemberInBet[curIndex].push(member);
-        curIndex = (curIndex === 'small') ? 'big' : 'small';
+        curIndex = curIndex === 'small' ? 'big' : 'small';
     });
 
-    // Calculate the total members in each group
     let totalSmallMembers = resultMemberInBet.small.length;
     let totalBigMembers = resultMemberInBet.big.length;
 
-    // Divide the bet amounts randomly for each group
-    let smallRandomDivide = divideAmount(distributionBetAmount.small, totalSmallMembers);
-    let bigRandomDivide = divideAmount(distributionBetAmount.big, totalBigMembers);
+    let smallRandomDivide = divideAmount(distributionBetAmount.small, totalSmallMembers, resultMemberInBet.small);
+    let bigRandomDivide = divideAmount(distributionBetAmount.big, totalBigMembers, resultMemberInBet.big);
 
-    // Function to adjust bet amounts if balance is insufficient
     function adjustAmounts(group, randomDivide) {
-        let adjustedDivide = [...randomDivide]; // Copy the divide array
+        let adjustedDivide = [...randomDivide];
         for (let i = 0; i < group.length; i++) {
             const member = group[i];
             if (adjustedDivide[i] > member.balance) {
-                // Calculate the excess amount
                 let excess = adjustedDivide[i] - member.balance;
-                adjustedDivide[i] = member.balance; // Set to max possible for this member
-
-                // Redistribute the excess among other members
+                adjustedDivide[i] = member.balance;
                 for (let j = 0; j < group.length; j++) {
                     if (j !== i && adjustedDivide[j] < group[j].balance) {
-                        const available = group[j].balance - adjustedDivide[j];
-                        const redistribute = Math.min(available, excess);
+                        let available = group[j].balance - adjustedDivide[j];
+                        let redistribute = Math.min(available, excess);
                         adjustedDivide[j] += redistribute;
                         excess -= redistribute;
-                        if (excess <= 0) break; // Stop redistribution if no excess remains
+                        if (excess <= 0) break;
                     }
                 }
             }
@@ -118,11 +93,9 @@ function distributeBetAmount(members, distributionBetAmount) {
         return adjustedDivide;
     }
 
-    // Adjust bet amounts for each group
     smallRandomDivide = adjustAmounts(resultMemberInBet.small, smallRandomDivide);
     bigRandomDivide = adjustAmounts(resultMemberInBet.big, bigRandomDivide);
 
-    // Assign the adjusted amounts to members
     let finalMemberBetDistributionObject = [];
 
     resultMemberInBet.small.forEach((member, index) => {
@@ -130,14 +103,14 @@ function distributeBetAmount(members, distributionBetAmount) {
             user_id: member.id,
             name: member.name,
             is_test_user: member.is_test_user,
-            min:1,
+            min: 1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'SMALL',
             amount: smallRandomDivide[index],
             balance: member.balance - smallRandomDivide[index],
-            balance_after_deduct_percentage: Number(member.balance) - Math.round(0.02 * Number(smallRandomDivide[index])) - Number(smallRandomDivide[index]),
-            bet_id:generateTimeBasedId(),
-            total_bet_amount:distributionBetAmount.total,
+            balance_after_deduct_percentage: member.balance - Math.round(0.02 * smallRandomDivide[index]) - smallRandomDivide[index],
+            bet_id: generateTimeBasedId(),
+            total_bet_amount: distributionBetAmount.total,
         });
     });
 
@@ -146,14 +119,14 @@ function distributeBetAmount(members, distributionBetAmount) {
             user_id: member.id,
             name: member.name,
             is_test_user: member.is_test_user,
-            min:1,
+            min: 1,
             betting_active_users_id: member.betting_active_users_id,
             option_name: 'BIG',
             amount: bigRandomDivide[index],
             balance: member.balance - bigRandomDivide[index],
-            balance_after_deduct_percentage: Number(member.balance) - Math.round(0.02 * Number(bigRandomDivide[index])) - Number(bigRandomDivide[index]),
-            bet_id:generateTimeBasedId(),
-            total_bet_amount:distributionBetAmount.total,
+            balance_after_deduct_percentage: member.balance - Math.round(0.02 * bigRandomDivide[index]) - bigRandomDivide[index],
+            bet_id: generateTimeBasedId(),
+            total_bet_amount: distributionBetAmount.total,
         });
     });
 
