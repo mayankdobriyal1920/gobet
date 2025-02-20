@@ -43,15 +43,13 @@ import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
 import DepositHistoryListPage from "./pages/DepositHistoryListPage";
-import { App as CapacitorApp } from '@capacitor/app';
 import AdminGameResultListPage from "./pages/admin/AdminGameResultListPage";
-import {useHistory} from "react-router";
 import PendingWithdrawalRequestListPage from "./pages/admin/PendingWithdrawalRequestListPage";
 import PendingDepositRequestListPage from "./pages/admin/PendingDepositRequestListPage";
 import GeneratedPasscodeListPage from "./pages/admin/GeneratedPasscodeListPage";
 import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
-import createSocketConnection from "./socket/socket";
+import AppBackButtonHandler from "./components/AppBackButtonHandler";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -76,6 +74,9 @@ const AppEnterMainPage = () => {
 
     return (
         <IonReactRouter>
+            {(Capacitor.isNativePlatform()) ?
+              <AppBackButtonHandler/> :''
+            }
             <IonRouterOutlet>
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
                 <Route exact={true} path="/win-go-betting/:betting_active_users_id" component={WinAndGoBettingMainPage}/>
@@ -94,7 +95,6 @@ const AppEnterMainPage = () => {
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>
-
         </IonReactRouter>
     );
 };

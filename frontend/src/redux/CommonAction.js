@@ -527,6 +527,11 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
                 }
                 break;
         }
+        if(websocketData?.type === "USER_BETTING_TIME_END") {
+            setTimeout(()=>{
+                dispatch(actionToGetUserWalletAndGameBalance())
+            })
+        }
     });
 
 

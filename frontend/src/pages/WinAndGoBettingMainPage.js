@@ -4,7 +4,7 @@ import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
     actionToGetUserBetPredictionData,
-    actionToGetUserBetPredictionHistory,
+    actionToGetUserBetPredictionHistory, actionToGetUserWalletAndGameBalance,
     actionToMakeCurrentUserInactive
 } from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
@@ -23,13 +23,20 @@ export default function WinAndGoBettingMainPage() {
     let readyRunningTimerRef = useRef(null);
     const goBack = ()=>{
         history.goBack();
+        dispatch(actionToGetUserWalletAndGameBalance())
+        if(status !== 2 && status !== 1) {
+            dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
+        }
     }
 
     useEffect(() => {
         dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
         dispatch(actionToGetUserBetPredictionHistory());
         return ()=>{
-            dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
+            // dispatch(actionToGetUserWalletAndGameBalance())
+            // if(status !== 2 && status !== 1) {
+            //     dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
+            // }
         }
     }, [betting_active_users_id]);
 
@@ -159,7 +166,7 @@ export default function WinAndGoBettingMainPage() {
                                     </React.Fragment>
                                     : (status === 2) ?
                                         <div className="Betting__C-mark ready_state">
-                                            {(readyRunningTimer <= 10) ?
+                                            {(readyRunningTimer <= 10 && readyRunningTimer > 0) ?
                                                 <React.Fragment>
                                                     <div>{readyRunningTimer}</div>
                                                 </React.Fragment>

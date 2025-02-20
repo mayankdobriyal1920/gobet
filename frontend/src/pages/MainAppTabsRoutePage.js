@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
     IonApp,
     IonRouterOutlet,
@@ -13,43 +13,12 @@ import { home, wallet, person } from 'ionicons/icons';
 import AccountPage from "./AccountPage";
 import WalletPage from "./WalletPage";
 import HomePage from "./HomePage";
-import {useHistory} from "react-router";
-import {Capacitor} from "@capacitor/core";
-import {App as CapacitorApp} from "@capacitor/app";
-
 
 export default function MainAppTabsRoutePage() {
     const [isFirstTimeEnterInApp,setIsFirstTimeEnterInApp] = useState(localStorage.getItem('isFirstTimeEnterInApp'));
     const closeFirstTimeScreen = ()=>{
         setIsFirstTimeEnterInApp('yes');
         localStorage.setItem('isFirstTimeEnterInApp','yes');
-    }
-
-    const history = useHistory();
-    const [showExitAlert, setShowExitAlert] = useState(false);
-
-    useEffect(()=>{
-        if(Capacitor.isNativePlatform()){
-            const backButtonListener = CapacitorApp.addListener('backButton', ({canGoBack}) => {
-                if(!canGoBack){
-                    setShowExitAlert(true);
-                } else {
-                    window.history.back();
-                }
-            });
-
-            return () => {
-                // Remove listener on unmount
-                if(backButtonListener)
-                    backButtonListener?.remove();
-            };
-        }
-    },[history])
-
-    const exitApp = ()=>{
-        if(Capacitor.isNativePlatform()){
-            CapacitorApp.exitApp();
-        }
     }
 
     return (
@@ -114,27 +83,6 @@ export default function MainAppTabsRoutePage() {
                     </IonTabBar>
                 </IonTabs>
             }
-            <IonAlert
-                isOpen={showExitAlert}
-                onDidDismiss={() => setShowExitAlert(false)} // Close the alert
-                header="Exit App"
-                message="Do you really want to exit the app?"
-                buttons={[
-                    {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        handler: () => {
-                            setShowExitAlert(false); // Close alert
-                        },
-                    },
-                    {
-                        text: 'Exit',
-                        handler: () => {
-                            exitApp(); // Exit the app
-                        },
-                    },
-                ]}
-            />
         </IonApp>
     );
 }
