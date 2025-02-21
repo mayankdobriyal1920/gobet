@@ -20,6 +20,7 @@ export default function GameTransactionPage() {
     const datetimeRef = createRef();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     const renderVirtualElement = (dataItems)=>{

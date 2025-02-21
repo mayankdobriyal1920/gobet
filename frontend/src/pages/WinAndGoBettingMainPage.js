@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {IonContent, IonHeader, IonPage} from "@ionic/react";
+import {IonContent, IonHeader, IonPage, useIonAlert} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -11,6 +11,8 @@ import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
 import LineLoaderComponent from "../components/LineLoaderComponent";
 import {_formatTimeMMSS} from "../redux/CommonHelper";
+import { App } from "@capacitor/app";
+import useAppNavigationHandler from "../hooks/useAppNavigationHandler";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
@@ -21,10 +23,18 @@ export default function WinAndGoBettingMainPage() {
     const {betting_active_users_id} = useParams();
     const [readyRunningTimer,setReadyRunningTimer] = useState(0);
     let readyRunningTimerRef = useRef(null);
+
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
         dispatch(actionToGetUserWalletAndGameBalance())
-        if(status !== 2 && status !== 1) {
+        callFunctionToHandleAppExit();
+    }
+
+    useAppNavigationHandler(goBack);
+
+    const callFunctionToHandleAppExit = ()=>{
+        if(status !== 2 && status !== 1){
             dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
         }
     }
@@ -32,12 +42,6 @@ export default function WinAndGoBettingMainPage() {
     useEffect(() => {
         dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
         dispatch(actionToGetUserBetPredictionHistory());
-        return ()=>{
-            // dispatch(actionToGetUserWalletAndGameBalance())
-            // if(status !== 2 && status !== 1) {
-            //     dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
-            // }
-        }
     }, [betting_active_users_id]);
 
     useEffect(() => {
@@ -56,6 +60,17 @@ export default function WinAndGoBettingMainPage() {
             }
         };
     }, [status]);
+
+    useEffect(()=>{
+        const handlePopState = ()=>{
+            callFunctionToHandleAppExit();
+        }
+        window.addEventListener('popstate',handlePopState);
+        return()=>{
+            window.removeEventListener('popstate',handlePopState)
+        }
+
+    },[])
 
 
     return (

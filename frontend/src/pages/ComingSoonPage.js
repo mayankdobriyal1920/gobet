@@ -7,6 +7,7 @@ export default function ComingSoonPage() {
     const history = useHistory();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     return (

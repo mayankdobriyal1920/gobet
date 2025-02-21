@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import {IonAlert, IonApp, IonLoading, IonRouterOutlet, setupIonicReact} from '@ionic/react';
+import {IonApp, IonLoading, IonRouterOutlet, setupIonicReact, useIonAlert} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
@@ -39,6 +39,7 @@ import ComingSoonPage from "./pages/ComingSoonPage";
 import GameTransactionPage from "./pages/GameTransactionPage";
 import MoneyTransactionPage from "./pages/MoneyTransactionPage";
 import {Capacitor} from "@capacitor/core";
+import {App as CapacitorApp} from "@capacitor/app";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
@@ -74,9 +75,7 @@ const AppEnterMainPage = () => {
 
     return (
         <IonReactRouter>
-            {(Capacitor.isNativePlatform()) ?
-              <AppBackButtonHandler/> :''
-            }
+            <AppBackButtonHandler/>
             <IonRouterOutlet>
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
                 <Route exact={true} path="/win-go-betting/:betting_active_users_id" component={WinAndGoBettingMainPage}/>
@@ -115,9 +114,7 @@ const App = () => {
                 StatusBar.setStyle({ style:Style.Light });
             });
         }
-
     },[])
-
 
     return (
         <IonApp>

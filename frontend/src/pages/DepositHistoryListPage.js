@@ -25,6 +25,7 @@ export default function DepositHistoryListPage() {
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     const callFunctionToApplyTypeFilter = (filter)=>{

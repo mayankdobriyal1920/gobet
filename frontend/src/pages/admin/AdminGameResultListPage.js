@@ -27,6 +27,7 @@ export default function AdminGameResultListPage() {
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     const callFunctionToApplyTypeFilter = (filter)=>{

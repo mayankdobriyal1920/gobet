@@ -371,9 +371,9 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
 
 export const actionToMakeCurrentUserInactiveApiCall = (betting_active_users_id) => {
     return new Promise(function(resolve) {
-        let condition = `id = ?`;
+        let condition = `id = ? AND status != ? AND status != ?`;
         let tableName = "betting_active_users";
-        deleteCommonApiCall({condition, tableName, values: [betting_active_users_id]}).then(() => {
+        deleteCommonApiCall({condition, tableName, values: [betting_active_users_id,1,2]}).then(() => {
             resolve({status:true});
         })
     })
@@ -839,8 +839,8 @@ export const actionToUpdateUserAliveForGameApiCall = (userId) => {
             if(results?.length){
                 ///////// GAME 1% TRANSFER TO GAME WALLET //////////////
                 let setData = `status = ?`;
-                const whereCondition = `id = ?`;
-                let dataToSend = {column: setData, value: [3,results[0]?.id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+                const whereCondition = `id = ? AND status != ? AND status != ?`;
+                let dataToSend = {column: setData, value: [3,results[0]?.id,2,1], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
                 updateCommonApiCall(dataToSend).then(()=>{
                     resolve({success:1,betting_active_users_id:results[0]?.id});
                 })

@@ -31,6 +31,7 @@ export default function GeneratedPasscodeListPage() {
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     useEffect(() => {

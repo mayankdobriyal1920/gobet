@@ -28,6 +28,7 @@ export default function AllUserListNormalAndSubAdminPage() {
     const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     const callFunctionClearToAddFilterAndGetData = () => {

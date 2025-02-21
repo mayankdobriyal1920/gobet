@@ -1,33 +1,34 @@
-import { useEffect } from 'react';
-import { App } from '@capacitor/app';
-import { useHistory } from 'react-router-dom';
-import { useIonAlert } from '@ionic/react';
+import useBlockBackButton from "../hooks/useBlockBackButton";
+import {useEffect} from "react";
+import {App as CapacitorApp} from "@capacitor/app";
+import {Capacitor} from "@capacitor/core";
+import {useIonAlert} from "@ionic/react";
 
 const AppBackButtonHandler = () => {
-    const history = useHistory();
+    useBlockBackButton();
     const [presentAlert] = useIonAlert();
 
     useEffect(() => {
-        App.addListener('backButton', ({ canGoBack }) => {
-            if (history.length > 1) {
-                history.goBack();
-            } else {
-                presentAlert({
-                    header: 'Exit App',
-                    cssClass:'custom_site_alert_toast',
-                    message: 'Are you sure you want to exit?',
-                    buttons: [
-                        { text: 'Cancel', role: 'cancel' },
-                        { text: 'Exit',role: 'confirm', handler: () => App.exitApp() },
-                    ],
-                });
-            }
-        });
+        if(Capacitor.isNativePlatform()) {
+            const backButtonListener = CapacitorApp.addListener("backButton", async (data) => {
+                if (!data.canGoBack) {
+                    presentAlert({
+                        header: 'Are you sure?',
+                        cssClass: 'custom_site_alert_toast',
+                        message: 'You want to exit the app.',
+                        buttons: [
+                            {text: 'Cancel', role: 'cancel'},
+                            {text: 'Exit', role: 'confirm', handler: () => CapacitorApp.exitApp()},
+                        ],
+                    });
+                }
+            });
 
-        return () => {
-            App.removeAllListeners();
-        };
-    }, [history, presentAlert]);
+            return () => {
+                backButtonListener.remove(); // Ensure cleanup on unmount
+            };
+        }
+    }, []);
 
     return null;
 };

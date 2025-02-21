@@ -13,6 +13,7 @@ export default function SettingPage() {
     const history = useHistory();
     const goBack = ()=>{
         history.goBack();
+        window.history.back();
     }
 
     const handleChangeAvatar = () => {
