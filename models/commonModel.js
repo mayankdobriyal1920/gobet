@@ -381,7 +381,7 @@ export const actionToMakeCurrentUserInactiveApiCall = (betting_active_users_id) 
 export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
         let predData = [];
-        const query = `SELECT * from bet_prediction_history WHERE user_id = ? AND status = ? AND game_type = ?`;
+        const query = `SELECT * from bet_prediction_history WHERE user_id = ? AND status = ? AND game_type = ? ORDER BY  limit 20`;
         pool.query(query,[userId,0,'win_go'], (error, results) => {
             if (error) {
                 reject(error)

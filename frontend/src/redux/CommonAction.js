@@ -530,6 +530,7 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
         if(websocketData?.type === "USER_BETTING_TIME_END") {
             setTimeout(()=>{
                 dispatch(actionToGetUserWalletAndGameBalance())
+                dispatch(actionToGetUserBetPredictionHistory())
             })
         }
     });
