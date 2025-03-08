@@ -61,25 +61,27 @@ const WithdrawalPopupComponent = ({setShowSuccessAlertToWithdrawalRequest,isWith
                 <IonGrid>
                     <IonRow>
                         <IonCol size="12">
-                            <IonItem>
-                                <IonLabel position="stacked" className="enter_amount_label">Withdrawal Amount</IonLabel>
-                                <input
-                                    className="add-money-input input"
-                                    onChange={(e) => {
-                                        // Remove non-digit characters using a regular expression
-                                        const value = e.target.value.replace(/\D/g, '');
-                                        // Update the state with the numeric value
-                                        setAmount(value ? Number(value) : null);
-                                    }}
-                                    value={amount}
-                                    id="withdrawal_input_cont"
-                                    placeholder="Enter Amount"
-                                    type="text"
-                                />
-                            </IonItem>
+                            <IonLabel position="stacked" className="enter_amount_label">Withdrawal Amount</IonLabel>
+                            <input
+                                className="add-money-input input"
+                                onChange={(e) => {
+                                    // Remove non-digit characters using a regular expression
+                                    const value = e.target.value.replace(/\D/g, '');
+                                    // Update the state with the numeric value
+                                    setAmount(value ? Number(value) : ''); // Use empty string instead of null
+                                }}
+                                value={amount || ''} // Ensure value is always a string
+                                id="withdrawal_input_cont"
+                                placeholder="Enter Amount"
+                                type="text"
+                            />
                         </IonCol>
-                        {amountError && <p className="error fontsize2">{amountErrorMessage}</p>}
                     </IonRow>
+                    {amountError &&<IonRow>
+                        <IonCol size="12">
+                            {amountError && <p className="error fontsize2">{amountErrorMessage}</p>}
+                        </IonCol>
+                    </IonRow>}
                     <IonRow>
                         <IonCol size="12">
                             <button onClick={callWithdrawalRequest} type={"button"}

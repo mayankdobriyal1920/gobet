@@ -61,29 +61,29 @@ const UpdateUserNameModal = ({setIsEditing,isEditing}) => {
                     <IonGrid className="">
                         <IonRow className={""}>
                             <IonCol size="12" className="">
-                                <IonItem>
-                                    <IonLabel position="stacked" className="enter_modal_user_label">Name</IonLabel>
-                                    <input
-                                        type="text"
-                                        value={tempName}
-                                        onChange={(e) => setTempName(e.target.value)}
-                                        autoFocus
-                                        className="update_user_name_input"
-                                        id={"update_user_name_input"}
-                                        placeholder={"Enter Name"}  required={true}
-                                    />
-                                </IonItem>
+                                <IonLabel position="stacked" className="enter_modal_user_label">Name</IonLabel>
+                                <input
+                                    type="text"
+                                    value={tempName}
+                                    onChange={(e) => setTempName(e.target.value)}
+                                    autoFocus
+                                    className="update_user_name_input"
+                                    id={"update_user_name_input"}
+                                    placeholder={"Enter Name"}  required={true}
+                                />
                             </IonCol>
-                            {nameError && <p className="error fontsize2">{nameErrorMessage}</p>}
                         </IonRow>
+                        {nameError &&<IonRow className={""}>
+                            <IonCol size="12" className="">
+                                {nameError && <p className="error fontsize2">{nameErrorMessage}</p>}
+                            </IonCol>
+                        </IonRow>}
                         <IonRow>
                             <IonCol size="12" className="">
-                                <IonItem>
-                                    <button onClick={updateUserNameAction} type={"button"}
-                                            className={"submit_user_name_update_btn"}>
-                                        Submit
-                                    </button>
-                                </IonItem>
+                                <button onClick={updateUserNameAction} type={"button"}
+                                        className={"submit_user_name_update_btn"}>
+                                    Submit
+                                </button>
                             </IonCol>
                         </IonRow>
                     </IonGrid>

@@ -8,7 +8,7 @@ import pool from './models/connection.js'; // MySQL connection
 import dotenv from 'dotenv';
 import commonRouter from './routers/commonRouter.js';
 import cookieParser from 'cookie-parser';
-import {actionToRunCheckForAliveUsers} from "./models/commonModel.js";
+import {actionToSetAllCronJobsToBettingSlot} from "./models/commonModel.js";
 
 dotenv.config(); // Load environment variables
 
@@ -57,7 +57,7 @@ app.use(
         cookie: {
             expires: new Date(Date.now() + 31536000000),  // 1 year expiration
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: 'None',
             secure: true,  // Ensure HTTPS for secure cookies
             maxAge: 31536000000  // 1 year max age
         },
@@ -122,6 +122,6 @@ io.on('connection', (socket) => {
 
 // Start server
 server.listen(PORT, () => {
-    actionToRunCheckForAliveUsers();
+    actionToSetAllCronJobsToBettingSlot();
     console.log(`Server is running on http://localhost:${PORT}`);
 });

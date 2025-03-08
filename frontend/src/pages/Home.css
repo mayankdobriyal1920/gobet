@@ -19,7 +19,7 @@
 
 .first_time_user_container_screen .welcome_screen_text .welcome_txt {
     color: #ffffff;
-    font-size: .4rem;
+    font-size: 1.3rem;
     font-weight: bold;
     line-height: 55px;
 }
@@ -45,7 +45,7 @@
     padding: 25px 55px;
     margin: 10px 17px;
     color: #fff;
-    font-size: .4rem;
+    font-size: 1.3rem;
     letter-spacing: .04333rem;
     border-radius: 1.06667rem;
     background: #bf4f2b;

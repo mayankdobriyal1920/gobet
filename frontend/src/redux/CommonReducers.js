@@ -213,19 +213,11 @@ export const generatedPasscodeListByAdminReducer = (state = {}, action) => {
 export const userBetPredictionStatusReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_BET_PREDICTION_STATUS_LOADING_REQUEST:
-            return {loading:true,status: 0,prediction:state.prediction,timer:60,dateTime:state.dateTime};
-        case USER_BET_PREDICTION_STATUS_EXPIRED:
-            return {loading:false,status: 5,prediction:state.prediction,timer:60,dateTime:state.dateTime};
-        case USER_BET_PREDICTION_STATUS_WAITING:
-            return {loading:false,status: 3,prediction:state.prediction,timer:60,dateTime:state.dateTime};
-        case USER_BET_PREDICTION_STATUS_READY:
-            return {loading:false,status: 2,prediction:state.prediction,readyState:120,readyStateDateTime:new Date(),timer:60,dateTime:state.dateTime};
+            return {status: 0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS:
-            return {loading:false,status: 1,prediction:action.payload,timer:60,dateTime:new Date()};
-        case USER_BET_PREDICTION_STATUS_READY_TIMER:
-            return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,readyStateDateTime:state.readyStateDateTime,timer:60,readyState:action.payload};
+            return {status: 1,prediction:action.payload,timer:60 - new Date().getSeconds(),dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS_TIMER:
-            return {loading:false,status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
+            return {status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
         default:
             return state;
     }

@@ -68,15 +68,15 @@ export default function MainAppTabsRoutePage() {
                     </IonRouterOutlet>
                     {/* Tab Bar */}
                     <IonTabBar slot="bottom" className="bg-gray-200">
-                        <IonTabButton tab="home" href="/dashboard/home">
+                        <IonTabButton className={"ion_tab_button_cont"} tab="home" href="/dashboard/home">
                             <IonIcon icon={home} />
                             <IonLabel>Home</IonLabel>
                         </IonTabButton>
-                        <IonTabButton tab="wallet" href="/dashboard/wallet">
+                        <IonTabButton className={"ion_tab_button_cont"} tab="wallet" href="/dashboard/wallet">
                             <IonIcon icon={wallet} />
                             <IonLabel>Wallet</IonLabel>
                         </IonTabButton>
-                        <IonTabButton tab="account" href="/dashboard/account">
+                        <IonTabButton className={"ion_tab_button_cont"} tab="account" href="/dashboard/account">
                             <IonIcon icon={person} />
                             <IonLabel>Account</IonLabel>
                         </IonTabButton>

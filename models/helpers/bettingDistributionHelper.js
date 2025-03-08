@@ -5,18 +5,18 @@ function generateTimeBasedId() {
     const day = String(now.getDate()).padStart(2, '0');
     const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
     const counter = 10000 + minutesSinceMidnight;
-    return `${year}${month}${day}1000${counter + 1}`;
+    return `${year}${month}${day}1000${counter + 2}`;
 }
 
-export function calculateUserBetAmount(members) {
+export function calculateUserBetAmount(members = []) {
     if (!members || members.length === 0) {
-        throw new Error('Members list cannot be empty.');
+        return [];
     }
 
     // Ensure members have at least 100 balance
     const validMembers = members.filter(member => member.balance >= 100);
     if (validMembers.length === 0) {
-        throw new Error('No members have sufficient balance.');
+        return [];
     }
 
     const totalMembers = validMembers.length;
@@ -24,7 +24,7 @@ export function calculateUserBetAmount(members) {
     const maxBetAmount = Math.min(...validMembers.map(m => Math.floor(m.balance / 100) * 100)) * totalMembers;
 
     if (minBetAmount > maxBetAmount) {
-        throw new Error('Invalid member balances: Minimum bet exceeds maximum bet range.');
+        return [];
     }
 
     let totalBetAmount;
@@ -108,7 +108,6 @@ function distributeBetAmount(members, distributionBetAmount) {
             option_name: 'SMALL',
             amount: smallRandomDivide[index],
             balance: member.balance - smallRandomDivide[index],
-            balance_after_deduct_percentage: member.balance - Math.round(0.02 * smallRandomDivide[index]) - smallRandomDivide[index],
             bet_id: generateTimeBasedId(),
             total_bet_amount: distributionBetAmount.total,
         });
@@ -124,7 +123,6 @@ function distributeBetAmount(members, distributionBetAmount) {
             option_name: 'BIG',
             amount: bigRandomDivide[index],
             balance: member.balance - bigRandomDivide[index],
-            balance_after_deduct_percentage: member.balance - Math.round(0.02 * bigRandomDivide[index]) - bigRandomDivide[index],
             bet_id: generateTimeBasedId(),
             total_bet_amount: distributionBetAmount.total,
         });

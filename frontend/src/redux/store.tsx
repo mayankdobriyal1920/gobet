@@ -38,7 +38,7 @@ const initialState = {
     allUsersNormalAndSunAdminList: {loading:true,userData:[]},
     generatedPasscodeListByAdmin: {loading:true,passcodeList:[]},
     passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
-    userBetPredictionStatus: {status:0,prediction:{bet_id:'20250103100051250',min:1,option_name:'SMALL',amount:0},timer:60,dateTime:new Date()},
+    userBetPredictionStatus: {status:0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,

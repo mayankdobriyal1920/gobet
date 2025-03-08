@@ -43,7 +43,7 @@ import {
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 const api = Axios.create({
-    baseURL: 'https://121tuition.in/api-get-bet/common/',
+    baseURL: 'https://unikpayindia.com/api-get-bet/common/',
     withCredentials:true
 })
 
@@ -477,22 +477,12 @@ export const actionToGetAllUsersNormalAndSubAdminList = (payload = {}) => async 
 
 let betStateTimeInterval = null;
 
-export const actionToStartTimeIntervalOfUserTime = (createdAt) => async (dispatch) => {
-    let dataOfCreation = new Date(createdAt);
-    const startTime = dataOfCreation.getTime(); // ✅ Correct way to get the timestamp
-
+export const actionToStartTimeIntervalOfUserTime = () => async (dispatch) => {
+    if(betStateTimeInterval !== null){
+        clearInterval(betStateTimeInterval);
+    }
     betStateTimeInterval = setInterval(() => {
-        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000); // ✅ Correct elapsed time calculation
-
-        if (elapsedSeconds >= 60) {
-            clearInterval(betStateTimeInterval);
-            dispatch({ type: USER_BET_PREDICTION_STATUS_WAITING });
-        } else {
-            dispatch({
-                type: USER_BET_PREDICTION_STATUS_TIMER,
-                payload: 60 - elapsedSeconds, // ✅ Countdown from 60 seconds
-            });
-        }
+        dispatch({type: USER_BET_PREDICTION_STATUS_TIMER, payload: 60 - new Date().getSeconds()});
     }, 1000);
 }
 
@@ -509,82 +499,36 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
     socket.on('message', (data) => {
         let websocketData = JSON.parse(data);
         switch (websocketData?.type) {
-            case 'USER_DATA_FOR_READY_STATE':
             case 'USER_BETTING_DATA_RECEIVED':
-            case 'USER_BETTING_TIME_END':
                 if (websocketData?.selectedGroup?.length) {
                     const userIdsArray = websocketData.selectedGroup.map(user => user.id);
-
                     if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
                         let currentUserBetData = websocketData.selectedGroup.find((user) =>
                             user?.id === getState().userAuthDetail?.userInfo?.id
                         );
-
                         if (currentUserBetData?.betting_active_users_id) {
                             dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
                         }
+                        dispatch(actionToGetUserWalletAndGameBalance())
                     }
                 }
                 break;
         }
-        if(websocketData?.type === "USER_BETTING_TIME_END") {
-            setTimeout(()=>{
-                dispatch(actionToGetUserWalletAndGameBalance())
-                dispatch(actionToGetUserBetPredictionHistory())
-            })
-        }
     });
-
 
     socket.on('disconnect', () => {
         console.log('Disconnected from socket server');
     });
 }
-export const actionToGetUserBetPredictionData = (betting_active_users_id,loading = false) => async (dispatch) => {
-
-    function clearAllTimeOut(){
-        if(betStateTimeInterval) {
-            clearInterval(betStateTimeInterval);
-            betStateTimeInterval = null;
-        }
-    }
-
-    if(loading){
-        clearAllTimeOut();
-        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
-    }
-
-    if(betting_active_users_id) {
-        try {
-            api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
-                if (responseData?.data?.success === 5) {
-                    clearAllTimeOut();
-                    dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
-                } else if (responseData?.data?.success === 1) {
-                    if(responseData?.data.prediction?.status === 3){
-                        clearAllTimeOut();
-                        dispatch({type: USER_BET_PREDICTION_STATUS_WAITING});
-                    }else if(responseData?.data.prediction?.status === 2){
-                        clearAllTimeOut();
-                        dispatch({type: USER_BET_PREDICTION_STATUS_READY});
-                    }else if(responseData?.data.prediction?.status === 1) {
-                        if(!betStateTimeInterval) {
-                            dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
-                            dispatch(actionToStartTimeIntervalOfUserTime(responseData?.data?.prediction?.created_at));
-                        }
-                    }else if(responseData?.data.prediction?.status === 0 || responseData?.data.prediction?.status === 4) {
-                        clearAllTimeOut();
-                        dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
-                    }
-
-                }
-            })
-        } catch (error) {
-            console.log(error);
-        }
-    }else{
-        clearAllTimeOut();
-        dispatch({type: USER_BET_PREDICTION_STATUS_EXPIRED});
+export const actionToGetUserBetPredictionData = (betting_active_users_id) => async (dispatch) => {
+    dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+    dispatch(actionToStartTimeIntervalOfUserTime());
+    try {
+        api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
+            dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
+        })
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -594,6 +538,26 @@ export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => asy
             if(callFunctionToEnterInGame) {
                 callFunctionToEnterInGame(responseData?.data?.betting_active_users_id);
             }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToOrderNextBetActivateUser = (betId) => async (dispatch) => {
+    try {
+        api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(() => {
+            dispatch(actionToGetUserBetPredictionData(betId));
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToCancelNextBetOrderActivateUser = (betId) => async (dispatch) => {
+    try {
+        api.post(`actionToCancelNextBetOrderActivateUserApiCall`, {bet_id:betId}).then(() => {
+            dispatch(actionToGetUserBetPredictionData(betId));
         })
     } catch (error) {
         console.log(error);

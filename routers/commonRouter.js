@@ -36,7 +36,9 @@ import {
     actionToUpdateUserRoleApiCall,
     actionToApprovePasscodeRequestAndGeneratePasscodeApiCall,
     actionToGetMoneyTransactionDataApiCall,
-    actionToMakeCurrentUserInactiveApiCall
+    actionToMakeCurrentUserInactiveApiCall,
+    actionToOrderNextBetActivateUserApiCall,
+    actionToCancelNextBetOrderActivateUserApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -616,6 +618,38 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToUpdateUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToOrderNextBetActivateUserApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToOrderNextBetActivateUserApiCall(req.body.bet_id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToCancelNextBetOrderActivateUserApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToCancelNextBetOrderActivateUserApiCall(req.body.bet_id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

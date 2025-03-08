@@ -205,7 +205,11 @@ export default function LoginPage(){
                                        placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                             </IonCol>
                         </IonRow>
-                            {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
+                            {otpError && <IonRow>
+                                <IonCol size={12}>
+                                    {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
+                                </IonCol>
+                            </IonRow>}
                         <IonRow className={"form_second_label_input"}>
                             <div className={"login_form_label"}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
@@ -239,12 +243,17 @@ export default function LoginPage(){
                                 }
                             </IonCol>
                         </IonRow>
-                            {otpError && <p className="error fontsize2">{otpErrorMessage}</p>}
+
+                            {otpError && <IonRow>
+                                <IonCol size={12}>
+                                    <p className="error fontsize2">{otpErrorMessage}</p>
+                                </IonCol>
+                            </IonRow>}
                             {!isOtpExpired
                                 ? <>
                                 <IonRow>
                                         <IonCol size={12}>
-                                            <p>Get new OTP in: {timer} seconds</p>
+                                            <p className={"otp_message_p"}>Get new OTP in: {timer} seconds</p>
                                         </IonCol>
                                     </IonRow>
                                 </>

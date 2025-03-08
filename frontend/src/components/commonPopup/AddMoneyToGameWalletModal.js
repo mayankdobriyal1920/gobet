@@ -77,40 +77,34 @@ const AddMoneyToGameWalletModal = ({setIsAddMoneyOpen,isAddMoneyOpen,setLoadingA
                     <IonGrid>
                         <IonRow>
                             <IonCol size="12">
-                                <IonItem>
-                                    <IonLabel position="stacked" className="enter_amount_label">Betting
-                                        Amount</IonLabel>
-                                    <input
-                                        className="add-money-input input"
-                                        onChange={(e) => {
-                                            // Remove non-digit characters using a regular expression
-                                            const value = e.target.value.replace(/\D/g, '');
-                                            // Update the state with the numeric value
-                                            setAmount(value ? Number(value) : null);
-                                        }}
-                                        value={amount}
-                                        id="deposit_game_input_cont"
-                                        placeholder="Enter Amount"
-                                        type="text"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                            {amountError && <p className="error fontsize2 error_amount_betting_transfer">{amountErrorMessage}</p>}
-                        </IonRow>
-                        <IonRow>
-                            <IonCol size="12">
-                                {amount ? (
-                                    <p className={"validate_add_betting_balance"}>
-                                        To transfer <strong>₹{amount}</strong> to your betting wallet, we will deduct <strong>₹{Math.round(amount + (0.01 * amount))}</strong> from your main wallet.
-                                        <br />
-                                        A <strong>1%</strong> fee <strong>₹{Math.round(0.01 * amount)}</strong> will be deducted for transferring the balance to your betting account, and this fee is non-refundable.
-                                    </p>
-                                ) : ''}
+                                <IonLabel position="stacked" className="enter_amount_label">
+                                    Betting amount
+                                </IonLabel>
+                                <input
+                                    className="add-money-input input"
+                                    onChange={(e) => {
+                                        // Remove non-digit characters using a regular expression
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        // Update the state with the numeric value
+                                        setAmount(value ? Number(value) : ''); // Use empty string instead of null
+                                    }}
+                                    value={amount || ''} // Ensure value is always a string
+                                    id="deposit_game_input_cont"
+                                    placeholder="Enter Amount"
+                                    type="text"
+                                />
                             </IonCol>
                         </IonRow>
+                        {(amountError) &&
+                            <IonRow>
+                                <IonCol size="12">
+                                    {amountError &&
+                                        <p className="error fontsize2 error_amount_betting_transfer">{amountErrorMessage}</p>}
+                                </IonCol>
+                            </IonRow>}
                         <IonRow>
                             <IonCol size="12">
-                                <button onClick={addMoneyToGameWalletAction} type={"button"}
+                            <button onClick={addMoneyToGameWalletAction} type={"button"}
                                         className={"submit-transfer-btn"}>
                                     Submit
                                 </button>
