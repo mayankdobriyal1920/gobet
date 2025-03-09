@@ -51,6 +51,7 @@ import GeneratedPasscodeListPage from "./pages/admin/GeneratedPasscodeListPage";
 import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
 import AppBackButtonHandler from "./components/AppBackButtonHandler";
+import AdminWinAndGoBettingMainPage from "./pages/admin/AdminWinAndGoBettingMainPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -78,7 +79,7 @@ const AppEnterMainPage = () => {
             <AppBackButtonHandler/>
             <IonRouterOutlet>
                 <Route path="/dashboard" component={MainAppTabsRoutePage}/>
-                <Route exact={true} path="/win-go-betting/:betting_active_users_id" component={WinAndGoBettingMainPage}/>
+                <Route exact={true} path="/win-go-betting/:session_id" component={WinAndGoBettingMainPage}/>
                 <Route exact={true} path="/setting" component={SettingPage}/>
                 <Route exact={true} path="/game-history" component={GameTransactionPage}/>
                 <Route exact={true} path="/money-transaction" component={MoneyTransactionPage}/>

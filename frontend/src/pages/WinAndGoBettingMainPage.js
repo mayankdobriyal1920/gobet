@@ -1,28 +1,37 @@
-import React, {useEffect, useRef, useState} from "react";
-import {IonContent, IonHeader, IonPage, useIonAlert} from "@ionic/react";
+import React, {useEffect} from "react";
+import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
     actionToCancelNextBetOrderActivateUser,
+    actionToGetBetActiveUserData,
+    actionToGetBetGameSessionData,
+    actionToGetGameLastResultData,
     actionToGetUserBetPredictionData,
-    actionToGetUserBetPredictionHistory, actionToGetUserWalletAndGameBalance,
-    actionToMakeCurrentUserInactive, actionToOrderNextBetActivateUser
+    actionToGetUserBetPredictionHistory,
+    actionToGetUserWalletAndGameBalance,
+    actionToMakeCurrentUserInactive,
+    actionToOrderNextBetActivateUser, actionToUpdatePreviousGameResult
 } from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
 import LineLoaderComponent from "../components/LineLoaderComponent";
 import {_formatTimeMMSS} from "../redux/CommonHelper";
-import { App } from "@capacitor/app";
 import useAppNavigationHandler from "../hooks/useAppNavigationHandler";
 import useKeepAwake from "../hooks/useKeepAwake";
+import {arrowBack} from "ionicons/icons";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
     const {bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const {status,prediction,timer} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const {activeUserData} = useSelector((state) => state.betActiveUserData);
+    const {loading,sessionData} = useSelector((state) => state.betGameSessionData);
+    const gameLastResult = useSelector((state) => state.gameLastResult);
     const dispatch = useDispatch();
-    const {betting_active_users_id} = useParams();
+    const {session_id} = useParams();
     useKeepAwake();
     const goBack = ()=>{
         history.goBack();
@@ -35,14 +44,16 @@ export default function WinAndGoBettingMainPage() {
 
     const callFunctionToHandleAppExit = ()=>{
         if(status !== 2 && status !== 1){
-            dispatch(actionToMakeCurrentUserInactive(betting_active_users_id));
+            dispatch(actionToMakeCurrentUserInactive(activeUserData?.id));
         }
     }
 
     useEffect(() => {
-        dispatch(actionToGetUserBetPredictionData(betting_active_users_id,true));
         dispatch(actionToGetUserBetPredictionHistory());
-    }, [betting_active_users_id]);
+        dispatch(actionToGetBetActiveUserData());
+        dispatch(actionToGetBetGameSessionData(session_id));
+        dispatch(actionToGetGameLastResultData(session_id));
+    }, [session_id]);
 
     const orderNextBetActivateUser = (betId)=>{
         dispatch(actionToOrderNextBetActivateUser(betId));
@@ -50,6 +61,10 @@ export default function WinAndGoBettingMainPage() {
 
     const cancelNextBetOrderActivateUser = (betId)=>{
         dispatch(actionToCancelNextBetOrderActivateUser(betId));
+    }
+
+    const updatePreviousGameResult = (result,gameResultId)=>{
+        dispatch(actionToUpdatePreviousGameResult(result,gameResultId,session_id));
     }
 
     useEffect(()=>{
@@ -65,9 +80,14 @@ export default function WinAndGoBettingMainPage() {
 
     useEffect(()=>{
         if(timer === 60){
-            dispatch(actionToGetUserBetPredictionData(betting_active_users_id))
+            dispatch(actionToGetUserBetPredictionData(activeUserData?.id));
+            dispatch(actionToGetGameLastResultData(session_id));
         }
-    },[timer,betting_active_users_id])
+    },[timer,activeUserData])
+
+    useEffect(()=>{
+        dispatch(actionToGetUserBetPredictionData(activeUserData?.id))
+    },[activeUserData])
 
 
     return (
@@ -77,9 +97,9 @@ export default function WinAndGoBettingMainPage() {
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
-                                {/*<div onClick={goBack} className="navbar__content-left">*/}
-                                {/*    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />*/}
-                                {/*</div>*/}
+                                <div onClick={goBack} className="navbar__content-left">
+                                    <IonIcon icon={arrowBack} style={{ color: "#ffffff",width: "24px",height: "24px" }} />
+                                </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
                                         <span>Win Go</span>
@@ -91,7 +111,23 @@ export default function WinAndGoBettingMainPage() {
                 </div>
             </IonHeader>
             <IonContent className={"content-theme-off-white-bg-color"}>
-                <React.Fragment>
+                {(loading) ?
+                    <React.Fragment>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                        <LineLoaderComponent/>
+                    </React.Fragment>
+                    :(sessionData?.id && sessionData?.is_active && moment().isBetween(
+                        moment(sessionData?.start_time, 'HH:mm:ss'),
+                        moment(sessionData?.end_time, 'HH:mm:ss'),
+                        null,
+                        '[]' // Inclusive of both start and end times
+                    )) ?
+                   <React.Fragment>
                     <div className="Wallet__C inner_page">
                         <div className="Wallet__C-balance">
                             <div className="Wallet__C-balance-l1">
@@ -118,7 +154,7 @@ export default function WinAndGoBettingMainPage() {
                                     <div className={"order_button_and_text"}>
                                         {(prediction?.status !== 1) ?
                                             <React.Fragment>
-                                                <button onClick={()=>orderNextBetActivateUser(betting_active_users_id)} type={"button"} className={"order-bet-game-button"}>
+                                                <button onClick={()=>orderNextBetActivateUser(activeUserData?.id)} type={"button"} className={"order-bet-game-button"}>
                                                     ORDER BET
                                                 </button>
                                                 <button onClick={goBack} type={"button"} className={"exit-from-game-button"}>
@@ -126,7 +162,7 @@ export default function WinAndGoBettingMainPage() {
                                                 </button>
                                             </React.Fragment>
                                             :
-                                            <button onClick={()=>cancelNextBetOrderActivateUser(betting_active_users_id)} type={"button"} className={"order-bet-game-button cancel_button"}>
+                                            <button onClick={()=>cancelNextBetOrderActivateUser(activeUserData?.id)} type={"button"} className={"order-bet-game-button cancel_button"}>
                                                 CANCEL NEXT BET ORDER
                                             </button>
                                         }
@@ -172,9 +208,39 @@ export default function WinAndGoBettingMainPage() {
                                         </div>
                                     }
                                 </div>
+                                {(userInfo?.role === 1 && gameLastResult?.gameResult?.id) ?
+                                    <div className={"update_user_game_prev_result"}>
+                                        {(gameLastResult?.gameResult?.result) ?
+                                            <div className={"text_up"}>
+                                                PREVIOUS GAME RESULT
+                                                - <strong>{gameLastResult?.gameResult?.result}</strong>
+                                            </div>
+                                            :
+                                            ''
+                                        }
+                                        <div className={"text_up"}>
+                                            UPDATE PREVIOUS GAME RESULT
+                                        </div>
+                                        <div className={"update_user_game_prev_result_button"}>
+                                            <button
+                                                onClick={() => updatePreviousGameResult('SMALL', gameLastResult?.gameResult?.id)}
+                                                type={"button"} className={"order-bet-game-button"}>
+                                                SMALL
+                                            </button>
+                                            <button
+                                                onClick={() => updatePreviousGameResult('BIG', gameLastResult?.gameResult?.id)}
+                                                type={"button"}
+                                                className={"exit-from-game-button big"}>
+                                                BIG
+                                            </button>
+                                        </div>
+                                    </div>
+                                    :
+                                    ''
+                                }
                             </div>
                             :
-                            <div className={"Betting__C-numC"}>
+                                    <div className={"Betting__C-numC"}>
                                 <div className="Betting__C-mark full_screen_timer">
                                     <div>{timer}</div>
                                 </div>
@@ -227,6 +293,8 @@ export default function WinAndGoBettingMainPage() {
                         </div>
                     </div>
                 </React.Fragment>
+                   :''
+                }
             </IonContent>
         </IonPage>
     )

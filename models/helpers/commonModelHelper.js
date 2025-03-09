@@ -366,7 +366,7 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
         generateRandomGroup();
     });
 };
-export function actionToExecuteFunctionInLast10Seconds() {
+export function actionToExecuteFunctionInLast10Seconds(sessionId) {
     function scheduleNextExecution() {
         const now = new Date();
         const currentSeconds = now.getSeconds();
@@ -383,7 +383,22 @@ export function actionToExecuteFunctionInLast10Seconds() {
     function executeAndScheduleNext() {
         const now = new Date();
         console.log(`Executing function at: ${now.toLocaleTimeString()}`);
-        actionToRunCheckForAliveUsers();
+        const query = `SELECT
+                       bgs.id
+                   FROM betting_game_session bgs
+                   WHERE
+                       bgs.game_type = ? AND is_active = ?
+                     AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
+                   GROUP BY
+                       bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
+                   ORDER BY
+                       bgs.start_time
+                       LIMIT 1`;
+        pool.query(query,["win_go",1], (error, results) => {
+            if(results?.length){
+                actionToRunCheckForAliveUsers(results[0]?.id);
+            }
+        })
         // Calculate the time until the next exact minute (X:00:00)
         const nextExecutionDelay = (60 - new Date().getSeconds()) * 1000;
         setTimeout(scheduleNextExecution, nextExecutionDelay);
@@ -395,8 +410,9 @@ export function actionToExecuteFunctionInLast10Seconds() {
 /**
  * Distributes betting amounts among selected users and updates their balances.
  * @param {Array} allLiveUsersData - Array of live users data.
+ * @param sessionId
  */
-export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) => {
+export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,sessionId) => {
     actionToCallProcedureToSelectRightGroup(allLiveUsersData)
         .then((allSelectedGroupUserData) => {
             // Schedule the betting distribution after 1 minute
@@ -413,9 +429,9 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) =>
                 // Insert game result into the database
                 const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 const insertResultData = {
-                    alias: ['?', '?', '?', '?', '?'],
-                    column: ["id", "game_type", "game_id", "total_bet_amount", "bet_distribution_json"],
-                    values: [game_result_id, 'win_go', gameBetId, Number(totalBetAmount), JSON.stringify(userPayloadData)],
+                    alias: ['?', '?', '?', '?', '?' , '?'],
+                    column: ["id", "game_type", "game_id", "total_bet_amount", "bet_distribution_json" , "betting_game_session_id"],
+                    values: [game_result_id, 'win_go', gameBetId, Number(totalBetAmount), JSON.stringify(userPayloadData),sessionId],
                     tableName: 'game_result'
                 };
 
@@ -542,8 +558,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData) =>
                     })
                     .catch((error) => {
                         console.error('Error inserting game result:', error);
-                        actionToRunCheckForAliveUsers(); // Restart checking for alive users
-                    });
+                     });
             }
         })
         .catch((error) => {

@@ -92,7 +92,6 @@ export default function AdminGameResultListPage() {
 
     const callFunctionToUpdateGameResultPopup = (gameResult)=>{
         if(!gameResult?.result){
-            console.log('gameResult',gameResult)
             setUpdateGameResult(gameResult);
         }
     }

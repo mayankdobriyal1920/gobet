@@ -2,8 +2,8 @@ import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
     adminGameResultListReducer, allUsersNormalAndSunAdminListReducer,
-    allUsersUnsetSubAdminListReducer,
-    changeUserAvatarModal,
+    allUsersUnsetSubAdminListReducer, betActiveUserDataReducer, betGameSessionDataReducer,
+    changeUserAvatarModal, gameLastResultReducer,
     generatedPasscodeListByAdminReducer, nearestGameSessionAndActiveSessionReducer, passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
     pendingWithdrawalRequestListReducer,
@@ -40,9 +40,15 @@ const initialState = {
     passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
     userBetPredictionStatus: {status:0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()},
     nearestGameSessionAndActiveSession: {loading:true,gameSessionData:{}},
+    betActiveUserData: {loading:true,activeUserData:{}},
+    betGameSessionData: {loading:true,sessionData:{}},
+    gameLastResult: {loading:true,gameResult:{}},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
+    betActiveUserData: betActiveUserDataReducer,
+    gameLastResult: gameLastResultReducer,
+    betGameSessionData: betGameSessionDataReducer,
     userWithdrawalAmountHistory: userWithdrawalAmountHistoryReducer,
     allUsersNormalAndSunAdminList: allUsersNormalAndSunAdminListReducer,
     userDepositAmountHistory: userDepositAmountHistoryReducer,

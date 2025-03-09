@@ -38,7 +38,11 @@ import {
     actionToGetMoneyTransactionDataApiCall,
     actionToMakeCurrentUserInactiveApiCall,
     actionToOrderNextBetActivateUserApiCall,
-    actionToCancelNextBetOrderActivateUserApiCall, actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall
+    actionToCancelNextBetOrderActivateUserApiCall,
+    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall,
+    actionToCallFunctionToActiveSectionAndStartGameApiCall,
+    actionToGetBetActiveUserDataApiCall,
+    actionToGetBetGameSessionDataApiCall, actionToGetGameLastResultDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -430,6 +434,54 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToGetBetActiveUserDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetBetActiveUserDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetBetGameSessionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetBetGameSessionDataApiCall(req.body.session_id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetGameLastResultDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetGameLastResultDataApiCall(req.body.session_id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
     '/actionToGetUserBetPredictionDataApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id && req.body.betting_active_users_id) {
@@ -631,6 +683,22 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToUpdateUserAliveForGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId,req.body.platformId).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToCallFunctionToActiveSectionAndStartGameApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToCallFunctionToActiveSectionAndStartGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

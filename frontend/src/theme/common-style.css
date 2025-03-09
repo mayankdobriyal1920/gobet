@@ -2077,3 +2077,18 @@ ion-alert .alert-button-group .alert-button {
 .sysMessage__container-msgWrapper__item.for_session .sysMessage__container-msgWrapper__item-content {
     line-height: 3rem;
 }
+.update_user_game_prev_result {
+    margin-top: 1rem;
+}
+
+.update_user_game_prev_result .text_up {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.update_user_game_prev_result_button {
+    display: flex;
+}
+button.exit-from-game-button.big {
+    background: #da0000;
+}

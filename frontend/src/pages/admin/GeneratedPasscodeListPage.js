@@ -125,7 +125,7 @@ export default function GeneratedPasscodeListPage() {
                                         <span>Pass Codes</span>
                                     </div>
                                 </div>
-                                {(userAuthDetail?.role === 2) ?
+                                {(userAuthDetail?.userInfo?.role === 2) ?
                                     <>
                                         {(!passcodeRequestBySubAdmin?.loading && passcodeRequestBySubAdmin?.passcodeRequest?.id) ?
                                             <div onClick={callFunctionToOpenPasscodeRequestPopup}

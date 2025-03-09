@@ -7,6 +7,7 @@ import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
 import {
+    actionToCallFunctionToActiveSectionAndStartGame,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatform,
     actionToUpdateUserAliveForGame
 } from "../redux/CommonAction";
@@ -16,6 +17,7 @@ import BettingGameEntryGamePlatformListComponent
 
 export default function HomePage() {
     const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const history = useHistory();
     const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
@@ -26,9 +28,10 @@ export default function HomePage() {
     const goToPage = (page)=>{
         history.push(page);
     }
-    const callFunctionToEnterInGame = (betting_active_users_id)=>{
-        goToPage(`/win-go-betting/${betting_active_users_id}`);
+    const callFunctionToEnterInGame = (sessionId)=>{
+        goToPage(`/win-go-betting/${sessionId}`);
         setUserEnterLoading(false);
+        setUserEnterInGameConfirm(false);
     }
     const callFunctionToSetUserEnterInGameConfirm = (gameType)=>{
         setUserEnterInGameConfirm(true);
@@ -38,6 +41,12 @@ export default function HomePage() {
         setUserEnterLoading(true);
         dispatch(actionToUpdateUserAliveForGame(sessionId,platformId,callFunctionToEnterInGame));
     }
+
+    const callFunctionToActiveSectionAndStartGame = (sessionId)=>{
+        setUserEnterLoading(true);
+        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,callFunctionToEnterInGame));
+    }
+
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
@@ -104,7 +113,7 @@ export default function HomePage() {
                             <img className="gameImg"
                                  src={limboGame}/>
                         </div>
-                        <BettingGameEntryGamePlatformListComponent callFunctionToDeductBalanceAndEnterInGame={callFunctionToDeductBalanceAndEnterInGame} setUserEnterInGameConfirm={setUserEnterInGameConfirm} userEnterInGameConfirm={userEnterInGameConfirm}/>
+                        <BettingGameEntryGamePlatformListComponent callFunctionToActiveSectionAndStartGame={callFunctionToActiveSectionAndStartGame} callFunctionToDeductBalanceAndEnterInGame={callFunctionToDeductBalanceAndEnterInGame} setUserEnterInGameConfirm={setUserEnterInGameConfirm} userEnterInGameConfirm={userEnterInGameConfirm}/>
                     </div>
                 </div>
                 <div className="first_list-item processing_fee_container">

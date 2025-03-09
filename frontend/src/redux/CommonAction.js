@@ -42,7 +42,13 @@ import {
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
     USER_MONEY_TRANSACTIONS_REQUEST,
     USER_MONEY_TRANSACTIONS_SUCCESS,
-    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST, NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS,
+    BET_ACTIVE_USER_REQUEST,
+    BET_ACTIVE_USER_SUCCESS,
+    BET_GAME_SESSION_REQUEST,
+    BET_GAME_SESSION_SUCCESS,
+    GET_GAME_LAST_RESULT_REQUEST, GET_GAME_LAST_RESULT_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 const api = Axios.create({
@@ -208,6 +214,39 @@ export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async 
             if(setBalanceLoading){
                 setBalanceLoading(false);
             }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetBetActiveUserData = () => async (dispatch) => {
+    dispatch({ type: BET_ACTIVE_USER_REQUEST});
+    try {
+        api.post(`actionToGetBetActiveUserDataApiCall`, {}).then(responseData => {
+            dispatch({ type: BET_ACTIVE_USER_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetBetGameSessionData = (sessionId) => async (dispatch) => {
+    dispatch({ type: BET_GAME_SESSION_REQUEST});
+    try {
+        api.post(`actionToGetBetGameSessionDataApiCall`, {session_id:sessionId}).then(responseData => {
+            dispatch({ type: BET_GAME_SESSION_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetGameLastResultData = (sessionId) => async (dispatch) => {
+    dispatch({ type: GET_GAME_LAST_RESULT_REQUEST});
+    try {
+        api.post(`actionToGetGameLastResultDataApiCall`, {session_id:sessionId}).then(responseData => {
+            dispatch({ type: GET_GAME_LAST_RESULT_SUCCESS, payload: {...responseData.data}});
         })
     } catch (error) {
         console.log(error);
@@ -548,9 +587,21 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id) => asy
 
 export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunctionToEnterInGame) => async () => {
     try {
-        api.post(`actionToUpdateUserAliveForGameApiCall`, {sessionId:sessionId,platformId:platformId}).then((responseData) => {
+        api.post(`actionToUpdateUserAliveForGameApiCall`, {sessionId:sessionId,platformId:platformId}).then(() => {
             if(callFunctionToEnterInGame) {
-                callFunctionToEnterInGame(sessionId,responseData?.data?.betting_active_users_id);
+                callFunctionToEnterInGame(sessionId);
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async () => {
+    try {
+        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId}).then(() => {
+            if(callFunctionToEnterInGame) {
+                callFunctionToEnterInGame(sessionId);
             }
         })
     } catch (error) {
@@ -572,6 +623,16 @@ export const actionToCancelNextBetOrderActivateUser = (betId) => async (dispatch
     try {
         api.post(`actionToCancelNextBetOrderActivateUserApiCall`, {bet_id:betId}).then(() => {
             dispatch(actionToGetUserBetPredictionData(betId));
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToUpdatePreviousGameResult = (result,gameResultId,session_id) => async (dispatch) => {
+    try {
+        api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {result,id:gameResultId}).then(() => {
+            dispatch(actionToGetGameLastResultData(session_id));
         })
     } catch (error) {
         console.log(error);

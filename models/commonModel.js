@@ -221,6 +221,54 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
     })
 }
 
+export const actionToGetBetActiveUserDataApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        const query = 'SELECT id from betting_active_users WHERE user_id = ?';
+        let userData = {};
+        pool.query(query,[userId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                userData = results[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
+    return new Promise(function(resolve, reject) {
+        const query = 'SELECT * from betting_game_session WHERE id = ?';
+        let userData = {};
+        pool.query(query,[sessionId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                userData = results[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionToGetGameLastResultDataApiCall = (sessionId) => {
+    return new Promise(function(resolve, reject) {
+        const query = 'SELECT id,result,game_id from game_result WHERE betting_game_session_id = ? AND result IS NULL ORDER BY game_id DESC LIMIT 1';
+        let userData = {};
+        pool.query(query,[sessionId], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                userData = results[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
 export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
     return new Promise(function (resolve, reject) {
         let userData = {};
@@ -862,6 +910,22 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     })
 }
 
+export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId) => {
+    return new Promise(function(resolve) {
+        let setData = `started_by = ? , is_active = ?`;
+        const whereCondition = `id = ?`;
+        let dataToSend = {
+            column: setData,
+            value: [userId, 1, sessionId],
+            whereCondition: whereCondition,
+            returnColumnName: 'id',
+            tableName: 'betting_game_session'
+        };
+        updateCommonApiCall(dataToSend).then(() => {
+            resolve({success: 1});
+        })
+    })
+}
 export const actionToUpdateUserAliveForGameApiCall = (userId,sessionId,platformId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = ?';
@@ -952,7 +1016,7 @@ export const actionTransferMoneyToMainWalletApiCall = (userId) => {
 export function actionToSetAllCronJobsToBettingSlot() {
     actionToExecuteFunctionInLast10Seconds();
 }
-export function actionToRunCheckForAliveUsers() {
+export function actionToRunCheckForAliveUsers(sessionId) {
     try {
         pool.query(getAliveUsersQuery(), [1], (error, results) => {
             if (error) {
@@ -963,7 +1027,7 @@ export function actionToRunCheckForAliveUsers() {
                 // Check if at least one user has is_test_user = 0
                 const hasRealUser = results.some(user => user.is_test_user === 0);
                 if (hasRealUser) {
-                    actionToDistributeBettingFunctionAmongUsers(results);
+                    actionToDistributeBettingFunctionAmongUsers(results,sessionId);
                 }
             }else if(results?.length > 0){
                 let setData = `status = ?`;

@@ -44,7 +44,10 @@ import {
     USER_MONEY_TRANSACTIONS_REQUEST,
     USER_MONEY_TRANSACTIONS_SUCCESS,
     NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST,
-    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS,
+    BET_ACTIVE_USER_SUCCESS,
+    BET_ACTIVE_USER_REQUEST,
+    BET_GAME_SESSION_REQUEST, BET_GAME_SESSION_SUCCESS, GET_GAME_LAST_RESULT_REQUEST, GET_GAME_LAST_RESULT_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -68,6 +71,39 @@ export const userSessionReducer = (state = {}, action) => {
             return { loading: true };
         case USER_SESSION_SUCCESS:
             return { loading: false, success: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const betActiveUserDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case BET_ACTIVE_USER_REQUEST:
+            return { loading: true };
+        case BET_ACTIVE_USER_SUCCESS:
+            return { loading: false, activeUserData: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const betGameSessionDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case BET_GAME_SESSION_REQUEST:
+            return { loading: true };
+        case BET_GAME_SESSION_SUCCESS:
+            return { loading: false, sessionData: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const gameLastResultReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GET_GAME_LAST_RESULT_REQUEST:
+            return { loading: true };
+        case GET_GAME_LAST_RESULT_SUCCESS:
+            return { loading: false, gameResult: action.payload };
         default:
             return state;
     }

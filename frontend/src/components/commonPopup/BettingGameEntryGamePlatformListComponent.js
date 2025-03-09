@@ -1,19 +1,54 @@
 import React from 'react';
-import {IonModal, IonContent, IonIcon, IonHeader} from '@ionic/react';
+import {IonModal, IonContent, IonIcon, IonHeader,useIonToast} from '@ionic/react';
 import {useSelector} from "react-redux";
 import LineLoaderComponent from "../LineLoaderComponent";
 import moment from "moment-timezone";
 import {arrowBack} from "ionicons/icons";
 import {Virtuoso} from "react-virtuoso";
 
-const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,userEnterInGameConfirm,callFunctionToDeductBalanceAndEnterInGame}) => {
+const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,userEnterInGameConfirm,callFunctionToActiveSectionAndStartGame,callFunctionToDeductBalanceAndEnterInGame}) => {
     const {loading,gameSessionData} = useSelector((state) => state.nearestGameSessionAndActiveSession);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const [present] = useIonToast();
+
     const handleCloseModal = () => {
         setUserEnterInGameConfirm(false); // Close the modal
     }
+
     const callFunctionToEnterBet =(sessionData,platformId)=>{
-        if(sessionData.is_active){
-            callFunctionToDeductBalanceAndEnterInGame(sessionData?.id,platformId);
+        if(userInfo?.role !== 1) {
+            if (sessionData.is_active) {
+                callFunctionToDeductBalanceAndEnterInGame(sessionData?.id, platformId);
+            }else{
+                present({
+                    message: 'The session has not started yet!',
+                    duration: 2000,
+                    position: 'bottom'
+                });
+            }
+        }else{
+            if (sessionData.is_active) {
+                callFunctionToActiveSectionAndStartGame(sessionData?.id);
+            }else{
+                const now = moment();
+                const startTime = moment(sessionData?.start_time, 'HH:mm:ss');
+                const endTime = moment(sessionData?.end_time, 'HH:mm:ss');
+                if (now.isBetween(startTime, endTime, null, '[]')) {
+                    callFunctionToActiveSectionAndStartGame(sessionData?.id);
+                } else if (now.isBefore(startTime)) {
+                    present({
+                        message: 'It\'s too early to start the session!',
+                        duration: 2000,
+                        position: 'bottom'
+                    });
+                } else {
+                    present({
+                        message: 'The session has already ended!',
+                        duration: 2000,
+                        position: 'bottom'
+                    });
+                }
+            }
         }
     }
 
@@ -24,19 +59,35 @@ const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,us
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
                         <span className={"title"}>{dataItems?.platform_name}</span>
-                        <div className="settingPanel__container-items-right">
-                            {(gameSessionData?.is_active) ?
-                                <span className={"active_session"}>ACTIVE</span>
-                                :
-                                <span className={"inactive_session"}>INACTIVE</span>
-                            }
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 className="van-badge__wrapper van-icon van-icon-arrow" fill="rgb(136, 136, 136)"
-                                 height="17px" width="17px" version="1.1" id="Layer_1" viewBox="0 0 330 330">
-                                <path id="XMLID_222_"
-                                      d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"></path>
-                            </svg>
-                        </div>
+                        {(userInfo?.role !== 1) ?
+                            <div className="settingPanel__container-items-right">
+                                {(gameSessionData?.is_active) ?
+                                    <span className={"active_session"}>ACTIVE</span>
+                                    :
+                                    <span className={"inactive_session"}>INACTIVE</span>
+                                }
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     className="van-badge__wrapper van-icon van-icon-arrow" fill="rgb(136, 136, 136)"
+                                     height="17px" width="17px" version="1.1" id="Layer_1" viewBox="0 0 330 330">
+                                    <path id="XMLID_222_"
+                                          d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"></path>
+                                </svg>
+                            </div>
+                            :
+                            <div className="settingPanel__container-items-right">
+                                {(gameSessionData?.is_active) ?
+                                    <span className={"active_session"}>ACTIVE</span>
+                                    :
+                                    <span className={"inactive_session"}>START</span>
+                                }
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     className="van-badge__wrapper van-icon van-icon-arrow" fill="rgb(136, 136, 136)"
+                                     height="17px" width="17px" version="1.1" id="Layer_1" viewBox="0 0 330 330">
+                                    <path id="XMLID_222_"
+                                          d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"></path>
+                                </svg>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
