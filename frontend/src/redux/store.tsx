@@ -4,7 +4,7 @@ import {
     adminGameResultListReducer, allUsersNormalAndSunAdminListReducer,
     allUsersUnsetSubAdminListReducer,
     changeUserAvatarModal,
-    generatedPasscodeListByAdminReducer, passcodeRequestBySubAdminReducer,
+    generatedPasscodeListByAdminReducer, nearestGameSessionAndActiveSessionReducer, passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
     pendingWithdrawalRequestListReducer,
     signupSigninFormError,
@@ -39,6 +39,7 @@ const initialState = {
     generatedPasscodeListByAdmin: {loading:true,passcodeList:[]},
     passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
     userBetPredictionStatus: {status:0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()},
+    nearestGameSessionAndActiveSession: {loading:true,gameSessionData:{}},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -60,6 +61,7 @@ export const rootReducer = combineReducers({
     passcodeRequestBySubAdmin: passcodeRequestBySubAdminReducer,
     userGameHistory: userGameHistoryReducer,
     userMoneyTransactions: userMoneyTransactionsReducer,
+    nearestGameSessionAndActiveSession: nearestGameSessionAndActiveSessionReducer,
 });
 
 declare global {

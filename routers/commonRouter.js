@@ -38,7 +38,7 @@ import {
     actionToGetMoneyTransactionDataApiCall,
     actionToMakeCurrentUserInactiveApiCall,
     actionToOrderNextBetActivateUserApiCall,
-    actionToCancelNextBetOrderActivateUserApiCall
+    actionToCancelNextBetOrderActivateUserApiCall, actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -73,6 +73,18 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall',
+    expressAsyncHandler(async (req, res) => {
+        actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall(req.body)
+            .then(data => {
+                res.status(200).send(data);
+            }).catch(error => {
+            res.status(500).send(error);
+        })
+    })
+);
+
+commonRouter.post(
     '/actionToSendOtpApiCall',
     expressAsyncHandler(async (req, res) => {
         let responseToSend = {
@@ -89,7 +101,8 @@ commonRouter.post(
                     }
                     res.status(200).send(responseToSend);
                 }else{
-                    const otp = Math.floor(1000 + Math.random() * 9000);
+                   // const otp = Math.floor(1000 + Math.random() * 9000);
+                    const otp = 1234;
                     console.log(otp);
 
                     callFunctionToSendOtp(phone,otp);
@@ -123,8 +136,8 @@ commonRouter.post(
                     }
                     res.status(200).send(responseToSend);
                 }else{
-                    const otp = Math.floor(1000 + Math.random() * 9000);
-
+                    //const otp = Math.floor(1000 + Math.random() * 9000);
+                    const otp = 1234;
                     console.log(otp);
 
                     callFunctionToSendOtp(phone,otp);
@@ -617,7 +630,7 @@ commonRouter.post(
     '/actionToUpdateUserAliveForGameApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToUpdateUserAliveForGameApiCall(req?.session?.userSessionData?.id).then(responseData => {
+            actionToUpdateUserAliveForGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId,req.body.platformId).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

@@ -1,6 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
+    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
     checkMobNumberAlreadyExistQuery,
     getAdminPassCodeListQuery, getAliveUsersQuery,
     getDepositHistoryQuery,
@@ -96,6 +97,23 @@ export const actionValidatePassCodeApiCall = (body) => {
                 userData = results[0];
             }
             resolve(userData);
+        })
+    })
+}
+
+export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall = (body) => {
+    const {game_type} = body;
+    return new Promise(function(resolve, reject) {
+        let resultData = {};
+        const query = actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery();
+        pool.query(query,[game_type], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                resultData = results[0];
+            }
+            resolve(resultData);
         })
     })
 }
@@ -844,14 +862,14 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     })
 }
 
-export const actionToUpdateUserAliveForGameApiCall = (userId) => {
+export const actionToUpdateUserAliveForGameApiCall = (userId,sessionId,platformId) => {
     return new Promise(function(resolve) {
         const query = 'SELECT id from betting_active_users WHERE user_id = ?';
         pool.query(query,[userId], (error, results) => {
             if(results?.length){
-                let setData = `status = ?`;
+                let setData = `status = ? , betting_game_session_id = ? , betting_platform_id = ?`;
                 const whereCondition = `id = ? AND status != ? AND status != ?`;
-                let dataToSend = {column: setData, value: [3,results[0]?.id,2,1], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+                let dataToSend = {column: setData, value: [3,sessionId,platformId,results[0]?.id,2,1], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
                 updateCommonApiCall(dataToSend).then(()=>{
                     resolve({success:1,betting_active_users_id:results[0]?.id});
                 })

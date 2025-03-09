@@ -6,8 +6,13 @@ import aviatorGame from "../theme/img/aviator.png";
 import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
-import {actionToUpdateUserAliveForGame} from "../redux/CommonAction";
+import {
+    actionToGetNearestGameSessionOrActiveSessionAndGamePlatform,
+    actionToUpdateUserAliveForGame
+} from "../redux/CommonAction";
 import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
+import BettingGameEntryGamePlatformListComponent
+    from "../components/commonPopup/BettingGameEntryGamePlatformListComponent";
 
 export default function HomePage() {
     const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
@@ -25,16 +30,13 @@ export default function HomePage() {
         goToPage(`/win-go-betting/${betting_active_users_id}`);
         setUserEnterLoading(false);
     }
-    const callFunctionToSetUserEnterInGameConfirm = ()=>{
-        if(bettingBalance >= 100) {
-            setUserEnterInGameConfirm(true);
-        }else{
-            setLowBalanceAlert(true)
-        }
+    const callFunctionToSetUserEnterInGameConfirm = (gameType)=>{
+        setUserEnterInGameConfirm(true);
+        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform(gameType))
     }
-    const callFunctionToDeductBalanceAndEnterInGame = ()=>{
+    const callFunctionToDeductBalanceAndEnterInGame = (sessionId,platformId)=>{
         setUserEnterLoading(true);
-        dispatch(actionToUpdateUserAliveForGame(callFunctionToEnterInGame))
+        dispatch(actionToUpdateUserAliveForGame(sessionId,platformId,callFunctionToEnterInGame));
     }
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -92,8 +94,7 @@ export default function HomePage() {
                     </div>
                     <div className="getbet__container allGame">
                         <div onClick={()=>callFunctionToSetUserEnterInGameConfirm(true)} className="item">
-                            <img className="gameImg"
-                                 src={wingoGame}/>
+                            <img className="gameImg" src={wingoGame}/>
                         </div>
                         <div onClick={()=>goToPage('/coming-soon')} className="item">
                             <img className="gameImg"
@@ -103,6 +104,7 @@ export default function HomePage() {
                             <img className="gameImg"
                                  src={limboGame}/>
                         </div>
+                        <BettingGameEntryGamePlatformListComponent callFunctionToDeductBalanceAndEnterInGame={callFunctionToDeductBalanceAndEnterInGame} setUserEnterInGameConfirm={setUserEnterInGameConfirm} userEnterInGameConfirm={userEnterInGameConfirm}/>
                     </div>
                 </div>
                 <div className="first_list-item processing_fee_container">
@@ -122,30 +124,6 @@ export default function HomePage() {
                     </div>
                 </div>
             </IonContent>
-            <IonAlert
-                header="Warning!!"
-                message="To get a prediction for this game, press the I AM IN button to proceed if you are sure."
-                isOpen={userEnterInGameConfirm}
-                className={"custom_site_alert_toast"}
-                buttons={[
-                    {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        handler: () => {
-                            setUserEnterInGameConfirm(false);
-                        },
-                    },
-                    {
-                        text: 'I AM IN',
-                        role: 'confirm',
-                        handler: () => {
-                            callFunctionToDeductBalanceAndEnterInGame()
-                        },
-                    },
-                ]}
-                onDidDismiss={() => setUserEnterInGameConfirm(false)}
-            />
-
             <IonAlert
                 header="Sorry!!"
                 message="You should have minimum 100 game balance to enter into the game."

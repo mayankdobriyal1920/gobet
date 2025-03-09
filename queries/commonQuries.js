@@ -42,6 +42,36 @@ export const isPassCodeValidQuery = () => {
     `;
 };
 
+export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = () => {
+    return `
+        SELECT
+            bgs.id,
+            bgs.start_time,
+            bgs.end_time,
+            bgs.is_active,
+            JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                            'platform_id', bp.id,
+                            'platform_name', bp.name
+                    )
+            ) AS platforms
+        FROM
+            betting_platform bp
+                CROSS JOIN
+            betting_game_session bgs
+        WHERE
+            bp.game_type = ?
+          AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
+        GROUP BY
+            bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
+        ORDER BY
+            bgs.start_time
+            LIMIT 1;
+
+
+    `;
+};
+
 export const signupQuery = () => {
     return `INSERT INTO app_user(id, name, phone_number, profile_url, sub_admin, wallet_balance, role, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
 };

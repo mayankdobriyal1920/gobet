@@ -70,97 +70,99 @@ export default function WalletPage() {
                         </div>
                     </div>
                     <div className={"wallet-container-content"}>
-                    <div  className="container">
-                        <div className="progressBars">
-                            <div className="progressBarsL">
-                                <div className="van-circle">
-                                    <svg viewBox="0 0 1100 1100">
-                                        <path className="van-circle__layer"
-                                              d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                              style={{"fill": "none", strokeWidth: "100px"}}></path>
-                                        <path
-                                            d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                            className="van-circle__hover"
-                                            style={{
-                                                strokeWidth: "101px",
-                                                strokeLinecap: "butt",
-                                                strokeDasharray: `${totalWalletBalancePercentage * 31.4}px,3140px`
-                                            }}></path>
-                                    </svg>
-                                    <div className="van-circle__text">{totalWalletBalancePercentage}%</div>
+                        <div className="container">
+                            <div className="progressBars">
+                                <div className="progressBarsL">
+                                    <div className="van-circle">
+                                        <svg viewBox="0 0 1100 1100">
+                                            <path className="van-circle__layer"
+                                                  d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                  style={{"fill": "none", strokeWidth: "100px"}}></path>
+                                            <path
+                                                d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                className="van-circle__hover"
+                                                style={{
+                                                    strokeWidth: "101px",
+                                                    strokeLinecap: "butt",
+                                                    strokeDasharray: `${totalWalletBalancePercentage * 31.4}px,3140px`
+                                                }}></path>
+                                        </svg>
+                                        <div className="van-circle__text">{totalWalletBalancePercentage}%</div>
+                                    </div>
+                                    <h3>₹{walletBalance ? walletBalance : '0.00'}</h3><span>Main wallet</span>
                                 </div>
-                                <h3>₹{walletBalance ? walletBalance : '0.00'}</h3><span>Main wallet</span>
+                                <div className="progressBarsL">
+                                    <div className="van-circle">
+                                        <svg viewBox="0 0 1100 1100">
+                                            <path className="van-circle__layer"
+                                                  d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                  style={{"fill": "none", strokeWidth: "100px"}}></path>
+                                            <path
+                                                d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                className="van-circle__hover"
+                                                style={{
+                                                    strokeWidth: "101px",
+                                                    strokeLinecap: "butt",
+                                                    strokeDasharray: `${totalBettingBalancePercentage * 31.4}px,3140px`
+                                                }}></path>
+                                        </svg>
+                                        <div className="van-circle__text">{totalBettingBalancePercentage}%</div>
+                                    </div>
+                                    <h3>₹{bettingBalance ? bettingBalance : '0.00'}</h3><span>Betting wallet</span>
+                                </div>
+                                <div className="progressBarsR">
+                                    <div className="van-circle">
+                                        <svg viewBox="0 0 1100 1100">
+                                            <path className="van-circle__layer"
+                                                  d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                  style={{"fill": "none", strokeWidth: "100px"}}></path>
+                                            <path
+                                                d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
+                                                className="van-circle__hover"
+                                                style={{
+                                                    strokeWidth: "101px",
+                                                    strokeLinecap: "butt",
+                                                    strokeDasharray: `${totalGameBalancePercentage * 31.4}px,3140px`
+                                                }}></path>
+                                        </svg>
+                                        <div className="van-circle__text">{totalGameBalancePercentage}%</div>
+                                    </div>
+                                    <h3>₹{gameBalance ? gameBalance : 0.00}</h3><span>Game wallet</span></div>
                             </div>
-                            <div className="progressBarsL">
-                                <div className="van-circle">
-                                    <svg viewBox="0 0 1100 1100">
-                                        <path className="van-circle__layer"
-                                              d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                              style={{"fill": "none", strokeWidth: "100px"}}></path>
-                                        <path
-                                            d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                            className="van-circle__hover"
-                                            style={{
-                                                strokeWidth: "101px",
-                                                strokeLinecap: "butt",
-                                                strokeDasharray: `${totalBettingBalancePercentage * 31.4}px,3140px`
-                                            }}></path>
-                                    </svg>
-                                    <div className="van-circle__text">{totalBettingBalancePercentage}%</div>
-                                </div>
-                                <h3>₹{bettingBalance ? bettingBalance : '0.00'}</h3><span>Betting wallet</span>
+                            <div className="recycleBtnD">
+                                <button onClick={addMoneyToGameWalletAction} className="recycleBtn">Main wallet transfer
+                                </button>
                             </div>
-                            <div className="progressBarsR">
-                                <div className="van-circle">
-                                    <svg viewBox="0 0 1100 1100">
-                                        <path className="van-circle__layer"
-                                              d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                              style={{"fill": "none", strokeWidth: "100px"}}></path>
-                                        <path
-                                            d="M 550 550 m 0, -500 a 500, 500 0 1, 1 0, 1000 a 500, 500 0 1, 1 0, -1000"
-                                            className="van-circle__hover"
-                                            style={{
-                                                strokeWidth: "101px",
-                                                strokeLinecap: "butt",
-                                                strokeDasharray: `${totalGameBalancePercentage * 31.4}px,3140px`
-                                            }}></path>
-                                    </svg>
-                                    <div className="van-circle__text">{totalGameBalancePercentage}%</div>
+                            <div className="userDetail">
+                                <div>
+                                    <div onClick={() => setIsDepositPopupOpen(true)} className="imgD">
+                                        <img src={rechargeIcon}/>
+                                    </div>
+                                    <span>Deposit</span>
                                 </div>
-                                <h3>₹{gameBalance ? gameBalance : 0.00}</h3><span>Game wallet</span></div>
-                        </div>
-                        <div className="recycleBtnD">
-                            <button onClick={addMoneyToGameWalletAction} className="recycleBtn">Main wallet transfer
-                            </button>
-                        </div>
-                        <div className="userDetail">
-                            <div>
-                                <div onClick={() => setIsDepositPopupOpen(true)} className="imgD">
-                                    <img src={rechargeIcon}/>
+                                <div>
+                                    <div onClick={() => setIsWithdrawalPopupOpen(true)} className="imgD">
+                                        <img src={widthdrawBlue}/>
+                                    </div>
+                                    <span>Withdraw</span>
                                 </div>
-                                <span>Deposit</span>
                             </div>
-                            <div>
-                                <div onClick={() => setIsWithdrawalPopupOpen(true)} className="imgD">
-                                    <img src={widthdrawBlue}/>
+                            <div className="userDetail">
+                                <div>
+                                    <div onClick={() => goToPage('/deposit-history')} className="imgD">
+                                        <img src={rechargeHistory}/>
+                                    </div>
+                                    <span>Deposit history</span>
                                 </div>
-                                <span>Withdraw</span>
-                            </div>
-                            <div>
-                                <div onClick={() => goToPage('/deposit-history')} className="imgD">
-                                    <img src={rechargeHistory}/>
+                                <div>
+                                    <div onClick={() => goToPage('/withdrawal-history')} className="imgD">
+                                        <img src={withdrawHistory}/>
+                                    </div>
+                                    <span>Withdrawal history</span>
                                 </div>
-                                <span>Deposit history</span>
-                            </div>
-                            <div>
-                                <div onClick={()=>goToPage('/withdrawal-history')} className="imgD">
-                                    <img src={withdrawHistory}/>
-                                </div>
-                                <span >Withdrawal history</span>
                             </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </IonContent>
             <IonAlert

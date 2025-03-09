@@ -14,7 +14,7 @@ body{
 }
 ion-header {
     box-shadow: none!important;
-    height: 2.5rem;
+    height: 3.5rem;
 }
 .main_logo_and_slogan_container_header {
     background: var(--theme-gradiant-color);
@@ -32,7 +32,7 @@ ion-header {
 .main_logo_and_slogan_container_header .main_welcome_header_logo_section .logo_login_text {
     margin: auto;
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 1.2rem;
     color: #ffffff;
     font-weight: 900;
 }
@@ -50,7 +50,7 @@ ion-header {
 }
 
 .main_logo_and_slogan_container_header.login_text_in_page .login_head {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #fff;
     padding-bottom: 10px;
@@ -67,14 +67,14 @@ ion-header {
 }
 
 .main_form_container_section .login_form_label {
-    font-size: 1rem;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
 }
 
 .main_form_container_section .login_form_label svg {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
     margin-right: .16rem;
 }
 
@@ -84,7 +84,7 @@ ion-header {
     height: 50px;
     color: var(--theme-button-text-color);
     margin-top: 10px;
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: .02rem;
     border-radius: 0.5rem;
@@ -97,7 +97,7 @@ ion-header {
     height: 45px;
     color: var(--theme-button-text-color);
     margin-top: 10px;
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: .02rem;
     border-radius: 0.5rem;
@@ -116,15 +116,15 @@ ion-header {
     border-radius: .26667rem;
     color: var(--theme-text-color);
     height: 45px;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     width: 100%;
     margin-top: 10px;
 }
 .main_form_container_section .form_second_label_input {
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
 }
 .loading-spinner+.loading-content {
-    font-size: 0.8em;
+    font-size: 1.3em;
 }
 .first_time_user_container_screen .logo_in_container svg {
     margin: auto;
@@ -156,7 +156,7 @@ ion-header {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    margin-right: .5rem;
+    margin-right: 1.6rem;
     overflow: hidden;
 }
 .userInfo__container-content {
@@ -207,7 +207,7 @@ ion-header {
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    font-size: 1rem;
+    font-size: 1.6rem;
     color: #fff;
 }
 
@@ -231,11 +231,11 @@ ion-header {
 }
 
 .userInfo__container-content-logintime {
-    font-size: .63rem;
+    font-size: .87rem;
 }
 .userInfo__container-content-uid {
     padding: .2rem 0;
-    font-size: .8rem;
+    font-size: 1rem;
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -302,7 +302,7 @@ ion-header {
 }
  .totalSavings__container-header__title .acc_balance_title_tip {
     font-weight: 400;
-    font-size: .82rem;
+    font-size: 1.3rem;
     color: var(--text_color_L2);
 }
 .totalSavings__container-header__subtitle {
@@ -383,13 +383,13 @@ ion-header {
     border-radius: .13333rem;
 }
 .financialServices__container-box>div svg {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 4rem;
+    height: 4rem;
 }
 .financialServices__container-box>div>div {
     position: relative;
-    padding: .13333rem;
-    border-radius: .26667rem;
+    padding: .4rem;
+    border-radius: .5rem;
 }
 
 .financialServices__container-box-para {
@@ -404,11 +404,11 @@ ion-header {
     flex-direction: column;
 }
 .financialServices__container-box-para h3 {
-    font-size: .8rem;
+    font-size: 1.1rem;
     color: var(--text_color_L1);
 }
 .financialServices__container-box>div span {
-    font-size: .7rem;
+    font-size: 1rem;
     color: var(--text_color_L2);
 }
 .serviceCenter__container {
@@ -418,9 +418,9 @@ ion-header {
     height: auto;
 }
 .serviceCenter__container h1 {
-    margin-bottom: 1rem;
+    margin-bottom: 1.3rem;
     color: var(--text_color_L1);
-    font-size: 1rem;
+    font-size: 1.3rem;
 }
 .serviceCenter__container-items {
     display: grid;
@@ -440,12 +440,12 @@ ion-header {
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    gap: .27rem;
-    font-size: .74rem;
+    gap: .4rem;
+    font-size: 1rem;
 }
 .serviceCenter__container-items__item svg {
-    width: 2rem;
-    height: 2rem;
+    width: 3.2rem;
+    height: 3.2rem;
 }
 .serviceCenter__container-items__item span {
     text-align: center;
@@ -454,7 +454,7 @@ ion-header {
     margin: 2.3rem 0 .5rem;
 }
 .otp_message_p{
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 .serviceCenter-wrap-header button {
     display: -webkit-box;
@@ -467,13 +467,13 @@ ion-header {
     -webkit-justify-content: center;
     justify-content: center;
     width: 100%;
-    padding-block: .13333rem;
+    padding-block: .5rem;
     color: var(--main-color);
     background: #ffffff;
     border: .01333rem solid var(--main-color);
     border-radius: .66667rem;
-    font-size: 0.8rem;
-    gap: 0.8rem;
+    font-size: 1.2rem;
+    gap: 01rem;
 }
 .serviceCenter-wrap-header button svg {
     width: 1.6rem;
@@ -489,22 +489,22 @@ ion-header {
     font-size: 1rem!important;
 }
 .loading_loader_spinner_container .loading-wrapper{
-    padding-bottom: .9rem!important;
-    padding-top: .9rem!important;
+    padding-bottom: 2rem!important;
+    padding-top: 2rem!important;
 }
 
 .custom_site_alert_toast .alert-message {
-    font-size: 0.8rem!important;
+    font-size: 1.1rem!important;
 }
 
 .custom_site_alert_toast .alert-button-role-confirm {
-    font-size: 0.8rem!important;
+    font-size: 1.2rem!important;
     color: #ffffff!important;
     background: var(--ion-color-primary, #3880ff)!important;
     border-radius: 10px!important;
     text-transform: none!important;
     width: 45%!important;
-    padding: 0.4rem!important;
+    padding: 0.8rem!important;
     height: fit-content!important;
 }
 
@@ -515,7 +515,7 @@ ion-header {
     border-radius: 10px!important;
     text-transform: none!important;
     width: 45%!important;
-    padding: 0.4rem!important;
+    padding: 0.8rem!important;
     height: fit-content!important;
 }
 
@@ -531,11 +531,11 @@ ion-header {
     background: var(--theme-gradiant-color, var(--bg_color_L2));
     width: 100%;
     color: #fff;
-    padding-bottom: .32rem;
+    padding-bottom: .8rem;
 }
 
 .wallet-container-header-belly {
-    padding-top: .38rem;
+    padding-top: .8rem;
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -548,25 +548,25 @@ ion-header {
     align-items: center;
 }
 .wallet-container-header-belly svg {
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 3rem;
+    height: 3rem;
 }
 .wallet-container-header-belly>div:nth-of-type(1) {
-    margin: .23rem 0;
-    font-size: 1.2rem;
-    line-height: 1.8rem;
+    margin: .8rem 0;
+    font-size: 1.8rem;
+    line-height: 2rem;
 }
 .wallet-container span {
     font-family: Inter;
     font-style: normal;
     font-weight: 400;
-    line-height: .8rem;
-    letter-spacing: .08em;
-    font-size: .8rem;
+    line-height: 1rem;
+    letter-spacing: .06em;
+    font-size: 1rem;
     text-align: center;
 }
 .wallet-container-header-belly .wallet_header {
-    font-size: .9rem;
+    font-size: 1.3rem;
 }
 
 .wallet-container-content {
@@ -577,7 +577,7 @@ ion-header {
     padding-bottom: 3rem;
     position: relative;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 1.8rem;
 }
 .wallet-container-content .container {
     display: flex;
@@ -608,8 +608,8 @@ ion-header {
     align-items: center;
 }
 .wallet-container-content .container .progressBars>div .van-circle {
-    width: 5.8rem;
-    height: 5.8rem;
+    width: 100%;
+    height: 7.2rem;
 }
 
 .van-circle {
@@ -618,16 +618,16 @@ ion-header {
     text-align: center;
 }
 .wallet-container-content .container .progressBars>div h3 {
-    margin-top: .4rem;
+    margin-top: .9rem;
 }
 
 .wallet-container h3 {
     font-family: Inter;
     font-style: normal;
     font-weight: 400;
-    line-height: 1.8rem;
-    letter-spacing: .08em;
-    font-size: 1rem;
+    line-height: 2rem;
+    letter-spacing: .06em;
+    font-size: 1.4rem;
     color: var(--text_color_L1);
 }
 .wallet-container .progressBars span {
@@ -654,29 +654,29 @@ ion-header {
 .wallet-container-content .container .recycleBtnD {
     width: 100%;
     text-align: center;
-    margin-bottom: 2.6rem;
+    margin-bottom: 3rem;
 }
 .wallet-container-content .container .recycleBtnD .recycleBtn {
     width: 100%;
-    height: 2.5rem;
+    height: 3.2rem;
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: 600;
-    letter-spacing: .032rem;
+    letter-spacing: .06rem;
     border: none;
-    border-radius: 1rem;
+    border-radius: 1.3rem;
     background: var(--theme-gradiant-color);
 }
 .wallet-container-content .container .userDetail {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: .28rem;
     -webkit-box-orient: initial;
     -webkit-box-direction: initial;
     -webkit-flex-direction: initial;
     flex-direction: initial;
     width: 100%;
-    margin-top: .4rem;
+    margin-top: .8rem;
 }
 .wallet-container-content .container .userDetail>div {
     display: -webkit-box;
@@ -695,9 +695,9 @@ ion-header {
     gap: .26rem;
 }
 .wallet-container-content .container .userDetail>div .imgD {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 2.6rem;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 3rem;
     background: var(--bg_color_L2);
     display: -webkit-box;
     display: -webkit-flex;
@@ -720,7 +720,7 @@ ion-header {
     height: auto;
 }
 .wallet-container-content .container .userDetail>div span {
-    font-size: 0.7rem;
+    font-size: 1.1rem;
 }
 
 
@@ -730,7 +730,7 @@ ion-header {
     stroke-linecap: round;
 }
 .wallet-container-content .container .progressBars .van-circle__text {
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     font-weight: 600;
     color: var(--text_color_L1);
 }
@@ -779,13 +779,13 @@ ion-header {
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     justify-content: center;
-    height: 2.5rem;
+    height: 3.5rem;
     color: var(--text_color_L1);
     background: var(--theme-gradiant-color);
 }
 .navbar__content-left {
     position: absolute;
-    left: .32rem;
+    left: 1rem;
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -803,13 +803,13 @@ ion-header {
     margin-right: 10px;
 }
 .navbar__content-left span {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-top: .2rem;
     color: #ffffff;
 }
 .Wallet__C {
-    padding: .9rem .9rem 0;
+    padding: 1.1rem 1.1rem 0;
     position: relative;
 }
 
@@ -817,8 +817,8 @@ ion-header {
     background-color: var(--bg_color_L3);
     background-repeat: no-repeat;
     background-size: contain;
-    border-radius: .53333rem;
-    padding: .46667rem .54667rem 1.3rem;
+    border-radius: 1rem;
+    padding: 1.5rem;
     position: relative;
     z-index: 0;
 }
@@ -826,7 +826,7 @@ ion-header {
 .Wallet__C-balance-l1 {
     text-align: center;
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     color: var(--text_color_L1);
     overflow: hidden;
 }
@@ -843,25 +843,25 @@ ion-header {
     -webkit-justify-content: center;
     justify-content: center;
     margin-top: .4rem;
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: var(--text_color_L1);
 }
 .Wallet__C-balance-l2>svg {
-    width: 1.3rem;
-    height: 1.3rem;
-    margin-right: .24rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.4rem;
 }
 .Wallet__C-balance-l3 {
     display: flex;
     width: 100%;
-    height: 2.4rem;
+    height: 3rem;
     justify-content: space-between;
-    margin-top: 1.4rem;
+    margin-top: 2rem;
     line-height: 1rem;
     background: var(--norm_green-color);
-    border-radius: .7rem;
+    border-radius: 1rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: #fff;
     text-align: center;
 }
@@ -870,7 +870,7 @@ ion-header {
 }
 .navbar__content-right {
     position: absolute;
-    right: .32rem;
+    right: 1.3rem;
 }
 .content-getbet__right {
     display: -webkit-box;
@@ -887,7 +887,7 @@ ion-header {
 }
 .content-getbet__right .message {
     color: #ffffff;
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     padding-top: 0.16rem;
 }
 
@@ -899,6 +899,7 @@ ion-header {
     display: grid;
     grid-gap: 0.6rem;
     margin-bottom: 2rem;
+    margin-top: 0.5rem;
 }
 .getbet__container.allGame .item {
     width: auto;
@@ -909,14 +910,10 @@ ion-header {
     position: relative;
     border-radius: .26667rem;
 }
-.getbet__container.allGame .item .gameImg {
-    width: auto;
-    height: auto;
-}
 
 .getbet__container .item .gameImg {
-    width: 3.36rem;
-    height: 4.26667rem;
+    width: auto;
+    height: 11.5rem;
     border-radius: .26667rem;
     background: var(--theme-gradiant-color);
     margin-top: .4rem;
@@ -950,14 +947,14 @@ ion-header {
     -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
     width: .2rem;
-    height: .8rem;
+    height: 1rem;
     background: var(--main-color);
     border-radius: .2rem;
 }
 .getbet-title-left {
     display: flex;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 600;
     gap: .3rem;
     color: var(--text_color_L1);
@@ -969,33 +966,33 @@ ion-header {
 }
 .processing_fee_container.first_list-item {
     box-shadow: none;
-    padding: .5rem;
-    border-radius: .5rem;
+    padding: 1rem;
+    border-radius: 1rem;
     background: var(--bg_color_L3);
-    margin: .9rem;
+    margin: 1rem;
 }
 .processing_fee_container.first_list-item .head {
     display: flex;
     -webkit-box-pack: justify;
     -webkit-justify-content: space-between;
     justify-content: space-between;
-    margin-bottom: .18667rem;
+    margin-bottom: .8rem;
 }
 .processing_fee_container.first_list-item .head .title {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: var(--text_color_L1);
     font-weight: 600;
     text-transform: uppercase;
 }
 .processing_fee_container.first_list-item .head .orange {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: var(--theme-primary-button-color);
     font-weight: 600;
 }
 .processing_fee_container.first_list-item .description {
-    font-size: .64rem;
+    font-size: .9rem;
     color: var(--text_color_L2);
-    margin-bottom: .8rem;
+    margin-bottom: 1rem;
 }
 .processing_fee_container.first_list-item .foot {
     display: -webkit-box;
@@ -1019,7 +1016,7 @@ ion-header {
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translate(-50%) translateY(-50%);
     color: var(--text_color_L1);
-    font-size: .8rem;
+    font-size: 1.1rem;
 }
 
 .error {
@@ -1048,7 +1045,7 @@ ion-header {
 }
 .navbar__content-center {
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 1.3rem;
 }
 
 .inner_page.Wallet__C:before {
@@ -1069,7 +1066,7 @@ ion-header {
 }
 .Betting__C {
     width: calc(100% - 2rem);
-    margin: .5rem auto 0;
+    margin: 1.7rem auto 0;
     background: var(--bg_color_L2);
     border-radius: .5rem;
     position: relative;
@@ -1077,7 +1074,7 @@ ion-header {
 
 .Betting__C-mark.full_screen_timer {
     background: rgb(0 0 0 / 6%);
-    height: 100%;
+    height: 20rem;
 }
 .Betting__C-mark {
     width: 100%;
@@ -1095,12 +1092,12 @@ ion-header {
     background-color: var(--bg_color_L3);
     font-weight: 700;
     width: 20%;
-    font-size: 2.8rem;
+    font-size: 3rem;
     text-align: center;
 }
 .Betting__C-mark.full_screen_timer>div{
-    font-size: 4rem;
-    width: 40%;
+    font-size: 5rem;
+    width: 50%;
 }
 .TimeLeft__C {
     width: calc(100% - 2rem);
@@ -1112,8 +1109,8 @@ ion-header {
     padding: 1rem;
 }
 .TimeLeft__C_bottom .TimeLeft__C-id {
-    font-size: 0.75rem;
-    line-height: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6rem;
     margin-bottom: 1rem;
     color: #ffffff;
 }
@@ -1209,10 +1206,10 @@ ion-header {
 
 .TimeLeft__C-up .TimeLeft__C-time>div {
     color: var(--text_color_L1);
-    font-weight: 700;
-    font-size: .9rem;
+    font-weight: 600;
+    font-size: 1.5rem;
     text-align: center;
-    padding: .8rem;
+    padding: 1rem;
     margin: auto;
     border-radius: .3rem;
     background-color: var(--bg_color_L2);
@@ -1249,7 +1246,7 @@ ion-header {
     font-size: .7rem;
 }
 .GameRecord__C-head {
-    height: 2rem;
+    height: 3.4rem;
     line-height: 2.4rem;
     background: var(--ion-color-primary);
     border-radius: .3rem .3rem 0 0;
@@ -1266,9 +1263,10 @@ ion-header {
     flex-wrap: wrap;
 }
 .GameRecord__C-head .van-col {
-    height: 2rem;
+    height: 3.4rem;
     overflow: hidden;
-    font-size: .8rem;
+    font-size: 1.1rem;
+    line-height: 3rem;
 }
 
 .van-col--9 {
@@ -1290,7 +1288,7 @@ ion-header {
 .GameRecord__C-body>div {
     background: var(--bg_color_L2);
     color: var(--text_color_L1);
-    font-size: .8rem;
+    font-size: 1rem;
 }
 .TimeLeft__C_bottom.TimeLeft__C.for_warning_message {
     height: fit-content!important;
@@ -1311,18 +1309,18 @@ ion-header {
 .add-money-to-game-wallet-modal .add_money_game_wallet_heading{
     width: 100%;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.3rem;
     border-bottom: 1px solid #f1f1f1;
 }
 
 .add-money-to-game-wallet-modal .ion-padding h2 {
     letter-spacing: .06rem;
-    padding-bottom: .6rem;
-    padding-top: .6rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
 }
 
 .add-money-to-game-wallet-modal .enter_amount_label {
-    font-size: 1.1rem!important;
+    font-size: 1.5rem!important;
     font-weight: 500!important;
     color: #555!important;
     display: block!important;
@@ -1332,9 +1330,9 @@ ion-header {
 
 .list_status_type {
     text-align: center;
-    padding-top: .3rem;
-    line-height: 2.6rem;
-    font-size: .9rem;
+    padding-top: .6rem;
+    line-height: 3.4rem;
+    font-size: 1.1rem;
     color: #878787;
 }
 
@@ -1352,19 +1350,19 @@ ion-header {
     border: 1px solid var(--theme-primary-button-color);
     border-radius: .3rem;
     color: var(--theme-text-color);
-    height: 40px;
-    font-size: .86rem;
+    height: 45px;
+    font-size: 1.1rem;
     width: 100%;
-    margin-top: .5rem;
+    margin-top: 1rem;
 }
 
 .add-money-to-game-wallet-modal .submit-transfer-btn {
     background-color: var(--theme-primary-button-color);
     width: 100%;
-    height: 40px;
+    height: 45px;
     color: var(--theme-button-text-color);
     margin-top: 10px;
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: .04333rem;
     border-radius: .7rem;
@@ -1403,14 +1401,14 @@ ion-header {
     align-items: center;
 }
 .userInfo__container-content__avatar {
-    border-width: .05333rem;
+    border-width: .3rem;
 }
 
 .userInfo__container-content__avatar {
-    width: 1.86667rem;
-    height: 1.86667rem;
+    width: 5rem;
+    height: 5rem;
     border-radius: 50%;
-    margin-right: .2rem;
+    margin-right: .6rem;
     overflow: hidden;
 }
 .userInfo__container-content__avatar img {
@@ -1434,8 +1432,8 @@ ion-header {
 }
 
 .userInfo__container-setting-center-header-edit span {
-    font-size: .34667rem;
-    padding-right: .34667rem;
+    font-size: 1.3rem;
+    padding-right: 1.3rem;
 }
 .van-icon {
     position: relative;
@@ -1449,25 +1447,18 @@ ion-header {
     display: inline-block;
 }
 .userInfo__container-setting-center-content {
-    display: -webkit-box;
-    display: -webkit-flex;
     display: flex;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
     justify-content: space-between;
-    font-size: 1.37333rem;
+    font-size: 1.1rem;
+    align-items: center;
     color: var(--text_color_L1);
-    padding: .62667rem 0;
+    padding: 1.6rem 0;
 }
-.userInfo__container-setting-center-content h5 {
-    color: var(--text_color_L2);
-    line-height: 0.5rem;
-}
+
 .userInfo__container-setting-center-content div {
     display: -webkit-box;
     display: -webkit-flex;
-    display: flex
-;
+    display: flex;
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
@@ -1492,17 +1483,6 @@ ion-header {
     padding-inline-end: .16rem;
 }
 
-.userInfo__container-setting-center-content {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-    font-size: 1.37333rem;
-    color: var(--text_color_L1);
-    padding: .62667rem 0;
-}
 .userInfo__container-setting-center-content h5 {
     color: var(--text_color_L2);
 }
@@ -1520,37 +1500,37 @@ ion-header {
     padding-inline-end: .16rem;
 }
 .userInfo__container-setting-center-content svg {
-    width: .45333rem;
-    height: .45333rem;
+    width: 2rem;
+    height: 1rem;
     color: var(--main-color);
 }
 .content_setting-wrapper {
     position: relative;
-    -webkit-padding-after: .13333rem;
-    padding-block-end: .13333rem;
+    padding-block-end: .8rem;
 }
 .content_setting-wrapper {
-    padding: 0 .32rem;
+    padding: 0 .8rem;
     background: var(--bg_color_L1) !important;
-    padding-top: .18rem;
+    padding-top: .6rem;
     height: 100%;
 
 }
 .content_setting-wrapper .content-sub_title {
-    margin-top: 1.3rem;
+    margin-top: 3rem;
 }
 .content_setting-wrapper .content-sub_title>div {
-    font-size: .42667rem;
+    font-size: 1.1rem;
     color: var(--text_color_L1);
     font-weight: 700;
-    padding-left: .26667rem;
-    margin-bottom: .26667rem;
-    border-left: .08rem solid var(--main-color);
+    text-transform: uppercase;
+    padding-left: .6rem;
+    margin-bottom: .6rem;
+    border-left: .2rem solid var(--main-color);
 }
 .setting_container .setting_container_item {
-    height: 1.86667rem;
+    height: 3rem;
     background: var(--bg_color_L2);
-    border-radius: .26667rem;
+    border-radius: .6rem;
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -1560,8 +1540,8 @@ ion-header {
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    padding: .34667rem .28rem;
-    margin-bottom: 1.3rem;
+    padding: .8rem .5rem;
+    margin-bottom: 4rem;
 }
 .setting_container .setting_container_item div {
     display: -webkit-box;
@@ -1584,9 +1564,9 @@ figure.icon {
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     justify-content: center;
-    width: 1.06667rem;
-    height: 1.06667rem;
-    border-radius: .26667rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: .6rem;
 }
 
 .setting_container .setting_container_item:last-of-type div .icon svg {
@@ -1600,7 +1580,7 @@ figure.icon {
     color: var(--main-color);
 }
 .setting_container .setting_container_item span {
-    font-size: 1.37333rem;
+    font-size: 1.1rem;
     color: var(--text_color_L1);
     padding: 0 .34667rem;
 }
@@ -1617,27 +1597,11 @@ figure.icon {
 }
 .setting_container .setting_container_item h5 {
     display: inline-block;
-    font-size: .34667rem;
+    font-size: 1.1rem;
     color: var(--text_color_L2);
-    margin-right: .45333rem;
+    margin-right: 1rem;
 }
-.setting_container .setting_container_item {
-    height: 1.86667rem;
-    background: var(--bg_color_L2);
-    border-radius: .26667rem;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex
-;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    padding: .34667rem .28rem;
-    margin-bottom: 1.3rem;
-}
+
 .bet-container .tabs {
     background: var(--bg_color_L1);
 }
@@ -1653,30 +1617,24 @@ figure.icon {
 }
 
 .ar-searchbar {
-    display: -webkit-box;
-    display: -webkit-flex;
     display: flex;
-    padding-left: .5rem;
-    padding-right: .5rem;
-    padding-top: .7rem;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
     align-items: center;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
     justify-content: space-between;
     gap: .52rem;
     width: 100%;
-    font-size: 0.8rem;
-    margin-top: .5rem;
-    margin-bottom: .5rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .ar-searchbar__selector {
     position: relative;
     display: flex;
-    width: 9rem;
-    height: 2rem !important;
+    width: 11rem;
+    height: 3rem !important;
     color: var(--text_color_L2);
 }
 
@@ -1695,14 +1653,14 @@ overflow: hidden;
 
 .ar-searchbar__selector>div {
     width: 100%;
-    line-height: 2.2rem;
+    line-height: 3rem;
     border-radius: .4rem;
     background: var(--bg_color_L2);
 }
 .ar-searchbar__selector>div:first-of-type svg {
     position: absolute;
-    top: 39%;
-    right: .5rem;
+    top: 35%;
+    right: 0rem;
 }
 
 .infiniteScroll {
@@ -1742,18 +1700,18 @@ overflow: hidden;
 }
 
 .empty__container svg {
-    width: 5.17333rem;
-    height: 3.02667rem;
+    width: 8rem;
+    height: 6rem;
     margin-top: 1.3rem;
     margin-bottom: .24667rem;
 }
 .empty__container p {
     color: var(--text_color_L3);
-    font-size: .8rem;
+    font-size: 1.3rem;
 }
 .svg-icon {
-    width: 2rem;
-    height: 2rem;
+    width: 4rem;
+    height: 4rem;
     vertical-align: middle;
 }
 .svg-icon.icon-refreshBalance {
@@ -1798,8 +1756,8 @@ overflow: hidden;
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    font-size: .8rem;
-    padding: .8rem 0;
+    font-size: 1.1rem;
+    padding: 1.2rem 0;
     position: relative;
 }
 
@@ -1847,15 +1805,15 @@ overflow: hidden;
     transform: scaleY(.5);
 }
 .settingPanel__container-items__item svg.svg_min_icon {
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
 .settingPanel__container .content-sub_title div {
-    margin-bottom: 1.4rem;
+    margin-bottom: 2rem;
     color: var(--text_color_L1);
-    font-size: 0.97rem;
-    margin-top: 1.2rem;
+    font-size: 1.3rem;
+    margin-top: 2rem;
 }
 .settingPanel__container .content-sub_title {
     border-bottom: 1px solid #eeeeee;
@@ -1875,7 +1833,7 @@ overflow: hidden;
 .user_name_change_modal_heading{
     width: 100%;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.3rem;
     border-bottom: 1px solid #f1f1f1;
 }
 .user_name_change_modal_heading h2{
@@ -1884,7 +1842,7 @@ overflow: hidden;
     padding-top: .1rem;
 }
 .enter_modal_user_label{
-    font-size: 1.1rem !important;
+    font-size: 1.5rem !important;
     font-weight: 500 !important;
     color: #555 !important;
     display: block !important;
@@ -1895,18 +1853,18 @@ overflow: hidden;
     border: 1px solid var(--theme-primary-button-color);
     border-radius: .1rem;
     color: var(--theme-text-color);
-    height: 40px;
-    font-size: .8rem;
+    height: 45px;
+    font-size: 1.3rem;
     width: 100%;
-    margin-top: .5rem;
+    margin-top: 1.3rem;
 }
 .submit_user_name_update_btn{
     background-color: var(--theme-primary-button-color);
     width: 100%;
-    height: 40px;
+    height: 45px;
     color: var(--theme-button-text-color);
     margin-top: 30px;
-    font-size: .9rem;
+    font-size: 1.3rem;
     font-weight: 700;
     letter-spacing: .1rem;
     border-radius: 2rem;
@@ -1956,17 +1914,18 @@ overflow: hidden;
 }
 .sysMessage__container-msgWrapper__item-title .title {
     margin-left: .1rem;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 600;
 }
 .sysMessage__container-msgWrapper__item-title .action_button {
     margin-left: auto;
     text-transform: uppercase;
+    font-size: 1.1rem;
 }
 .sysMessage__container-msgWrapper__item-title .action_button.update {
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 1rem;
     padding: 10px 16px;
     color: #fff;
     background: var(--main-color);
@@ -1974,12 +1933,12 @@ overflow: hidden;
 .sysMessage__container-msgWrapper__item-time {
     margin-block: .2rem 0.6rem;
     color: var(--text_color_L2);
-    font-size: .75rem;
+    font-size: 1rem;
     font-weight: 400;
 }
 .sysMessage__container-msgWrapper__item-content {
     color: var(--text_color_L2);
-    font-size: .8rem;
+    font-size: 1.1rem;
     font-weight: 400;
     word-break: break-word;
 }
@@ -2007,7 +1966,7 @@ ion-toast {
 }
 
 ion-alert .alert-wrapper .alert-title {
-    font-size: .9rem!important;
+    font-size: 1.3rem!important;
 }
 
 .alert-radio-label.sc-ion-alert-md {}
@@ -2021,7 +1980,7 @@ ion-alert .alert-wrapper .alert-radio-label {
 
 
 ion-alert .alert-button-group .alert-button {
-    font-size: .8rem!important;
+    font-size: 1.1rem!important;
 }
 .validate_add_betting_balance{
     font-size: .8rem;
@@ -2030,7 +1989,7 @@ ion-alert .alert-button-group .alert-button {
 }
 .acc_balance_tip{
     display: flex;
-    font-size: .82rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--text_color_L1);
 }
@@ -2041,15 +2000,14 @@ ion-alert .alert-button-group .alert-button {
 }
 .totalSavings__container-header-box.blanc_title {
     width: 85%;
-    padding: 0.7rem;
+    padding: 1rem;
 }
 .exit-from-game-button {
-    height: 54px;
+    height: 60px;
     background: var(--ion-color-primary);
-    bottom: 13px;
     width: 100%;
     color: #ffffff;
-    font-size: .9rem;
+    font-size: 1rem;
     display: block;
     margin: .6rem;
     font-weight: 600;
@@ -2062,13 +2020,12 @@ ion-alert .alert-button-group .alert-button {
 }
 
 .order-bet-game-button {
-    height: 54px;
+    height: 60px;
     background: #2ca100;
-    bottom: 13px;
     width: 100%;
     margin: .6rem;
     color: #ffffff;
-    font-size: .9rem;
+    font-size: 1rem;
     display: block;
     font-weight: 600;
     border-radius: 8px;
@@ -2077,5 +2034,46 @@ ion-alert .alert-button-group .alert-button {
     background: #b63e3e;
 }
 .main_logo_and_slogan_container_header.login_text_in_page .login_text {
-    font-size: 0.6rem;
+    font-size: 1rem;
+}
+.platform_session_main_outer_container .platform_session_he {
+    font-size: 1.3rem;
+    padding: 1rem;
+    border-bottom: 1px solid #d4d4d4;
+}
+.platform_game_list_container {
+    padding: 1rem;
+}
+.platform_game_list_container .platform_name_button {
+    font-size: 1.1rem;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+}
+.sysMessage__container-msgWrapper__item.for_session {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sysMessage__container-msgWrapper__item.for_session span.title {
+    font-size: 1.2rem;
+    font-weight: 100;
+    line-height: 1rem;
+}
+
+.sysMessage__container-msgWrapper__item.for_session .settingPanel__container-items-right {
+    position: absolute;
+    right: 21px;
+}
+.inactive_session {
+    color: #ff0000;
+    margin-left: .8rem;
+    font-size: 1rem;
+}
+.active_session {
+    color: #56ff47;
+    margin-left: .8rem;
+    font-size: 1rem;
+}
+.sysMessage__container-msgWrapper__item.for_session .sysMessage__container-msgWrapper__item-content {
+    line-height: 3rem;
 }

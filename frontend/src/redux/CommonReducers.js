@@ -41,7 +41,10 @@ import {
     PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
-    USER_MONEY_TRANSACTIONS_REQUEST, USER_MONEY_TRANSACTIONS_SUCCESS
+    USER_MONEY_TRANSACTIONS_REQUEST,
+    USER_MONEY_TRANSACTIONS_SUCCESS,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -84,9 +87,20 @@ export const userWalletAndGameBalanceReducer = (state = {}, action) => {
 export const userBetPredictionHistoryReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_BET_PREDICTION_HISTORY_REQUEST:
-            return { loading: true};
+            return { loading: true,predictionHistory:[]};
         case USER_BET_PREDICTION_HISTORY_SUCCESS:
             return { loading: false, predictionHistory: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const nearestGameSessionAndActiveSessionReducer = (state = {}, action) => {
+    switch (action.type) {
+        case NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST:
+            return { loading: true,gameSessionData:{}};
+        case NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS:
+            return { loading: false, gameSessionData: action.payload};
         default:
             return state;
     }

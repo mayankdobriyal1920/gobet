@@ -39,7 +39,10 @@ import {
     PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
     PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
     ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS, USER_MONEY_TRANSACTIONS_REQUEST, USER_MONEY_TRANSACTIONS_SUCCESS
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
+    USER_MONEY_TRANSACTIONS_REQUEST,
+    USER_MONEY_TRANSACTIONS_SUCCESS,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST, NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 const api = Axios.create({
@@ -269,6 +272,17 @@ export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
     try {
         api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
             dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatform = (gameType) => async (dispatch) => {
+    dispatch({type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST});
+    try {
+        api.post(`actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
+            dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...responseData.data}});
         })
     } catch (error) {
         console.log(error);
@@ -532,11 +546,11 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id) => asy
     }
 }
 
-export const actionToUpdateUserAliveForGame = (callFunctionToEnterInGame) => async () => {
+export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunctionToEnterInGame) => async () => {
     try {
-        api.post(`actionToUpdateUserAliveForGameApiCall`, {}).then((responseData) => {
+        api.post(`actionToUpdateUserAliveForGameApiCall`, {sessionId:sessionId,platformId:platformId}).then((responseData) => {
             if(callFunctionToEnterInGame) {
-                callFunctionToEnterInGame(responseData?.data?.betting_active_users_id);
+                callFunctionToEnterInGame(sessionId,responseData?.data?.betting_active_users_id);
             }
         })
     } catch (error) {

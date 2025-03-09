@@ -19,14 +19,14 @@
 
 .first_time_user_container_screen .welcome_screen_text .welcome_txt {
     color: #ffffff;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: bold;
     line-height: 55px;
 }
 
 .first_time_user_container_screen .welcome_screen_text .welcome_txt2 {
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 1.4rem;
     font-weight: bold;
     line-height: 40px;
 }
@@ -38,7 +38,7 @@
 .first_time_user_container_screen .welcome_screen_text_2_sec {
     text-align: center;
     color: #813213;
-    font-size: 18px;
+    font-size: 1.1;
 }
 
 .first_time_user_container_screen .welcome_screen_text_2_sec button.welcome_txt_se_button {
@@ -48,14 +48,14 @@
     font-size: 1.3rem;
     letter-spacing: .04333rem;
     border-radius: 1.06667rem;
-    background: #bf4f2b;
+    background: #ce743b;
 }
 .first_time_user_container_screen .welcome_screen_text_2_sec .welcome_txt_se_2 {
-    font-size: .38rem;
+    font-size: 1.1rem;
 }
 
 .first_time_user_container_screen .welcome_screen_text_2_sec .welcome_txt_se_3 {
-    font-size: .32rem;
+    font-size: 1rem;
     text-align: justify;
-    padding: .33rem;
+    padding: 1rem;
 }

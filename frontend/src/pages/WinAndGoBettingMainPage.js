@@ -119,7 +119,7 @@ export default function WinAndGoBettingMainPage() {
                                         {(prediction?.status !== 1) ?
                                             <React.Fragment>
                                                 <button onClick={()=>orderNextBetActivateUser(betting_active_users_id)} type={"button"} className={"order-bet-game-button"}>
-                                                    ORDER NEXT BET
+                                                    ORDER BET
                                                 </button>
                                                 <button onClick={goBack} type={"button"} className={"exit-from-game-button"}>
                                                     EXIT GAME
