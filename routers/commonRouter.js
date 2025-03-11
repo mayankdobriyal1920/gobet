@@ -42,7 +42,11 @@ import {
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall,
     actionToCallFunctionToActiveSectionAndStartGameApiCall,
     actionToGetBetActiveUserDataApiCall,
-    actionToGetBetGameSessionDataApiCall, actionToGetGameLastResultDataApiCall
+    actionToGetBetGameSessionDataApiCall,
+    actionToGetGameLastResultDataApiCall,
+    actionToGetUserActiveSubscriptionDataApiCall,
+    actionToGetAppSubscriptionPlanDataApiCall,
+    actionToActivateSubscriptionPlanApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -482,6 +486,38 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToGetUserActiveSubscriptionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetUserActiveSubscriptionDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetAppSubscriptionPlanDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetAppSubscriptionPlanDataApiCall(req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                wallet_balance:0,
+                game_balance:0
+            });
+        }
+    })
+);
+
+commonRouter.post(
     '/actionToGetUserBetPredictionDataApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id && req.body.betting_active_users_id) {
@@ -491,6 +527,21 @@ commonRouter.post(
         }else{
             res.status(200).send({
                 success:5,
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToActivateSubscriptionPlanApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToActivateSubscriptionPlanApiCall(req?.session?.userSessionData?.id,req.body.plan).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success:0,
             });
         }
     })

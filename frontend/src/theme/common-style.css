@@ -990,7 +990,7 @@ ion-header {
     font-weight: 600;
 }
 .processing_fee_container.first_list-item .description {
-    font-size: .9rem;
+    font-size: 1.1rem;
     color: var(--text_color_L2);
     margin-bottom: 1rem;
 }
@@ -1954,7 +1954,7 @@ overflow: hidden;
     height: 90vh!important;
 }
 ion-toast {
-    font-size: 0.9rem !important;
+    font-size: 1.1rem !important;
 }
 .navbar__content-right .navbar__content-button {
     text-align: center;
@@ -2091,4 +2091,28 @@ ion-alert .alert-button-group .alert-button {
 }
 button.exit-from-game-button.big {
     background: #da0000;
+}
+.ion_confirm_button_subscription {
+    background: var(--theme-gradiant-color);
+    color: #ffffff;
+    border-radius: 0.4rem;
+    padding: 0.3rem 1rem;
+    margin: 1rem;
+    font-size: 1.1rem;
+}
+
+.ion_cancel_button_subscription {
+    background: #cccccc;
+    color: #ffffff;
+    border-radius: 0.4rem;
+    padding: 0.3rem 1rem;
+    font-size: 1.1rem;
+}
+.sub_item_text{
+    font-size: 1.05rem;
+}
+.processing_fee_container .foot_insub .step_txt {
+    font-size: 1.07rem;
+    line-height: 1.9rem;
+    color: #d47e3b;
 }

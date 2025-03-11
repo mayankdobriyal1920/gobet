@@ -47,7 +47,14 @@ import {
     NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS,
     BET_ACTIVE_USER_SUCCESS,
     BET_ACTIVE_USER_REQUEST,
-    BET_GAME_SESSION_REQUEST, BET_GAME_SESSION_SUCCESS, GET_GAME_LAST_RESULT_REQUEST, GET_GAME_LAST_RESULT_SUCCESS
+    BET_GAME_SESSION_REQUEST,
+    BET_GAME_SESSION_SUCCESS,
+    GET_GAME_LAST_RESULT_REQUEST,
+    GET_GAME_LAST_RESULT_SUCCESS,
+    USER_SUBSCRIPTION_DATA_REQUEST,
+    USER_SUBSCRIPTION_DATA_SUCCESS,
+    APP_SUBSCRIPTION_PLAN_REQUEST,
+    APP_SUBSCRIPTION_PLAN_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -104,6 +111,28 @@ export const gameLastResultReducer = (state = {}, action) => {
             return { loading: true };
         case GET_GAME_LAST_RESULT_SUCCESS:
             return { loading: false, gameResult: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const userSubscriptionDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_SUBSCRIPTION_DATA_REQUEST:
+            return { loading: true };
+        case USER_SUBSCRIPTION_DATA_SUCCESS:
+            return { loading: false, subscriptionData: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const appSubscriptionPlanDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case APP_SUBSCRIPTION_PLAN_REQUEST:
+            return { loading: true ,subscriptionPlan:[]};
+        case APP_SUBSCRIPTION_PLAN_SUCCESS:
+            return { loading: false, subscriptionPlan: action.payload };
         default:
             return state;
     }

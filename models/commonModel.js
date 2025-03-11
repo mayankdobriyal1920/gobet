@@ -28,6 +28,7 @@ import {
     insertCommonApiCall,
     updateCommonApiCall
 } from "./helpers/commonModelHelper.js";
+import moment from "moment-timezone";
 
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
@@ -269,6 +270,52 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
     })
 }
 
+export const actionToGetUserActiveSubscriptionDataApiCall = (userId) => {
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT 
+                            us.id,
+                            s.name AS plan_name,
+                            s.price,
+                            s.duration_days,
+                            us.plan_type,
+                            us.total_value,
+                            us.balance,
+                            us.created_at,
+                            us.expiry_date,
+                            us.is_active
+                        FROM user_subscriptions us
+                        JOIN subscriptions s ON us.subscription_id = s.id
+                        WHERE us.created_by = ? AND us.is_active = ?;
+                        `;
+        let userData = {};
+        pool.query(query,[userId,1], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                userData = results[0];
+            }
+            resolve(userData);
+        })
+    })
+}
+
+export const actionToGetAppSubscriptionPlanDataApiCall = () => {
+    return new Promise(function(resolve, reject) {
+        const query = `SELECT * FROM subscriptions;`;
+        let userData = {};
+        pool.query(query,[], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                userData = results;
+            }
+            resolve(userData);
+        })
+    })
+}
+
 export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
     return new Promise(function (resolve, reject) {
         let userData = {};
@@ -433,6 +480,83 @@ export const actionToGetUserBetPredictionDataApiCall = (userId,betting_active_us
                 predData = {success:1,prediction:results[0]}
             }
             resolve(predData);
+        })
+    })
+}
+
+export const actionToActivateSubscriptionPlanApiCall = (userId,plan) => {
+    return new Promise(function(resolve, reject) {
+        if(!plan.id){
+            resolve({status:false});
+        }
+        let query = `SELECT * from subscriptions WHERE id = ?`;
+        pool.query(query, [plan.id], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if (results?.length) {
+                let subscription_id = results[0]?.id;
+                let plan_type = results[0]?.name;
+                let plan_price = Number(results[0]?.price);
+                let total_value = results[0]?.value;
+                let balance = results[0]?.value;
+                let created_by = userId;
+                let expiry_date = moment().add(30,'days').format();
+                query = `SELECT wallet_balance from app_user WHERE id = ?`;
+                pool.query(query, [userId], (error, results) => {
+                    if (error) {
+                        reject(error)
+                    }
+                    if (results?.length) {
+                        let userWalletBalance = results[0]?.wallet_balance;
+
+                        if (Number(plan_price) > Number(userWalletBalance)) {
+                            resolve({status: 0, error: 'Given amount is greater then wallet balance'});
+                        } else {
+                            let aliasArray = ['?', '?', '?', '?', '?', '?'];
+                            let columnArray = ["subscription_id", "plan_type", "total_value", "balance", "created_by","expiry_date"];
+                            let valuesArray = [subscription_id, plan_type, total_value, balance,created_by,expiry_date];
+                            let insertData = {
+                                alias: aliasArray,
+                                column: columnArray,
+                                values: valuesArray,
+                                tableName: 'user_subscriptions'
+                            };
+                            insertCommonApiCall(insertData).then(() => {
+                                let setData = `wallet_balance = ?`;
+                                const whereCondition = `id = ?`;
+                                let dataToSend = {
+                                    column: setData,
+                                    value: [Number(userWalletBalance) - Number(plan_price), userId],
+                                    whereCondition: whereCondition,
+                                    returnColumnName: 'id',
+                                    tableName: 'app_user'
+                                };
+                                updateCommonApiCall(dataToSend).then(() => {
+                                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                                    const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                                    let aliasArray = ['?', '?', '?', '?'];
+                                    let columnArray = ["id", "amount", "user_id", "type"];
+                                    let valuesArray = [user_transaction_history_id, plan_price, userId, 'purchased_subscription_plan'];
+                                    let insertData = {
+                                        alias: aliasArray,
+                                        column: columnArray,
+                                        values: valuesArray,
+                                        tableName: 'user_transaction_history'
+                                    };
+                                    insertCommonApiCall(insertData).then(() => {
+                                        resolve({status: 1});
+                                    })
+                                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                                })
+                            })
+
+                        }
+                    }
+                })
+            }else{
+                resolve({status:false});
+            }
         })
     })
 }

@@ -48,7 +48,10 @@ import {
     BET_ACTIVE_USER_SUCCESS,
     BET_GAME_SESSION_REQUEST,
     BET_GAME_SESSION_SUCCESS,
-    GET_GAME_LAST_RESULT_REQUEST, GET_GAME_LAST_RESULT_SUCCESS
+    GET_GAME_LAST_RESULT_REQUEST,
+    GET_GAME_LAST_RESULT_SUCCESS,
+    USER_SUBSCRIPTION_DATA_REQUEST,
+    USER_SUBSCRIPTION_DATA_SUCCESS, APP_SUBSCRIPTION_PLAN_REQUEST, APP_SUBSCRIPTION_PLAN_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 const api = Axios.create({
@@ -247,6 +250,41 @@ export const actionToGetGameLastResultData = (sessionId) => async (dispatch) => 
     try {
         api.post(`actionToGetGameLastResultDataApiCall`, {session_id:sessionId}).then(responseData => {
             dispatch({ type: GET_GAME_LAST_RESULT_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetUserActiveSubscriptionData= (setActivationPlanLoader) => async (dispatch) => {
+    dispatch({ type: USER_SUBSCRIPTION_DATA_REQUEST});
+    try {
+        api.post(`actionToGetUserActiveSubscriptionDataApiCall`, {}).then(responseData => {
+            dispatch({ type: USER_SUBSCRIPTION_DATA_SUCCESS, payload: {...responseData.data}});
+            if(setActivationPlanLoader)
+                setActivationPlanLoader(false);
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetAppSubscriptionPlanData = () => async (dispatch) => {
+    dispatch({ type: APP_SUBSCRIPTION_PLAN_REQUEST});
+    try {
+        api.post(`actionToGetAppSubscriptionPlanDataApiCall`, {}).then(responseData => {
+            dispatch({ type: APP_SUBSCRIPTION_PLAN_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToActivateSubscriptionPlan = (plan,setActivationPlanLoader) => async (dispatch) => {
+    try {
+        api.post(`actionToActivateSubscriptionPlanApiCall`, {plan}).then(() => {
+            dispatch(actionToGetUserActiveSubscriptionData(setActivationPlanLoader));
+            dispatch(actionToGetUserWalletAndGameBalance());
         })
     } catch (error) {
         console.log(error);

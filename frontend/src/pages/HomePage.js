@@ -7,6 +7,7 @@ import wingoGame from "../theme/img/wingoGame.png";
 import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router-dom";
 import {
+    actionToActivateSubscriptionPlan,
     actionToCallFunctionToActiveSectionAndStartGame,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatform,
     actionToUpdateUserAliveForGame
@@ -14,17 +15,21 @@ import {
 import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
 import BettingGameEntryGamePlatformListComponent
     from "../components/commonPopup/BettingGameEntryGamePlatformListComponent";
+import SubscriptionModal from "../components/SubscriptionModal";
 
 export default function HomePage() {
     const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
-    const {userInfo} = useSelector((state) => state.userAuthDetail);
+    const {subscriptionData} = useSelector((state) => state.userSubscriptionData);
     const history = useHistory();
     const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
     const [userEnterLoading,setUserEnterLoading] = useState(false);
     const dispatch = useDispatch();
     const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
+    const [activationPlanLoader, setActivationPlanLoader] = useState(false);
     const [loadingAddAmountSuccess, setLoadingAddAmountSuccess] = useState(false);
+    const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+
     const goToPage = (page)=>{
         history.push(page);
     }
@@ -47,6 +52,16 @@ export default function HomePage() {
         dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,callFunctionToEnterInGame));
     }
 
+    const handlePlanSelect = (plan) => {
+        if(walletBalance >= plan.price) {
+            setActivationPlanLoader(true);
+            setIsSubscriptionModalOpen(false); // Close modal after selection
+            dispatch(actionToActivateSubscriptionPlan(plan, setActivationPlanLoader))
+        }else{
+            setLowBalanceAlert(true);
+        }
+    };
+
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
@@ -64,8 +79,8 @@ export default function HomePage() {
                                 <div className="navbar__content-right">
                                     <div className="content-getbet__right">
                                         <div className="message">
-                                            Main Balance
-                                            ₹{walletBalance ? walletBalance : '0.00'}
+                                            Eligible Value
+                                            ₹{subscriptionData?.balance ? subscriptionData?.balance : '0.00'}
                                         </div>
                                     </div>
                                 </div>
@@ -116,26 +131,53 @@ export default function HomePage() {
                         <BettingGameEntryGamePlatformListComponent callFunctionToActiveSectionAndStartGame={callFunctionToActiveSectionAndStartGame} callFunctionToDeductBalanceAndEnterInGame={callFunctionToDeductBalanceAndEnterInGame} setUserEnterInGameConfirm={setUserEnterInGameConfirm} userEnterInGameConfirm={userEnterInGameConfirm}/>
                     </div>
                 </div>
-                <div className="first_list-item processing_fee_container">
-                    <div className="head">
-                        <div className="title">
-                            Processing Fee
+                {(subscriptionData?.id && subscriptionData?.balance > 0 && new Date(subscriptionData?.expiry_date) > new Date()) ? (
+                    <div className="first_list-item processing_fee_container">
+                        <div className="head">
+                            <div className="title">Active Subscription</div>
+                            <div className="orange">{subscriptionData?.plan_name}</div>
                         </div>
-                        <div className="orange">1%</div>
-                    </div>
-                    <div className="description">
-                        We deduct 1% of the amount when you transfer funds from your main wallet to your betting wallet. You will receive 99% of the transferred amount in your game wallet, which can be used for betting predictions.
-                    </div>
-                    <div className="foot">
-                        <div className="progress">
-                            <div className="step">Eligible bet ₹{bettingBalance}</div>
+                        <div className="description">
+                            Your subscription is active, allowing you to participate in betting predictions.
+                            Ensure you have sufficient balance to place bets.
+                        </div>
+                        <div className="foot_insub">
+                            <div className="step_txt">Eligible Bet: ₹{bettingBalance}</div>
+                            <div className="step_txt">Remaining Balance: ₹{subscriptionData?.balance}</div>
+                            <div className="step_txt">Expiry
+                                Date: {new Date(subscriptionData?.expiry_date).toLocaleDateString()}</div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="no-subscription">
+                        <div className="first_list-item processing_fee_container">
+                            <div className="head">
+                                <div className="title">Buy a Subscription</div>
+                            </div>
+                            <div className="description">
+                                {subscriptionData?.id ? (
+                                    subscriptionData?.balance <= 0 ? (
+                                        "Your previous subscription balance has been used up. Renew your plan to continue betting."
+                                    ) : new Date(subscriptionData?.expiry_date) <= new Date() ? (
+                                        "Your previous subscription has expired. Purchase a new plan to continue."
+                                    ) : ""
+                                ) : (
+                                    "You don't have an active subscription. Choose a plan to start betting."
+                                )}
+                            </div>
+                            <div className="foot">
+                                <div className="progress" onClick={() => setIsSubscriptionModalOpen(true)}>
+                                    <div className="step">Choose Plans</div>
+                                </div>
+                                <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onSelectPlan={handlePlanSelect} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </IonContent>
             <IonAlert
                 header="Sorry!!"
-                message="You should have minimum 100 game balance to enter into the game."
+                message="Insufficient balance in your main balance."
                 isOpen={lowBalanceAlert}
                 className={"custom_site_alert_toast"}
                 buttons={[
@@ -145,18 +187,11 @@ export default function HomePage() {
                         handler: () => {
                             setLowBalanceAlert(false);
                         },
-                    },
-                    {
-                        text: 'Add Money',
-                        role: 'confirm',
-                        handler: () => {
-                            setIsAddMoneyOpen(true)
-                        },
-                    },
+                    }
                 ]}
                 onDidDismiss={() => setLowBalanceAlert(false)}
             />
-            <IonLoading isOpen={userEnterLoading || loadingAddAmountSuccess} message={"Please wait..."}/>
+            <IonLoading isOpen={userEnterLoading || loadingAddAmountSuccess || activationPlanLoader} message={"Please wait..."}/>
         </IonPage>
     )
 }

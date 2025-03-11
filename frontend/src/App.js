@@ -26,7 +26,7 @@ import './theme/common-style.css';
 import {useDispatch, useSelector} from "react-redux";
 import {
     actionToConnectSocketServer,
-    actionToGetAllUsersUnderSubAdminList,
+    actionToGetAllUsersUnderSubAdminList, actionToGetAppSubscriptionPlanData, actionToGetUserActiveSubscriptionData,
     actionToGetUserSessionData,
     actionToGetUserWalletAndGameBalance
 } from "./redux/CommonAction";
@@ -72,6 +72,8 @@ const AppEnterMainPage = () => {
         dispatch(actionToGetUserWalletAndGameBalance());
         dispatch(actionToGetAllUsersUnderSubAdminList());
         dispatch(actionToConnectSocketServer());
+        dispatch(actionToGetUserActiveSubscriptionData());
+        dispatch(actionToGetAppSubscriptionPlanData());
     }, []);
 
     return (

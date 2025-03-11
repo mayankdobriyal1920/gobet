@@ -1,10 +1,17 @@
 import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
-    adminGameResultListReducer, allUsersNormalAndSunAdminListReducer,
-    allUsersUnsetSubAdminListReducer, betActiveUserDataReducer, betGameSessionDataReducer,
-    changeUserAvatarModal, gameLastResultReducer,
-    generatedPasscodeListByAdminReducer, nearestGameSessionAndActiveSessionReducer, passcodeRequestBySubAdminReducer,
+    adminGameResultListReducer,
+    allUsersNormalAndSunAdminListReducer,
+    allUsersUnsetSubAdminListReducer,
+    appSubscriptionPlanDataReducer,
+    betActiveUserDataReducer,
+    betGameSessionDataReducer,
+    changeUserAvatarModal,
+    gameLastResultReducer,
+    generatedPasscodeListByAdminReducer,
+    nearestGameSessionAndActiveSessionReducer,
+    passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
     pendingWithdrawalRequestListReducer,
     signupSigninFormError,
@@ -12,9 +19,11 @@ import {
     userBetPredictionHistoryReducer,
     userBetPredictionStatusReducer,
     userDepositAmountHistoryReducer,
-    userGameHistoryReducer, userMoneyTransactionsReducer,
+    userGameHistoryReducer,
+    userMoneyTransactionsReducer,
     userOtpReducer,
     userSessionReducer,
+    userSubscriptionDataReducer,
     userWalletAndGameBalanceReducer,
     userWithdrawalAmountHistoryReducer
 } from './CommonReducers';
@@ -43,10 +52,14 @@ const initialState = {
     betActiveUserData: {loading:true,activeUserData:{}},
     betGameSessionData: {loading:true,sessionData:{}},
     gameLastResult: {loading:true,gameResult:{}},
+    userSubscriptionData: {loading:true,subscriptionData:{}},
+    appSubscriptionPlanData: {loading:true,subscriptionPlan:[]}
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     betActiveUserData: betActiveUserDataReducer,
+    appSubscriptionPlanData: appSubscriptionPlanDataReducer,
+    userSubscriptionData: userSubscriptionDataReducer,
     gameLastResult: gameLastResultReducer,
     betGameSessionData: betGameSessionDataReducer,
     userWithdrawalAmountHistory: userWithdrawalAmountHistoryReducer,
