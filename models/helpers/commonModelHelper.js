@@ -160,7 +160,7 @@ export const callFunctionToSendOtp = (phone,otp) => {
     //////// SEND OTP TO SMS ////////
 }
 export const bulkUpdateCommonApiCall = (body) => {
-    const { updates, tableName, conditionColumn = 'id' } = body; // Default conditionColumn to 'id'
+    const { updates, tableName,amountUpdateCase = '', conditionColumn = 'id' } = body; // Default conditionColumn to 'id'
 
     try {
         return new Promise((resolve, reject) => {
@@ -174,12 +174,22 @@ export const bulkUpdateCommonApiCall = (body) => {
 
             // Construct the CASE statement for each column to update
             const columnsToUpdate = Object.keys(updates[0].set); // Get columns from the first update
-            const caseStatements = columnsToUpdate.map((column) => {
-                const cases = updates
-                    .map(() => `WHEN ${conditionColumn} = ? THEN ?`)
-                    .join(" ");
-                return `${column} = CASE ${cases} ELSE ${column} END`;
-            });
+            let caseStatements = '';
+            if(amountUpdateCase){
+                caseStatements = columnsToUpdate.map((column) => {
+                    const cases = updates
+                        .map(() => `WHEN ${conditionColumn} = ? THEN ${amountUpdateCase}`) // ✅ Correct subtraction
+                        .join(" ");
+                    return `${column} = CASE ${cases} ELSE ${column} END`;
+                });
+            }else{
+                caseStatements = columnsToUpdate.map((column) => {
+                    const cases = updates
+                        .map(() => `WHEN ${conditionColumn} = ? THEN ?`)
+                        .join(" ");
+                    return `${column} = CASE ${cases} ELSE ${column} END`;
+                });
+            }
 
             // Flatten the values for the CASE statements
             const caseValues = updates.flatMap((update) => [
@@ -429,12 +439,12 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                             if (!userPredData?.is_test_user) {
                                 updatesArray.push({
                                     conditionValue: userPredData.user_id,
-                                    set: {betting_balance: `betting_balance - ${Number(userPredData?.amount)}`}
+                                    set: {betting_balance: userPredData?.amount}
                                 });
 
                                 updatesSubscriptionBalanceArray.push({
                                     conditionValue: userPredData.subscription_id,
-                                    set: {balance: `balance - ${Number(userPredData?.amount)}`}
+                                    set: {balance: userPredData?.amount}
                                 });
 
                                 betActiveUserIds.push(userPredData.betting_active_users_id);
@@ -456,9 +466,9 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                         })
                             .then(() => {
                                 // Update user game balance
-                                bulkUpdateCommonApiCall({tableName: "app_user", updates: updatesArray, conditionColumn: "id"})
+                                bulkUpdateCommonApiCall({tableName: "app_user", updates: updatesArray, conditionColumn: "id",amountUpdateCase:`betting_balance - ?`})
                                     .then(() => {
-                                    bulkUpdateCommonApiCall({tableName: "user_subscriptions", updates: updatesSubscriptionBalanceArray, conditionColumn: "id"})
+                                    bulkUpdateCommonApiCall({tableName: "user_subscriptions", updates: updatesSubscriptionBalanceArray, conditionColumn: "id",amountUpdateCase:`balance - ?`})
                                         .then(() => {
                                             // Update betting_active_users status
                                             bulkUpdateCommonApiCall({

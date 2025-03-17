@@ -117,7 +117,7 @@ export default function HomePage() {
                         </div>
                     </div>
                     <div className="getbet__container allGame">
-                        <div onClick={()=>callFunctionToSetUserEnterInGameConfirm(true)} className="item">
+                        <div onClick={()=>callFunctionToSetUserEnterInGameConfirm('win_go')} className="item">
                             <img className="gameImg" src={wingoGame}/>
                         </div>
                         <div onClick={()=>goToPage('/coming-soon')} className="item">

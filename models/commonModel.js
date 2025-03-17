@@ -1223,14 +1223,18 @@ export function actionToRunCheckForAliveUsers(sessionId) {
             }
             if (results?.length > 1) {
                 const filteredUsers = results
-                    .filter(user => user.is_test_user === 0 && user.subscription_id) // Remove test users & users without a subscription
+                    .filter(user => user.is_test_user === 1 || user.subscription_id) // Remove test users & users without a subscription
                     .map(user => ({
                         ...user,
                         balance: Math.min(user.subscription_balance, user.balance) // Update betting_balance
                     }));
-                if (filteredUsers.length > 0) {
-                    actionToDistributeBettingFunctionAmongUsers(filteredUsers, sessionId);
-                    return;
+
+                if (filteredUsers.length > 1) {
+                    const hasRealUser = results.some(user => user.is_test_user === 0);
+                    if (hasRealUser) {
+                        actionToDistributeBettingFunctionAmongUsers(filteredUsers, sessionId);
+                        return;
+                    }
                 }
             }
 

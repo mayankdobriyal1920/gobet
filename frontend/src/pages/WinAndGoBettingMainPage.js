@@ -88,6 +88,7 @@ export default function WinAndGoBettingMainPage() {
         if(timer === 60){
             dispatch(actionToGetUserBetPredictionData(activeUserData?.id));
             dispatch(actionToGetGameLastResultData(session_id));
+            dispatch(actionToGetUserBetPredictionHistory());
         }
     },[timer,activeUserData])
 
@@ -304,7 +305,7 @@ export default function WinAndGoBettingMainPage() {
             </IonContent>
             <IonAlert
                 header="Sorry!!"
-                amessage="Insufficient balance in your betting balance or subscription balance. The balance must be greater than or equal to 10."
+                message="Insufficient balance in your betting balance or subscription balance. The balance must be greater than or equal to 10."
                 isOpen={lowBalanceAlert}
                 className={"custom_site_alert_toast"}
                 buttons={[
