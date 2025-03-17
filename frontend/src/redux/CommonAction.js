@@ -601,6 +601,7 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
                             dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
                         }
                         dispatch(actionToGetUserWalletAndGameBalance())
+                        dispatch(actionToGetUserActiveSubscriptionData())
                     }
                 }
                 break;
