@@ -948,8 +948,8 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                 let setData = ``;
                 let whereCondition = ``;
                 let dataToSend = {};
-                let userTrnsectionType = 'game_loose_amount_credit';
-                let amountToDeduct = Number(allBetData.amount) - Math.round(0.02 * Number(allBetData.amount));
+                let userTrnsectionType = '';
+                let amountToDeduct = 0;
 
                 if(allBetData?.option_name !== result) {
                     // Update user's game balance
@@ -957,26 +957,26 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                     whereCondition = `id = ?`;
                     dataToSend = {
                         column: setData,
-                        value: [Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount * 2)), allBetData.user_id],
+                        value: [Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount)), allBetData.user_id],
                         whereCondition: whereCondition,
                         returnColumnName: 'id',
                         tableName: 'app_user',
                     };
                     userTrnsectionType = 'game_loose_amount_credit';
-                    amountToDeduct = Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount * 2));
+                    amountToDeduct = Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount));
                 }else{
                     // Update user's game balance
                     setData = `game_balance = game_balance + ?`;
                     whereCondition = `id = ?`;
                     dataToSend = {
                         column: setData,
-                        value: [(0.02 * Number(allBetData.amount * 2)), allBetData.user_id],
+                        value: [(0.02 * Number(allBetData.amount)), allBetData.user_id],
                         whereCondition: whereCondition,
                         returnColumnName: 'id',
                         tableName: 'app_user',
                     };
                     userTrnsectionType = 'game_win_amount_credit';
-                    amountToDeduct = (0.02 * Number(allBetData.amount * 2));
+                    amountToDeduct = (0.02 * Number(allBetData.amount));
                 }
 
                 // Insert transaction history
