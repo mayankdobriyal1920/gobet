@@ -765,7 +765,7 @@ commonRouter.post(
     '/actionToOrderNextBetActivateUserApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToOrderNextBetActivateUserApiCall(req.body.bet_id).then(responseData => {
+            actionToOrderNextBetActivateUserApiCall(req.body.bet_id,req?.session?.userSessionData?.id).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

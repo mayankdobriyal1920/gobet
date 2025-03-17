@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import {IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
+import React, {useEffect, useState} from "react";
+import {IonAlert, IonContent, IonHeader, IonIcon, IonPage} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -23,6 +23,7 @@ import {arrowBack} from "ionicons/icons";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
+    const {subscriptionData} = useSelector((state) => state.userSubscriptionData);
     const {bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const {status,prediction,timer} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
@@ -30,6 +31,7 @@ export default function WinAndGoBettingMainPage() {
     const {activeUserData} = useSelector((state) => state.betActiveUserData);
     const {loading,sessionData} = useSelector((state) => state.betGameSessionData);
     const gameLastResult = useSelector((state) => state.gameLastResult);
+    const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
     const dispatch = useDispatch();
     const {session_id} = useParams();
     useKeepAwake();
@@ -56,7 +58,11 @@ export default function WinAndGoBettingMainPage() {
     }, [session_id]);
 
     const orderNextBetActivateUser = (betId)=>{
-        dispatch(actionToOrderNextBetActivateUser(betId));
+        if(subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10) {
+            dispatch(actionToOrderNextBetActivateUser(betId));
+        }else{
+            setLowBalanceAlert(true);
+        }
     }
 
     const cancelNextBetOrderActivateUser = (betId)=>{
@@ -296,6 +302,22 @@ export default function WinAndGoBettingMainPage() {
                    :''
                 }
             </IonContent>
+            <IonAlert
+                header="Sorry!!"
+                amessage="Insufficient balance in your betting balance or subscription balance. The balance must be greater than or equal to 10."
+                isOpen={lowBalanceAlert}
+                className={"custom_site_alert_toast"}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            setLowBalanceAlert(false);
+                        },
+                    }
+                ]}
+                onDidDismiss={() => setLowBalanceAlert(false)}
+            />
         </IonPage>
     )
 }

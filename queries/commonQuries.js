@@ -296,16 +296,30 @@ export const getUserByIdQuery = () => {
 export const getAliveUsersQuery = () => {
     return `
         SELECT
-            betting_active_users.id as betting_active_users_id,
-            app_user.id as id,
-            app_user.name as name,
-            app_user.phone_number as uid,
-            app_user.is_test_user as is_test_user,
-            app_user.betting_balance as balance
-        FROM betting_active_users
-        LEFT JOIN app_user ON app_user.id = betting_active_users.user_id
-        WHERE betting_active_users.status = ? AND app_user.betting_balance > 100
-        GROUP BY betting_active_users.user_id
-        ORDER BY betting_active_users.created_at DESC;
+            ba.id AS betting_active_users_id,
+            au.id AS id,
+            au.name AS name,
+            au.phone_number AS uid,
+            au.is_test_user AS is_test_user,
+            au.betting_balance AS balance,
+            us.id AS subscription_id,
+            us.plan_type AS plan_type,
+            us.total_value AS total_value,
+            us.balance AS subscription_balance,
+            us.expiry_date AS subscription_expiry_date
+        FROM betting_active_users AS ba
+                 LEFT JOIN app_user AS au ON au.id = ba.user_id
+                 LEFT JOIN user_subscriptions AS us ON us.id = (
+            SELECT id FROM user_subscriptions
+            WHERE created_by = au.id
+              AND is_active = 1
+              AND betting_balance >= 10
+              AND expiry_date > CURRENT_TIMESTAMP
+            ORDER BY created_at DESC LIMIT 1  -- Fetch latest active subscription
+            )
+        WHERE ba.status = ?
+          AND au.betting_balance >= 10
+        ORDER BY ba.created_at DESC;
+        ;
     `;
 };

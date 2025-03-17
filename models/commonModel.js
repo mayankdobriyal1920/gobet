@@ -926,13 +926,13 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
         };
 
         // Step 2: Fetch users who lost the bet (those whose option_name != result)
-        const fetchLosingBets = () => {
-            const query = `SELECT user_id, amount 
+        const fetchAllUsersBets = () => {
+            const query = `SELECT user_id, amount,option_name
                             FROM bet_prediction_history 
-                            WHERE game_result_id = ? AND option_name != ?`;
+                            WHERE game_result_id = ?`;
 
             return new Promise((resolve, reject) => {
-                pool.query(query, [id, result], (error, results) => {
+                pool.query(query, [id], (error, results) => {
                     if (error) {
                         reject(error);
                     } else {
@@ -943,25 +943,47 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
         };
 
         // Step 3: Update wallet balances for users who lost the bet
-        const updateWalletBalances = (losingBets) => {
-            const updatePromises = losingBets.map((looseBetData) => {
-                // Update user's game balance
-                const setData = `game_balance = game_balance + ?`;
-                const whereCondition = `id = ?`;
-                const dataToSend = {
-                    column: setData,
-                    value: [Number(looseBetData.amount) - Math.round(0.02 * Number(looseBetData.amount)), looseBetData.user_id],
-                    whereCondition: whereCondition,
-                    returnColumnName: 'id',
-                    tableName: 'app_user',
-                };
+        const updateWalletBalances = (allUsersBets) => {
+            const updatePromises = allUsersBets.map((allBetData) => {
+                let setData = ``;
+                let whereCondition = ``;
+                let dataToSend = {};
+                let userTrnsectionType = 'game_loose_amount_credit';
+                let amountToDeduct = Number(allBetData.amount) - Math.round(0.02 * Number(allBetData.amount));
+
+                if(allBetData?.option_name !== result) {
+                    // Update user's game balance
+                    setData = `game_balance = game_balance + ?`;
+                    whereCondition = `id = ?`;
+                    dataToSend = {
+                        column: setData,
+                        value: [Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount * 2)), allBetData.user_id],
+                        whereCondition: whereCondition,
+                        returnColumnName: 'id',
+                        tableName: 'app_user',
+                    };
+                    userTrnsectionType = 'game_loose_amount_credit';
+                    amountToDeduct = Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount * 2));
+                }else{
+                    // Update user's game balance
+                    setData = `game_balance = game_balance + ?`;
+                    whereCondition = `id = ?`;
+                    dataToSend = {
+                        column: setData,
+                        value: [(0.02 * Number(allBetData.amount * 2)), allBetData.user_id],
+                        whereCondition: whereCondition,
+                        returnColumnName: 'id',
+                        tableName: 'app_user',
+                    };
+                    userTrnsectionType = 'game_win_amount_credit';
+                    amountToDeduct = (0.02 * Number(allBetData.amount * 2));
+                }
 
                 // Insert transaction history
                 const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 const aliasArray = ['?', '?', '?', '?'];
                 const columnArray = ['id', 'amount', 'user_id', 'type'];
-                const amountToDeduct = Number(looseBetData.amount) - Math.round(0.02 * Number(looseBetData.amount));
-                const valuesArray = [user_transaction_history_id, amountToDeduct, looseBetData.user_id, 'game_loose_amount_credit'];
+                const valuesArray = [user_transaction_history_id, amountToDeduct, allBetData.user_id, userTrnsectionType];
                 const insertData = {
                     alias: aliasArray,
                     column: columnArray,
@@ -998,10 +1020,10 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 
         // Execute the steps in sequence
         updateGameResult()
-            .then(() => fetchLosingBets())
-            .then((losingBets) => {
-                if (losingBets.length > 0) {
-                    return updateWalletBalances(losingBets);
+            .then(() => fetchAllUsersBets())
+            .then((allUsersBets) => {
+                if (allUsersBets.length > 0) {
+                    return updateWalletBalances(allUsersBets);
                 } else {
                     return Promise.resolve(); // No losing bets, skip wallet updates
                 }
@@ -1012,16 +1034,68 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
     });
 };
 
-export const actionToOrderNextBetActivateUserApiCall = (betId) => {
-    return new Promise(function(resolve) {
-        let setData = `status = ?`;
-        const whereCondition = `id = ?`;
-        let dataToSend = {column: setData, value: [1,betId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
-        updateCommonApiCall(dataToSend).then(()=>{
-            resolve({success:1});
-        })
-    })
-}
+export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
+    return new Promise(function (resolve, reject) {
+        const queryUserBalance = `SELECT betting_balance FROM app_user WHERE id = ?`;
+
+        pool.query(queryUserBalance, [userId], (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+
+            if (results?.length) {
+                let userBettingBalance = results[0]?.betting_balance;
+
+                const querySubscription = `SELECT expiry_date, balance FROM user_subscriptions WHERE created_by = ?`;
+
+                pool.query(querySubscription, [userId], (error, subResults) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    if (subResults?.length) {
+                        let subExpiryDate = new Date(subResults[0]?.expiry_date);
+                        let subBalance = subResults[0]?.balance;
+                        let currentDate = new Date();
+
+                        // Check conditions
+                        if (subExpiryDate < currentDate) {
+                            return reject({ success: 0, message: "Subscription expired." });
+                        }
+                        if (subBalance < 10) {
+                            return reject({ success: 0, message: "Insufficient subscription balance." });
+                        }
+                        if (userBettingBalance < 10) {
+                            return reject({ success: 0, message: "Insufficient betting balance." });
+                        }
+
+                        // Update status if all conditions are met
+                        let setData = `status = ?`;
+                        const whereCondition = `id = ?`;
+                        let dataToSend = {
+                            column: setData,
+                            value: [1, betId],
+                            whereCondition: whereCondition,
+                            returnColumnName: 'id',
+                            tableName: 'betting_active_users'
+                        };
+
+                        updateCommonApiCall(dataToSend)
+                            .then(() => {
+                                resolve({ success: 1 });
+                            })
+                            .catch((err) => reject(err));
+                    } else {
+                        reject({ success: 0, message: "No subscription found." });
+                    }
+                });
+            } else {
+                reject({ success: 0, message: "User not found." });
+            }
+        });
+    });
+};
+
 
 export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     return new Promise(function(resolve) {
@@ -1148,17 +1222,22 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                 return;
             }
             if (results?.length > 1) {
-                // Check if at least one user has is_test_user = 0
-                const hasRealUser = results.some(user => user.is_test_user === 0);
-                if (hasRealUser) {
-                    actionToDistributeBettingFunctionAmongUsers(results,sessionId);
+                const filteredUsers = results
+                    .filter(user => user.is_test_user === 0 && user.subscription_id) // Remove test users & users without a subscription
+                    .map(user => ({
+                        ...user,
+                        balance: Math.min(user.subscription_balance, user.balance) // Update betting_balance
+                    }));
+                if (filteredUsers.length > 0) {
+                    actionToDistributeBettingFunctionAmongUsers(filteredUsers, sessionId);
+                    return;
                 }
-            }else if(results?.length > 0){
-                let setData = `status = ?`;
-                const whereCondition = `is_test_user = ?`;
-                let dataToSend = {column: setData, value: [3,0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
-                updateCommonApiCall(dataToSend).then(()=>{})
             }
+
+            let setData = `status = ?`;
+            const whereCondition = `is_test_user = ?`;
+            let dataToSend = {column: setData, value: [3,0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+            updateCommonApiCall(dataToSend).then(()=>{})
         });
     } catch (error) {
         console.error('Error:', error);

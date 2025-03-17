@@ -142,10 +142,8 @@ export default function HomePage() {
                             Ensure you have sufficient balance to place bets.
                         </div>
                         <div className="foot_insub">
-                            <div className="step_txt">Eligible Bet: ₹{bettingBalance}</div>
-                            <div className="step_txt">Remaining Balance: ₹{subscriptionData?.balance}</div>
-                            <div className="step_txt">Expiry
-                                Date: {new Date(subscriptionData?.expiry_date).toLocaleDateString()}</div>
+                            <div className="step_txt">Subscription Value: ₹{subscriptionData?.total_value}</div>
+                            <div className="step_txt">Expiry Date: {new Date(subscriptionData?.expiry_date).toLocaleDateString()}</div>
                         </div>
                     </div>
                 ) : (
