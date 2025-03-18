@@ -396,65 +396,64 @@ export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) =>
     })
 }
 
-export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (adminUserId,body) => {
+export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
-        const {id,user_id,count} = body;
-        if (id) {
-            let setData = `status = ?, updated_by = ?`;
-            const whereCondition = `id = ?`;
-            let dataToSend = {
-                column: setData,
-                value: [1, adminUserId, id],
-                whereCondition: whereCondition,
-                returnColumnName: 'id',
-                tableName: 'passcode_request'
-            };
+        const {requestPasscodeCount} = body;
 
-            updateCommonApiCall(dataToSend).then(() => {
-                let lengthLoop = count || 1; // Default to 1 if count is not provided
-                let valuesArray = [];
-
-                for (let i = 0; i < lengthLoop; i++) {
-                    valuesArray.push([user_id, Math.floor(100000 + Math.random() * 900000), adminUserId]);
-                }
-
-                const insertData = {
-                    column: ["user_id", "code", "created_by"],
-                    valuesArray: valuesArray,
-                    tableName: 'pass_code'
-                };
-
-                bulkInsertCommonApiCall(insertData).then(() => {
-                    resolve({ status: 1 });
-                }).catch((err) => {
-                    console.error('Error during bulk insert:', err);
-                    reject({ status: 0, error: err });
-                });
-            }).catch((err) => {
-                console.error('Error during update:', err);
-                reject({ status: 0, error: err });
-            });
-        } else {
-            let lengthLoop = 5; // Default length loop to 5 if id is not provided
-            let valuesArray = [];
-
-            for (let i = 0; i < lengthLoop; i++) {
-                valuesArray.push([adminUserId, Math.floor(100000 + Math.random() * 900000), adminUserId]);
+        const query = `SELECT role,wallet_balance from app_user WHERE id = ?`;
+        pool.query(query, [userId], (error, results) => {
+            if (error) {
+                reject(error)
             }
+            if (results?.length) {
+                let userWalletBalance = results[0]?.wallet_balance;
+                let role = results[0]?.role;
+                let moneyCount = Number(requestPasscodeCount) * (role === 1 ? 10000 : 1000);
+                if(moneyCount <= userWalletBalance){
+                    let lengthLoop = requestPasscodeCount; // Default length loop to 5 if id is not provided
+                    let valuesArray = [];
 
-            const insertData = {
-                column: ["user_id", "code", "created_by"],
-                valuesArray: valuesArray,
-                tableName: 'pass_code'
-            };
+                    for (let i = 0; i < lengthLoop; i++) {
+                        valuesArray.push([userId, Math.floor(100000 + Math.random() * 900000), userId]);
+                    }
 
-            bulkInsertCommonApiCall(insertData).then(() => {
-                resolve({ status: 1 });
-            }).catch((err) => {
-                console.error('Error during bulk insert:', err);
-                reject({ status: 0, error: err });
-            });
-        }
+                    const insertData = {
+                        column: ["user_id", "code", "created_by"],
+                        valuesArray: valuesArray,
+                        tableName: 'pass_code'
+                    };
+
+                    bulkInsertCommonApiCall(insertData).then(() => {
+                        let setData = `wallet_balance = wallet_balance - ?`;
+                        const whereCondition = `id = ?`;
+                        let dataToSend = {column: setData, value: [moneyCount,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+                        updateCommonApiCall(dataToSend).then(()=>{
+                            resolve({status:1});
+
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                            const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                            let aliasArray = ['?', '?', '?', '?'];
+                            let columnArray = ["id", "amount", "user_id", "type"];
+                            let valuesArray = [user_transaction_history_id, moneyCount, userId, 'purchased_passcodes'];
+                            let insertData = {
+                                alias: aliasArray,
+                                column: columnArray,
+                                values: valuesArray,
+                                tableName: 'user_transaction_history'
+                            };
+                            insertCommonApiCall(insertData).then(() => {})
+                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+
+                        })
+                    }).catch((err) => {
+                        console.error('Error during bulk insert:', err);
+                        reject({ status: 0, error: err });
+                    });
+                }else{
+                    reject({ status: 0, error: 'Insufficient balance' });
+                }
+            }
+        })
     })
 }
 

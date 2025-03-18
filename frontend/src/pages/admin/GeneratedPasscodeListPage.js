@@ -1,10 +1,10 @@
-import React, {createRef, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     IonCol,
     IonContent,
     IonHeader,
     IonIcon, IonLoading, IonModal,
-    IonPage, IonRow, IonSelect, IonSelectOption, IonToast,
+    IonPage, IonRow, IonSelect, IonSelectOption, IonToast, useIonToast,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
@@ -13,22 +13,23 @@ import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
     actionToApprovePasscodeRequestAndGeneratePasscode,
-    actionToGeneratePasscodeRequestBySubAdmin,
-    actionToGetAdminUserPasscodeListDataList, actionToGetPasscodeRequestBySubAdmin
+    actionToGetAdminUserPasscodeListDataList, actionToGetPasscodeRequestBySubAdmin, actionToGetUserWalletAndGameBalance
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {Capacitor} from "@capacitor/core";
 import {Clipboard} from "@capacitor/clipboard";
+
 export default function GeneratedPasscodeListPage() {
     const history = useHistory();
+    const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [isCopyStatus,setIsCopyStatus] = useState(false);
     const [isRequestPasscodePopupOpen,setIsRequestPasscodePopupOpen] = useState(false);
     const [requestPasscodeCount,setRequestPasscodeCount] = useState(1);
     const [updateLoading,setUpdateLoading] = useState(false);
     const {loading,passcodeList} = useSelector((state) => state.generatedPasscodeListByAdmin);
-    const passcodeRequestBySubAdmin = useSelector((state) => state.passcodeRequestBySubAdmin);
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
     const dispatch = useDispatch();
+    const [present] = useIonToast();
     const goBack = ()=>{
         history.goBack();
         window.history.back();
@@ -40,17 +41,16 @@ export default function GeneratedPasscodeListPage() {
     },[])
 
     const callFunctionToResetPasscodeRequest = () => {
-        dispatch(actionToGetPasscodeRequestBySubAdmin())
         dispatch(actionToGetAdminUserPasscodeListDataList())
+        dispatch(actionToGetUserWalletAndGameBalance())
+        present({
+            message: 'Passcodes generated successfully!',
+            duration: 2000,
+            position: 'bottom'
+        });
         setTimeout(()=>{
             setUpdateLoading(false);
         })
-    }
-
-    const callFunctionToSubmitPasscodeRequest = () => {
-        setUpdateLoading(true);
-        dispatch(actionToGeneratePasscodeRequestBySubAdmin(requestPasscodeCount,callFunctionToResetPasscodeRequest));
-        setIsRequestPasscodePopupOpen(false);
     }
 
     const callFunctionToCopyCode = async (code) => {
@@ -88,9 +88,18 @@ export default function GeneratedPasscodeListPage() {
     }
 
     const callFunctionToDirectGeneratePassCode = ()=>{
-        setUpdateLoading(true);
-        dispatch(actionToApprovePasscodeRequestAndGeneratePasscode({},callFunctionToResetPasscodeRequest));
-        setIsRequestPasscodePopupOpen(false);
+        let moneyCount = requestPasscodeCount * (userAuthDetail.userInfo.role === 1 ? 10000 : 1000);
+        if(moneyCount <= walletBalance) {
+            setUpdateLoading(true);
+            dispatch(actionToApprovePasscodeRequestAndGeneratePasscode({requestPasscodeCount}, callFunctionToResetPasscodeRequest));
+            setIsRequestPasscodePopupOpen(false);
+        }else{
+            present({
+                message: 'Insufficient balance in your main wallet!',
+                duration: 2000,
+                position: 'bottom'
+            });
+        }
     }
 
     const renderVirtualElement = (dataItems)=>{
@@ -125,32 +134,12 @@ export default function GeneratedPasscodeListPage() {
                                         <span>Pass Codes</span>
                                     </div>
                                 </div>
-                                {(userAuthDetail?.userInfo?.role === 2) ?
-                                    <>
-                                        {(!passcodeRequestBySubAdmin?.loading && passcodeRequestBySubAdmin?.passcodeRequest?.id) ?
-                                            <div onClick={callFunctionToOpenPasscodeRequestPopup}
-                                                 className="navbar__content-right">
-                                                <div className="navbar__content-button">
-                                                    Requested
-                                                </div>
-                                            </div>
-                                            :
-                                            <div onClick={callFunctionToOpenPasscodeRequestPopup}
-                                                 className="navbar__content-right">
-                                                <div className="navbar__content-button">
-                                                    Request
-                                                </div>
-                                            </div>
-                                        }
-                                    </>
-                                    :
-                                    <div onClick={callFunctionToDirectGeneratePassCode}
-                                         className="navbar__content-right">
-                                        <div className="navbar__content-button">
-                                            Generate
-                                        </div>
+                                <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                     className="navbar__content-right">
+                                    <div className="navbar__content-button">
+                                        Generate
                                     </div>
-                                }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -199,40 +188,30 @@ export default function GeneratedPasscodeListPage() {
                 initialBreakpoint={0.5} breakpoints={[0.5]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Passcode Count</h2>
+                        <h2>Buy Passcode(s)</h2>
                     </div>
                     <div className={"list_status_type"}>
                         <IonRow>
                             <IonCol size="12">
-                                <IonSelect label={"Passcode count"} value={requestPasscodeCount} onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
-                                    <IonSelectOption value={1}>1</IonSelectOption>
-                                    <IonSelectOption value={2}>2</IonSelectOption>
-                                    <IonSelectOption value={3}>3</IonSelectOption>
-                                    <IonSelectOption value={4}>4</IonSelectOption>
-                                    <IonSelectOption value={5}>5</IonSelectOption>
-                                    <IonSelectOption value={6}>6</IonSelectOption>
-                                    <IonSelectOption value={7}>7</IonSelectOption>
-                                    <IonSelectOption value={8}>8</IonSelectOption>
-                                    <IonSelectOption value={9}>9</IonSelectOption>
-                                    <IonSelectOption value={10}>10</IonSelectOption>
-                                    <IonSelectOption value={11}>11</IonSelectOption>
-                                    <IonSelectOption value={12}>12</IonSelectOption>
-                                    <IonSelectOption value={13}>13</IonSelectOption>
-                                    <IonSelectOption value={14}>14</IonSelectOption>
-                                    <IonSelectOption value={15}>15</IonSelectOption>
-                                    <IonSelectOption value={16}>16</IonSelectOption>
-                                    <IonSelectOption value={17}>17</IonSelectOption>
-                                    <IonSelectOption value={18}>18</IonSelectOption>
-                                    <IonSelectOption value={19}>19</IonSelectOption>
-                                    <IonSelectOption value={20}>20</IonSelectOption>
+                                <IonSelect label={"Passcode price"} value={requestPasscodeCount} onIonChange={(e)=>setRequestPasscodeCount(e.detail.value)}>
+                                    <IonSelectOption value={1}>1 of ₹{1 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={2}>2 of ₹{2 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={3}>3 of ₹{3 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={4}>4 of ₹{4 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={5}>5 of ₹{5 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={6}>6 of ₹{6 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={7}>7 of ₹{7 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={8}>8 of ₹{8 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={9}>9 of ₹{9 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
+                                    <IonSelectOption value={10}>10 of ₹{10 * (userAuthDetail?.userInfo?.role === 1 ? 10000 : 1000)}</IonSelectOption>
                                 </IonSelect>
                             </IonCol>
                         </IonRow>
                         <IonRow>
                             <IonCol size="12">
-                                <button onClick={callFunctionToSubmitPasscodeRequest} type={"button"}
+                                <button onClick={callFunctionToDirectGeneratePassCode} type={"button"}
                                         className={"submit-transfer-btn"}>
-                                    Submit
+                                    BUY
                                 </button>
                             </IonCol>
                         </IonRow>

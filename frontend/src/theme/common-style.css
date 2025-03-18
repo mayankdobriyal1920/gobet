@@ -1364,8 +1364,8 @@ ion-header {
     margin-top: 10px;
     font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: .04333rem;
-    border-radius: .7rem;
+    letter-spacing: .1rem;
+    border-radius: 1rem;
     border: none;
 }
 
@@ -1959,7 +1959,7 @@ ion-toast {
 .navbar__content-right .navbar__content-button {
     text-align: center;
     color: #ffffff;
-    font-size: 0.8rem;
+    font-size: 1rem;
     border-radius: 5px;
     padding: .3rem .5rem;
     background: #177400;
@@ -1972,7 +1972,7 @@ ion-alert .alert-wrapper .alert-title {
 .alert-radio-label.sc-ion-alert-md {}
 
 ion-alert .alert-wrapper .alert-radio-label {
-    font-size: .8rem!important;
+    font-size: 1rem!important;
 }
 .error_amount_betting_transfer {
     padding: 0px;

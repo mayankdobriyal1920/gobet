@@ -114,7 +114,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>My User List56</span>
+                                        <span>My User List</span>
                                     </div>
                                 </div>
                             </div>

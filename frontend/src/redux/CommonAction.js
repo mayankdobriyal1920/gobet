@@ -591,19 +591,19 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
         let websocketData = JSON.parse(data);
         switch (websocketData?.type) {
             case 'USER_BETTING_DATA_RECEIVED':
-                if (websocketData?.selectedGroup?.length) {
-                    const userIdsArray = websocketData.selectedGroup.map(user => user.id);
-                    if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
-                        let currentUserBetData = websocketData.selectedGroup.find((user) =>
-                            user?.id === getState().userAuthDetail?.userInfo?.id
-                        );
-                        if (currentUserBetData?.betting_active_users_id) {
-                            dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
-                        }
-                        dispatch(actionToGetUserWalletAndGameBalance())
-                        dispatch(actionToGetUserActiveSubscriptionData())
-                    }
-                }
+                // if (websocketData?.selectedGroup?.length) {
+                //     const userIdsArray = websocketData.selectedGroup.map(user => user.id);
+                //     if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
+                //         let currentUserBetData = websocketData.selectedGroup.find((user) =>
+                //             user?.id === getState().userAuthDetail?.userInfo?.id
+                //         );
+                //         if (currentUserBetData?.betting_active_users_id) {
+                //             dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
+                //         }
+                //         dispatch(actionToGetUserWalletAndGameBalance())
+                //         dispatch(actionToGetUserActiveSubscriptionData())
+                //     }
+                // }
                 break;
         }
     });
