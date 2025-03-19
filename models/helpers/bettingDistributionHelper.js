@@ -54,6 +54,7 @@ function getValidBetAmount(min, max) {
 
 // Distribute the bet amount among members
 function distributeBetAmount(members, totalBetAmount, minBetAmount,maximumBetAmount) {
+    console.log('members',members)
     members.sort((a, b) => a.balance - b.balance);
 
     let groups = { small: [], big: [] };
@@ -63,7 +64,7 @@ function distributeBetAmount(members, totalBetAmount, minBetAmount,maximumBetAmo
     let smallDistribution = divideAmount(halfAmount, groups.small, minBetAmount,maximumBetAmount);
     let bigDistribution = divideAmount(halfAmount, groups.big, minBetAmount,maximumBetAmount);
 
-    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount,maximumBetAmount);
+    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount,maximumBetAmount,members);
 }
 
 // Divide the amount among members, ensuring amounts are multiples of 10, 100, or 1000
@@ -100,17 +101,15 @@ function divideAmount(amount, members, minBetAmount, maximumBetAmount) {
 
 
 // Finalize the bet distribution and balance SMALL and BIG groups
-function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount,maximumBetAmount) {
+function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount,maximumBetAmount,members) {
     let totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
     let totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
 
     let diff = totalSmall - totalBig;
 
-    while (diff !== 0) {
+    if(diff !== 0) {
         return calculateUserBetAmount(members, minBetAmount, maximumBetAmount);
     }
-    console.log('totalSmall - totalBig',totalSmall , totalBig)
-
 
     let finalDistribution = [];
 

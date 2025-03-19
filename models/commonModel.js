@@ -1201,7 +1201,7 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     })
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId) => {
+export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId,platformId) => {
     return new Promise(function(resolve) {
         let setData = `started_by = ? , is_active = ?`;
         const whereCondition = `id = ?`;
@@ -1213,7 +1213,37 @@ export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,se
             tableName: 'betting_game_session'
         };
         updateCommonApiCall(dataToSend).then(() => {
-            resolve({success: 1});
+            const query = 'SELECT id from betting_active_users WHERE user_id = ?';
+            pool.query(query,[userId], (error, results) => {
+                if (results?.length) {
+                    let setData = `status = ? , betting_game_session_id = ? , betting_platform_id = ?`;
+                    const whereCondition = `id = ? AND status != ? AND status != ?`;
+                    let dataToSend = {
+                        column: setData,
+                        value: [3, sessionId, platformId, results[0]?.id, 2, 1],
+                        whereCondition: whereCondition,
+                        returnColumnName: 'id',
+                        tableName: 'betting_active_users'
+                    };
+                    updateCommonApiCall(dataToSend).then(() => {
+                        resolve({success: 1, betting_active_users_id: results[0]?.id});
+                    })
+                } else {
+                    let getRandomAliveUserId = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                    let aliasArray = ['?', '?', '?'];
+                    let columnArray = ["id", "user_id", "status"];
+                    let valuesArray = [getRandomAliveUserId, userId, 3];
+                    let insertData = {
+                        alias: aliasArray,
+                        column: columnArray,
+                        values: valuesArray,
+                        tableName: 'betting_active_users'
+                    };
+                    insertCommonApiCall(insertData).then(() => {
+                        resolve({success: 1, betting_active_users_id: getRandomAliveUserId});
+                    })
+                }
+            })
         })
     })
 }

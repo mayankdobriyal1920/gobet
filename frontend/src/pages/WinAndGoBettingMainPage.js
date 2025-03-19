@@ -262,7 +262,7 @@ export default function WinAndGoBettingMainPage() {
                                                     ''
                                                 }
                                                 <div className={"text_up"}>
-                                                    UPDATE PREVIOUS GAME RESULT
+                                                    UPDATE PREVIOUS GAME RESULT <br/> {moment(gameLastResult?.gameResult?.created_at).format('YYYY-MM-DD HH:mm')}
                                                 </div>
                                                 <div className={"update_user_game_prev_result_button"}>
                                                     <button
@@ -292,14 +292,9 @@ export default function WinAndGoBettingMainPage() {
                             </div>
                             <div className={"TimeLeft__C_bottom TimeLeft__C"}>
                                 <div className="TimeLeft__C-id">
-                                    {(status) ?
-                                        <>Please check the above bet prediction and ensure you place this bet within the
-                                            given time. If you lose, we will refund your bet amount to your main wallet
-                                            in our app.</>
-                                        :
-                                        <>You are in waiting mode. Please stay on this page while we provide your bet
-                                            prediction.</>
-                                    }
+                                    Please check the above bet prediction and ensure you place this bet within the
+                                        given time. If you lose, we will refund your bet amount to your main wallet
+                                        in our app.
                                 </div>
                             </div>
                             <div className={"GameRecord__C game-record"}>

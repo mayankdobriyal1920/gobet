@@ -47,9 +47,9 @@ export default function HomePage() {
         dispatch(actionToUpdateUserAliveForGame(sessionId,platformId,callFunctionToEnterInGame));
     }
 
-    const callFunctionToActiveSectionAndStartGame = (sessionId)=>{
+    const callFunctionToActiveSectionAndStartGame = (sessionId,platformId)=>{
         setUserEnterLoading(true);
-        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,callFunctionToEnterInGame));
+        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,platformId,callFunctionToEnterInGame));
     }
 
     const handlePlanSelect = (plan) => {

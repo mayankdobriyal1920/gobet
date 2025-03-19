@@ -441,14 +441,16 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
     actionToCallProcedureToSelectRightGroup(allLiveUsersData)
         .then((allSelectedGroupUserData) => {
             // Schedule the betting distribution after 1 minute
+            console.log('allSelectedGroupUserData',allSelectedGroupUserData)
             const userPayloadData = [];
             allSelectedGroupUserData?.forEach((userGroup) => {
-                let minimumBetAmount = userGroup?.balance_length === 2 ? 10 : userGroup?.balance_length === 3 ? 100 : 1000;
+                let minimumBetAmount = Number(userGroup?.balance_length) === 2 ? 10 : Number(userGroup?.balance_length) === 3 ? 100 : 1000;
                 let maximumBetAmount = minimumBetAmount === 10 ? 100 : minimumBetAmount === 100 ? 1000 : 10000;
-
                 // Ensure result is added properly
                 userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
             });
+
+            console.log('userPayloadData',userPayloadData)
 
             if(userPayloadData?.length) {
                 const gameBetId = userPayloadData[0]?.bet_id;

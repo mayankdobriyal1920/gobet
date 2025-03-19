@@ -28,13 +28,13 @@ const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,us
             }
         }else{
             if (sessionData.is_active) {
-                callFunctionToActiveSectionAndStartGame(sessionData?.id);
+                callFunctionToActiveSectionAndStartGame(sessionData?.id,platformId);
             }else{
                 const now = moment();
                 const startTime = moment(sessionData?.start_time, 'HH:mm:ss');
                 const endTime = moment(sessionData?.end_time, 'HH:mm:ss');
                 if (now.isBetween(startTime, endTime, null, '[]')) {
-                    callFunctionToActiveSectionAndStartGame(sessionData?.id);
+                    callFunctionToActiveSectionAndStartGame(sessionData?.id,platformId);
                 } else if (now.isBefore(startTime)) {
                     present({
                         message: 'It\'s too early to start the session!',

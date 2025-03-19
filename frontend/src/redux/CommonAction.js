@@ -663,10 +663,9 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
     });
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,isLoading = true) => async (dispatch) => {
-    if(isLoading) {
-        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
-        dispatch(actionToStartTimeIntervalOfUserTime());
-    }
+    //if(isLoading){
+       dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+    dispatch(actionToStartTimeIntervalOfUserTime());
     try {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
@@ -688,9 +687,9 @@ export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunction
     }
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async () => {
+export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,platformId,callFunctionToEnterInGame) => async () => {
     try {
-        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId}).then(() => {
+        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId,platformId:platformId}).then(() => {
             if(callFunctionToEnterInGame) {
                 callFunctionToEnterInGame(sessionId);
             }
