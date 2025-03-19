@@ -1,286 +1,304 @@
+// Generate a unique time-based ID
 function generateTimeBasedId() {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-    const counter = 10000 + minutesSinceMidnight;
-    return `${year}${month}${day}1000${counter + 2}`;
+    const counter = String(minutesSinceMidnight).padStart(4, '0'); // Ensure 4 digits
+    return `${year}${month}${day}1000${counter}`;
 }
 
-export function calculateUserBetAmount(members = []) {
-    if (!members || members.length === 0) {
-        return [];
-    }
-
-    const validMembers = members.filter(member => member.balance >= 10);
-    if (validMembers.length === 0) {
-        return [];
-    }
+// Calculate the total bet amount and distribute it among members
+export function calculateUserBetAmount(members = [], minBetAmount = 100, maximumBetAmount = 10000) {
+    if (!members || members.length === 0) return [];
+    members.forEach(member => {
+        member.balance = parseFloat(member.balance.toString());
+    });
+    const validMembers = members.filter(member => member.balance >= minBetAmount);
+    if (validMembers.length === 0) return [];
 
     const totalMembers = validMembers.length;
-    const minBetAmount = 10 * totalMembers;
-    const maxBetAmount = Math.min(...validMembers.map(m => Math.floor(m.balance / 10) * 10)) * totalMembers;
+    const minTotalBet = minBetAmount * totalMembers;
+    const maxTotalBet = Math.min(
+        validMembers.reduce((sum, member) => sum + Math.floor(member.balance / minBetAmount) * minBetAmount, 0),
+        maximumBetAmount * totalMembers
+    );
 
-    if (minBetAmount > maxBetAmount) {
+    if (minTotalBet > maxTotalBet){
         return [];
     }
 
-    let totalBetAmount;
-    do {
-        totalBetAmount = Math.floor(Math.random() * ((maxBetAmount - minBetAmount) / 10 + 1)) * 10 + minBetAmount;
-    } while (totalBetAmount % 10 !== 0);
+    // Randomly select a total bet amount within the valid range, ensuring it's a multiple of 10, 100, or 1000
+    const totalBetAmount = getValidBetAmount(minTotalBet, maxTotalBet);
 
-    const smallBet = totalBetAmount / 2;
-    const bigBet = totalBetAmount / 2;
-
-    console.log({
-        total: totalBetAmount,
-        small: smallBet,
-        big: bigBet,
-    })
-
-    return distributeBetAmount(validMembers, {
-        total: totalBetAmount,
-        small: smallBet,
-        big: bigBet,
-    });
+    return distributeBetAmount(validMembers, totalBetAmount, minBetAmount,maximumBetAmount);
 }
 
-function divideAmount(amount, parts, members) {
-    let divisions = new Array(parts).fill(0);
-    let remainingAmount = amount;
+// Get a valid bet amount that is a multiple of 10, 100, or 1000
+function getValidBetAmount(min, max) {
+    const multiples = [10, 100, 1000];
+    let validAmounts = [];
 
-    for (let i = 0; i < parts - 1; i++) {
-        let maxAllocatable = Math.min(remainingAmount, members[i].balance);
-        let part = formatBetAmount(Math.floor(Math.random() * maxAllocatable) + 1);
-        divisions[i] = part;
+    multiples.forEach(multiple => {
+        for (let i = min; i <= max; i += multiple) {
+            if (i % multiple === 0) {
+                validAmounts.push(i);
+            }
+        }
+    });
+
+    // Randomly select a valid amount
+    return validAmounts[Math.floor(Math.random() * validAmounts.length)];
+}
+
+// Distribute the bet amount among members
+function distributeBetAmount(members, totalBetAmount, minBetAmount,maximumBetAmount) {
+    members.sort((a, b) => a.balance - b.balance);
+
+    let groups = { small: [], big: [] };
+    members.forEach((member, index) => groups[index % 2 === 0 ? 'small' : 'big'].push(member));
+
+    let halfAmount = totalBetAmount / 2;
+    let smallDistribution = divideAmount(halfAmount, groups.small, minBetAmount,maximumBetAmount);
+    let bigDistribution = divideAmount(halfAmount, groups.big, minBetAmount,maximumBetAmount);
+
+    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount,maximumBetAmount);
+}
+
+// Divide the amount among members, ensuring amounts are multiples of 10, 100, or 1000
+function divideAmount(amount, members, minBetAmount, maximumBetAmount) {
+    let parts = members.length;
+    if (parts === 0) return [];
+
+    let divisions = new Array(parts).fill(minBetAmount);
+    let remainingAmount = amount - (minBetAmount * parts);
+
+    for (let i = 0; i < parts; i++) {
+        if (remainingAmount <= 0) break;
+
+        let maxAllocatable = Math.min(remainingAmount, members[i].balance - minBetAmount, maximumBetAmount - minBetAmount);
+        let part = getValidBetAmount(0, maxAllocatable);
+
+        divisions[i] += part;
         remainingAmount -= part;
     }
-    divisions[parts - 1] = formatBetAmount(remainingAmount);
+
+    // Distribute any remaining amount evenly, ensuring multiples of 10
+    let index = 0;
+    while (remainingAmount > 0) {
+        let increment = Math.min(10, remainingAmount, maximumBetAmount - divisions[index % parts]);
+        if (increment > 0) {
+            divisions[index % parts] += increment;
+            remainingAmount -= increment;
+        }
+        index++;
+    }
+
     return divisions;
 }
 
-function formatBetAmount(amount) {
-    if (amount >= 1000) return Math.floor(amount / 1000) * 1000;
-    if (amount >= 100) return Math.floor(amount / 100) * 100;
-    return Math.floor(amount / 10) * 10;
-}
 
-function distributeBetAmount(members, distributionBetAmount) {
-    members.sort((a, b) => a.balance - b.balance);
-    let resultMemberInBet = { small: [], big: [] };
-    let curIndex = Math.random() < 0.5 ? 'small' : 'big';
+// Finalize the bet distribution and balance SMALL and BIG groups
+function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount,maximumBetAmount) {
+    let totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
+    let totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
 
-    members.forEach(member => {
-        resultMemberInBet[curIndex].push(member);
-        curIndex = curIndex === 'small' ? 'big' : 'small';
-    });
+    let diff = totalSmall - totalBig;
 
-    let totalSmallMembers = resultMemberInBet.small.length;
-    let totalBigMembers = resultMemberInBet.big.length;
-
-    let smallRandomDivide = divideAmount(distributionBetAmount.small, totalSmallMembers, resultMemberInBet.small);
-    let bigRandomDivide = divideAmount(distributionBetAmount.big, totalBigMembers, resultMemberInBet.big);
-
-    function balanceSmallBigTotals(smallRandomDivide, bigRandomDivide) {
-        let smallTotal = smallRandomDivide.reduce((sum, val) => sum + val, 0);
-        let bigTotal = bigRandomDivide.reduce((sum, val) => sum + val, 0);
-        let diff = Math.abs(smallTotal - bigTotal);
-
-        if (smallTotal > bigTotal) {
-            for (let i = 0; i < totalBigMembers; i++) {
-                if (bigRandomDivide[i] + diff <= members[i].balance) {
-                    bigRandomDivide[i] += diff;
-                    break;
-                }
-            }
-        } else if (bigTotal > smallTotal) {
-            for (let i = 0; i < totalSmallMembers; i++) {
-                if (smallRandomDivide[i] + diff <= members[i].balance) {
-                    smallRandomDivide[i] += diff;
-                    break;
-                }
-            }
-        }
-        return { smallRandomDivide, bigRandomDivide };
+    while (diff !== 0) {
+        return calculateUserBetAmount(members, minBetAmount, maximumBetAmount);
     }
+    console.log('totalSmall - totalBig',totalSmall , totalBig)
 
-    let { smallRandomDivide: adjustedSmall, bigRandomDivide: adjustedBig } = balanceSmallBigTotals(smallRandomDivide, bigRandomDivide);
 
-    let finalMemberBetDistributionObject = [];
-    // Calculate total small and big amounts
-    const totalSmallAmount = adjustedSmall.reduce((sum, amount) => sum + amount, 0);
-    const totalBigAmount = adjustedBig.reduce((sum, amount) => sum + amount, 0);
+    let finalDistribution = [];
 
-    resultMemberInBet.small.forEach((member, index) => {
-        finalMemberBetDistributionObject.push({
-            user_id: member.id,
-            name: member.name,
-            is_test_user: member.is_test_user,
-            min: 1,
-            betting_active_users_id: member.betting_active_users_id,
-            option_name: 'SMALL',
-            amount: adjustedSmall[index],
-            balance: member.balance - adjustedSmall[index],
-            bet_id: generateTimeBasedId(),
-            subscription_id: member.subscription_id,
-            total_bet_amount: totalSmallAmount + totalBigAmount,
-            total_small_amount: totalSmallAmount,  // Added total small amount
-            total_big_amount: totalBigAmount,      // Added total big amount
-        });
-    });
+    groups.small.forEach((member, index) => finalDistribution.push(createBetObject(member, smallAmounts[index], 'SMALL', totalSmall, totalBig)));
+    groups.big.forEach((member, index) => finalDistribution.push(createBetObject(member, bigAmounts[index], 'BIG', totalSmall, totalBig)));
 
-    resultMemberInBet.big.forEach((member, index) => {
-        finalMemberBetDistributionObject.push({
-            user_id: member.id,
-            name: member.name,
-            is_test_user: member.is_test_user,
-            min: 1,
-            betting_active_users_id: member.betting_active_users_id,
-            option_name: 'BIG',
-            amount: adjustedBig[index],
-            balance: member.balance - adjustedBig[index],
-            bet_id: generateTimeBasedId(),
-            subscription_id: member.subscription_id,
-            total_bet_amount: totalSmallAmount + totalBigAmount,
-            total_small_amount: totalSmallAmount,  // Added total small amount
-            total_big_amount: totalBigAmount,      // Added total big amount
-        });
-    });
-    return finalMemberBetDistributionObject;
+    return finalDistribution;
 }
 
-// const testUsers = [
-//     { id: 1, name: "User A", is_test_user: false, balance: 1500, betting_active_users_id: 101 },
-//     { id: 2, name: "User B", is_test_user: false, balance: 2000, betting_active_users_id: 102 },
-//     { id: 3, name: "User C", is_test_user: false, balance: 5000, betting_active_users_id: 103 },
-//     { id: 4, name: "User D", is_test_user: false, balance: 3000, betting_active_users_id: 104 },
-//     { id: 5, name: "User E", is_test_user: false, balance: 7000, betting_active_users_id: 105 },
-//     { id: 6, name: "User F", is_test_user: false, balance: 1200, betting_active_users_id: 106 }
+// Create a bet object for each member
+function createBetObject(member, amount, option, totalSmall, totalBig) {
+    return {
+        user_id: member.id,
+        name: member.name,
+        is_test_user: member.is_test_user,
+        betting_active_users_id: member.betting_active_users_id,
+        option_name: option,
+        amount: amount,
+        balance: member.balance - amount,
+        bet_id: generateTimeBasedId(),
+        subscription_id: member.subscription_id,
+        total_bet_amount: totalSmall + totalBig,
+        total_small_amount: totalSmall,
+        total_big_amount: totalBig,
+    };
+}
+
+
+// // Example usage
+// const members =  [
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs14",
+//         id: "45486yhgf-gfhgfudf-ykhjg14",
+//         name: "Test user 14",
+//         uid: "8123126794",
+//         is_test_user: 1,
+//         balance: 187422936,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs18",
+//         id: "45486yhgf-gfhgfudf-ykhjg18",
+//         name: "Test user 18",
+//         uid: "8123126798",
+//         is_test_user: 1,
+//         balance: 199999963,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs46",
+//         id: "45486yhgf-gfhgfudf-ykhjg46",
+//         name: "Test user 46",
+//         uid: "8123126826",
+//         is_test_user: 1,
+//         balance: 199528130,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs43",
+//         id: "45486yhgf-gfhgfudf-ykhjg43",
+//         name: "Test user 43",
+//         uid: "8123126823",
+//         is_test_user: 1,
+//         balance: 198469512,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs22",
+//         id: "45486yhgf-gfhgfudf-ykhjg22",
+//         name: "Test user 22",
+//         uid: "8123126802",
+//         is_test_user: 1,
+//         balance: 198729807,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs27",
+//         id: "45486yhgf-gfhgfudf-ykhjg27",
+//         name: "Test user 27",
+//         uid: "8123126807",
+//         is_test_user: 1,
+//         balance: 102093065,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs11",
+//         id: "45486yhgf-gfhgfudf-ykhjg11",
+//         name: "Test user 11",
+//         uid: "8123126791",
+//         is_test_user: 1,
+//         balance: 177409230,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs36",
+//         id: "45486yhgf-gfhgfudf-ykhjg36",
+//         name: "Test user 36",
+//         uid: "8123126816",
+//         is_test_user: 1,
+//         balance: 25613918,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs16",
+//         id: "45486yhgf-gfhgfudf-ykhjg16",
+//         name: "Test user 16",
+//         uid: "8123126796",
+//         is_test_user: 1,
+//         balance: 199845060,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs20",
+//         id: "45486yhgf-gfhgfudf-ykhjg20",
+//         name: "Test user 20",
+//         uid: "8123126800",
+//         is_test_user: 1,
+//         balance: 175278813,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs50",
+//         id: "45486yhgf-gfhgfudf-ykhjg50",
+//         name: "Test user 50",
+//         uid: "8123126830",
+//         is_test_user: 1,
+//         balance: 133280013,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs41",
+//         id: "45486yhgf-gfhgfudf-ykhjg41",
+//         name: "Test user 41",
+//         uid: "8123126821",
+//         is_test_user: 1,
+//         balance: 198786147,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     }
 // ];
-// console.log(calculateUserBetAmount(testUsers));
-
-
-// export function calculateUserBetAmount(members = []) {
-//     if (!members || members.length === 0) {
-//         return [];
-//     }
 //
-//     // Ensure members have at least 100 balance
-//     const validMembers = members.filter(member => member.balance >= 100);
-//     if (validMembers.length === 0) {
-//         return [];
-//     }
+// const bets = calculateUserBetAmount(members, 10, 100);
 //
-//     const totalMembers = validMembers.length;
-//     const minBetAmount = 100 * totalMembers;
-//     const maxBetAmount = Math.min(...validMembers.map(m => Math.floor(m.balance / 100) * 100)) * totalMembers;
-//
-//     if (minBetAmount > maxBetAmount) {
-//         return [];
-//     }
-//
-//     let totalBetAmount;
-//     do {
-//         totalBetAmount = Math.floor(Math.random() * ((maxBetAmount - minBetAmount) / 100 + 1)) * 100 + minBetAmount;
-//     } while (totalBetAmount % 100 !== 0);
-//
-//     const smallBet = totalBetAmount / 2;
-//     const bigBet = totalBetAmount / 2;
-//
-//     return distributeBetAmount(validMembers, {
-//         total: totalBetAmount,
-//         small: smallBet,
-//         big: bigBet,
-//     });
-// }
-//
-// function divideAmount(amount, parts, members) {
-//     let divisions = new Array(parts).fill(0);
-//     let remainingAmount = amount;
-//
-//     for (let i = 0; i < parts - 1; i++) {
-//         let maxAllocatable = Math.min(remainingAmount, members[i].balance);
-//         let part = Math.floor(Math.random() * maxAllocatable) + 1;
-//         divisions[i] = part;
-//         remainingAmount -= part;
-//     }
-//     divisions[parts - 1] = remainingAmount;
-//     return divisions;
-// }
-//
-// function distributeBetAmount(members, distributionBetAmount) {
-//     members.sort((a, b) => a.balance - b.balance);
-//     let resultMemberInBet = { small: [], big: [] };
-//     let curIndex = Math.random() < 0.5 ? 'small' : 'big';
-//
-//     members.forEach(member => {
-//         resultMemberInBet[curIndex].push(member);
-//         curIndex = curIndex === 'small' ? 'big' : 'small';
-//     });
-//
-//     let totalSmallMembers = resultMemberInBet.small.length;
-//     let totalBigMembers = resultMemberInBet.big.length;
-//
-//     let smallRandomDivide = divideAmount(distributionBetAmount.small, totalSmallMembers, resultMemberInBet.small);
-//     let bigRandomDivide = divideAmount(distributionBetAmount.big, totalBigMembers, resultMemberInBet.big);
-//
-//     function adjustAmounts(group, randomDivide) {
-//         let adjustedDivide = [...randomDivide];
-//         for (let i = 0; i < group.length; i++) {
-//             const member = group[i];
-//             if (adjustedDivide[i] > member.balance) {
-//                 let excess = adjustedDivide[i] - member.balance;
-//                 adjustedDivide[i] = member.balance;
-//                 for (let j = 0; j < group.length; j++) {
-//                     if (j !== i && adjustedDivide[j] < group[j].balance) {
-//                         let available = group[j].balance - adjustedDivide[j];
-//                         let redistribute = Math.min(available, excess);
-//                         adjustedDivide[j] += redistribute;
-//                         excess -= redistribute;
-//                         if (excess <= 0) break;
-//                     }
-//                 }
-//             }
-//         }
-//         return adjustedDivide;
-//     }
-//
-//     smallRandomDivide = adjustAmounts(resultMemberInBet.small, smallRandomDivide);
-//     bigRandomDivide = adjustAmounts(resultMemberInBet.big, bigRandomDivide);
-//
-//     let finalMemberBetDistributionObject = [];
-//
-//     resultMemberInBet.small.forEach((member, index) => {
-//         finalMemberBetDistributionObject.push({
-//             user_id: member.id,
-//             name: member.name,
-//             is_test_user: member.is_test_user,
-//             min: 1,
-//             betting_active_users_id: member.betting_active_users_id,
-//             option_name: 'SMALL',
-//             amount: smallRandomDivide[index],
-//             balance: member.balance - smallRandomDivide[index],
-//             bet_id: generateTimeBasedId(),
-//             total_bet_amount: distributionBetAmount.total,
-//         });
-//     });
-//
-//     resultMemberInBet.big.forEach((member, index) => {
-//         finalMemberBetDistributionObject.push({
-//             user_id: member.id,
-//             name: member.name,
-//             is_test_user: member.is_test_user,
-//             min: 1,
-//             betting_active_users_id: member.betting_active_users_id,
-//             option_name: 'BIG',
-//             amount: bigRandomDivide[index],
-//             balance: member.balance - bigRandomDivide[index],
-//             bet_id: generateTimeBasedId(),
-//             total_bet_amount: distributionBetAmount.total,
-//         });
-//     });
-//
-//     return finalMemberBetDistributionObject;
-// }
+// console.log(bets);

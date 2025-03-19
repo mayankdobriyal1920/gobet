@@ -265,7 +265,6 @@ export async function storeNewSessionFileFromSessionStore(req, userSessionData) 
  */
 const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
     return new Promise((resolve, reject) => {
-        // Validate input
         if (!Array.isArray(allLiveUsersData) || allLiveUsersData.length === 0) {
             return resolve([]);
         }
@@ -273,84 +272,103 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
         let attemptCount = 0;
         const maxAttempts = 10;
 
-        /**
-         * Generates a random group of users and ensures it's unique.
-         */
-        const generateRandomGroup = () => {
+        const generateRandomGroups = () => {
             if (attemptCount >= maxAttempts) {
                 return resolve([]);
             }
             attemptCount++;
 
-            /**
-             * Generates a random group size between minSize and maxSize.
-             * @param {number} minSize - Minimum group size.
-             * @param {number} maxSize - Maximum group size.
-             * @returns {number} - Random group size.
-             */
             const getRandomGroupSize = (minSize, maxSize) => {
                 return Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
             };
 
-            /**
-             * Selects a random group of users from the given array.
-             * @param {Array} users - Array of users.
-             * @param {number} groupSize - Size of the group to select.
-             * @returns {Array} - Randomly selected group of users.
-             */
             const selectRandomGroup = (users, groupSize) => {
                 if (!users.length || groupSize <= 0) return [];
-                const shuffledUsers = [...users].sort(() => 0.5 - Math.random()); // Shuffle users
+                const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
                 return shuffledUsers.slice(0, groupSize);
             };
 
-            const minGroupSize = 2;
-            const maxGroupSize = allLiveUsersData.length;
-            const groupSize = getRandomGroupSize(minGroupSize, maxGroupSize);
-            console.log(`Random Group Size: ${groupSize}`);
+            // Group users based on the number of digits in their balance
+            const groupedUsers = allLiveUsersData.reduce((acc, user) => {
+                const digitCount = Number(user.balance).toString().length;
+                if (!acc[digitCount]) {
+                    acc[digitCount] = [];
+                }
+                acc[digitCount].push(user);
+                return acc;
+            }, {});
 
-            const selectedGroup = selectRandomGroup(allLiveUsersData, groupSize);
-            if (selectedGroup.length === 0) {
-                return generateRandomGroup(); // Retry if no users are selected
+            const validGroups = Object.keys(groupedUsers).filter(key => groupedUsers[key].length >= 2);
+
+            if (validGroups.length === 0) {
+                return resolve([]); // No valid groups found
             }
 
-            const hasRealUser = selectedGroup.some(user => user.is_test_user === 0);
+            let groupsToInsert = [];
 
-            if (!hasRealUser) {
-                return generateRandomGroup(); // Retry if no users are selected
+            validGroups.forEach((digitGroup) => {
+                const usersInGroup = groupedUsers[digitGroup];
+
+                const minGroupSize = 2;
+                const maxGroupSize = usersInGroup.length;
+                const groupSize = getRandomGroupSize(minGroupSize, maxGroupSize);
+
+                const selectedGroup = selectRandomGroup(usersInGroup, groupSize);
+                //console.log('selectedGroup.length === 0 || !selectedGroup.some(user => user.is_test_user === 0)',selectedGroup.length , selectedGroup.some(user => user.is_test_user === 0))
+
+                if (selectedGroup.length === 0 || !selectedGroup.some(user => user.is_test_user === 0)) {
+                    return; // Skip invalid groups
+                }
+
+                const phoneNumbers = selectedGroup.map(user => user.uid);
+                const sortedPhoneNumbers = phoneNumbers.sort((a, b) => a.localeCompare(b));
+                const groupId = sortedPhoneNumbers.join("-");
+
+                groupsToInsert.push({
+                    group_id: groupId,
+                    balance_length: digitGroup,
+                    game_type: "win_go",
+                    group_json: selectedGroup,
+                });
+            });
+
+            if (groupsToInsert.length === 0) {
+                return generateRandomGroups();
             }
 
-            // Generate a unique group ID based on sorted phone numbers
-            const phoneNumbers = selectedGroup.map(user => user.uid);
-            const betActiveUserIds = selectedGroup.map(user => user.betting_active_users_id);
-            const sortedPhoneNumbers = phoneNumbers.sort((a, b) => a.localeCompare(b));
-            const groupId = sortedPhoneNumbers.join("-");
+            // Check if groups already exist in database
+            const groupIds = groupsToInsert.map(g => g.group_id);
+            const query = `SELECT group_id FROM user_game_group_history WHERE group_id IN (?) AND game_type = ?`;
 
-            // Check if the group already exists in the database
-            const query = `SELECT id FROM user_game_group_history WHERE group_id = ? AND game_type = ?`;
-            pool.query(query, [groupId, "win_go"], (error, results) => {
+            pool.query(query, [groupIds, "win_go"], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
-                if (results?.length) {
-                    return generateRandomGroup(); // Retry if group already exists
+
+                const existingGroupIds = new Set(results.map(row => row.group_id));
+                const uniqueGroupsToInsert = groupsToInsert.filter(g => !existingGroupIds.has(g.group_id));
+
+                if (uniqueGroupsToInsert.length === 0) {
+                    return generateRandomGroups(); // Retry if all groups exist
                 }
 
-                const insertData = {
-                    alias: ['?', '?', '?'],
-                    column: ["group_id", "game_type", "group_json"],
-                    values: [groupId, "win_go", JSON.stringify(selectedGroup)],
+                const bulkInsertData = {
+                    column: ["group_id", "game_type","balance_length", "group_json"],
+                    valuesArray: uniqueGroupsToInsert.map(g => [g.group_id, g.game_type,g.balance_length, JSON.stringify(g.group_json)]),
                     tableName: 'user_game_group_history'
                 };
-                insertCommonApiCall(insertData)
-                    .then(() => resolve(selectedGroup))
+
+                bulkInsertCommonApiCall(bulkInsertData)
+                    .then(() => resolve(uniqueGroupsToInsert))
                     .catch(reject);
             });
         };
 
-        generateRandomGroup();
+        generateRandomGroups();
     });
 };
+
+
 export function actionToExecuteFunctionInLast10Seconds() {
     function scheduleNextExecution() {
         const now = new Date();
@@ -401,7 +419,16 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
     actionToCallProcedureToSelectRightGroup(allLiveUsersData)
         .then((allSelectedGroupUserData) => {
             // Schedule the betting distribution after 1 minute
-            const userPayloadData = calculateUserBetAmount(allSelectedGroupUserData);
+            const userPayloadData = [];
+            allSelectedGroupUserData?.forEach((userGroup) => {
+                let minimumBetAmount = userGroup?.balance_length === 2 ? 10 : userGroup?.balance_length === 3 ? 100 : 1000;
+                let maximumBetAmount = minimumBetAmount === 10 ? 100 : minimumBetAmount === 100 ? 1000 : 10000;
+
+                // Ensure result is added properly
+                userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
+            });
+            console.log('userPayloadData',userPayloadData)
+
             if(userPayloadData?.length) {
                 const gameBetId = userPayloadData[0]?.bet_id;
                 const totalBetAmount = userPayloadData[0]?.total_bet_amount;

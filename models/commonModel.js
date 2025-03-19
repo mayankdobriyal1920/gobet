@@ -1225,7 +1225,7 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                     .filter(user => user.is_test_user === 1 || user.subscription_id) // Remove test users & users without a subscription
                     .map(user => ({
                         ...user,
-                        balance: Math.min(user.subscription_balance, user.balance) // Update betting_balance
+                        balance: user.subscription_id ? Math.min(user.subscription_balance, user.balance) : user.balance // Update betting_balance
                     }));
 
                 if (filteredUsers.length > 1) {
