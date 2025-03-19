@@ -8,7 +8,7 @@ import {
     betActiveUserDataReducer,
     betGameSessionDataReducer,
     changeUserAvatarModal,
-    gameLastResultReducer,
+    gameLastResultReducer, gamePlatformDataReducer, gameSessionAndAllSessionReducer,
     generatedPasscodeListByAdminReducer,
     nearestGameSessionAndActiveSessionReducer,
     passcodeRequestBySubAdminReducer,
@@ -49,6 +49,8 @@ const initialState = {
     passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
     userBetPredictionStatus: {status:0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()},
     nearestGameSessionAndActiveSession: {loading:true,gameSessionData:{}},
+    gameSessionAndAllSession: {loading:true,gameSessionData:[]},
+    gamePlatformData: {loading:true,platformData:[]},
     betActiveUserData: {loading:true,activeUserData:{}},
     betGameSessionData: {loading:true,sessionData:{}},
     gameLastResult: {loading:true,gameResult:{}},
@@ -58,6 +60,7 @@ const initialState = {
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     betActiveUserData: betActiveUserDataReducer,
+    gamePlatformData: gamePlatformDataReducer,
     appSubscriptionPlanData: appSubscriptionPlanDataReducer,
     userSubscriptionData: userSubscriptionDataReducer,
     gameLastResult: gameLastResultReducer,
@@ -81,6 +84,7 @@ export const rootReducer = combineReducers({
     userGameHistory: userGameHistoryReducer,
     userMoneyTransactions: userMoneyTransactionsReducer,
     nearestGameSessionAndActiveSession: nearestGameSessionAndActiveSessionReducer,
+    gameSessionAndAllSession: gameSessionAndAllSessionReducer,
 });
 
 declare global {

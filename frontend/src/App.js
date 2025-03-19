@@ -52,6 +52,7 @@ import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
 import AppBackButtonHandler from "./components/AppBackButtonHandler";
 import AdminWinAndGoBettingMainPage from "./pages/admin/AdminWinAndGoBettingMainPage";
+import GetBetGameSessionListPage from "./pages/admin/GetBetGameSessionListPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -94,6 +95,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-generated-passcode-list" component={GeneratedPasscodeListPage}/>
                 <Route exact={true} path="/admin-sub-admin-users-list" component={AllUsersUnderSubAdminPage}/>
                 <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
+                <Route exact={true} path="/admin-game-session-list" component={GetBetGameSessionListPage}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     IonApp,
     IonRouterOutlet,
@@ -13,13 +13,20 @@ import { home, wallet, person } from 'ionicons/icons';
 import AccountPage from "./AccountPage";
 import WalletPage from "./WalletPage";
 import HomePage from "./HomePage";
+import {actionToGetGamePlatformData} from "../redux/CommonAction";
+import {useDispatch} from "react-redux";
 
 export default function MainAppTabsRoutePage() {
     const [isFirstTimeEnterInApp,setIsFirstTimeEnterInApp] = useState(localStorage.getItem('isFirstTimeEnterInApp'));
+    const dispatch = useDispatch();
     const closeFirstTimeScreen = ()=>{
         setIsFirstTimeEnterInApp('yes');
         localStorage.setItem('isFirstTimeEnterInApp','yes');
     }
+
+    useEffect(() => {
+        dispatch(actionToGetGamePlatformData())
+    }, []);
 
     return (
         <IonApp>

@@ -51,7 +51,13 @@ import {
     GET_GAME_LAST_RESULT_REQUEST,
     GET_GAME_LAST_RESULT_SUCCESS,
     USER_SUBSCRIPTION_DATA_REQUEST,
-    USER_SUBSCRIPTION_DATA_SUCCESS, APP_SUBSCRIPTION_PLAN_REQUEST, APP_SUBSCRIPTION_PLAN_SUCCESS
+    USER_SUBSCRIPTION_DATA_SUCCESS,
+    APP_SUBSCRIPTION_PLAN_REQUEST,
+    APP_SUBSCRIPTION_PLAN_SUCCESS,
+    GAME_SESSION_AND_ALL_SESSION_REQUEST,
+    GAME_SESSION_AND_ALL_SESSION_SUCCESS,
+    GET_ALL_GAME_PLATFORMS_REQUEST,
+    GET_ALL_GAME_PLATFORMS_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 const api = Axios.create({
@@ -360,6 +366,28 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatform = (game
     try {
         api.post(`actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
             dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetGameSessionOrAllSessionAndGamePlatform = (gameType) => async (dispatch) => {
+    dispatch({type: GAME_SESSION_AND_ALL_SESSION_REQUEST});
+    try {
+        api.post(`actionToGetGameSessionOrAllSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
+            dispatch({ type: GAME_SESSION_AND_ALL_SESSION_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetGamePlatformData = () => async (dispatch) => {
+    dispatch({type: GET_ALL_GAME_PLATFORMS_REQUEST});
+    try {
+        api.post(`actionToGetGamePlatformDataApiCall`, {}).then(responseData => {
+            dispatch({ type: GET_ALL_GAME_PLATFORMS_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
         console.log(error);

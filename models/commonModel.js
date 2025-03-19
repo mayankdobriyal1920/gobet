@@ -1,6 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
+    actionToGetGameSessionOrAllSessionAndGamePlatformQuery,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
     checkMobNumberAlreadyExistQuery,
     getAdminPassCodeListQuery, getAliveUsersQuery,
@@ -117,6 +118,40 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall 
             resolve(resultData);
         })
     })
+}
+
+export const actionToGetGameSessionOrAllSessionAndGamePlatformApiCall = () => {
+    return new Promise(function(resolve, reject) {
+        let resultData = [];
+        const query = actionToGetGameSessionOrAllSessionAndGamePlatformQuery();
+        pool.query(query,[], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                resultData = results;
+            }
+            resolve(resultData);
+        })
+    })
+
+}
+
+export const actionToGetGamePlatformDataApiCall = () => {
+    return new Promise(function(resolve, reject) {
+        let resultData = [];
+        const query = 'SELECT * from betting_platform';
+        pool.query(query,[], (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                resultData = results;
+            }
+            resolve(resultData);
+        })
+    })
+
 }
 
 export const actionUpdatePassCodeApiCall = (body) => {

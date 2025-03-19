@@ -12,7 +12,6 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToGeneratePasscodeRequestBySubAdmin,
     actionToGetAllUsersNormalAndSubAdminList, actionToUpdateUserRole,
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";

@@ -54,7 +54,10 @@ import {
     USER_SUBSCRIPTION_DATA_REQUEST,
     USER_SUBSCRIPTION_DATA_SUCCESS,
     APP_SUBSCRIPTION_PLAN_REQUEST,
-    APP_SUBSCRIPTION_PLAN_SUCCESS
+    APP_SUBSCRIPTION_PLAN_SUCCESS,
+    GAME_SESSION_AND_ALL_SESSION_REQUEST,
+    GAME_SESSION_AND_ALL_SESSION_SUCCESS,
+    GET_ALL_GAME_PLATFORMS_REQUEST, GET_ALL_GAME_PLATFORMS_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -166,6 +169,27 @@ export const nearestGameSessionAndActiveSessionReducer = (state = {}, action) =>
             return { loading: true,gameSessionData:{}};
         case NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS:
             return { loading: false, gameSessionData: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const gameSessionAndAllSessionReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GAME_SESSION_AND_ALL_SESSION_REQUEST:
+            return { loading: true,gameSessionData:[]};
+        case GAME_SESSION_AND_ALL_SESSION_SUCCESS:
+            return { loading: false, gameSessionData: action.payload};
+        default:
+            return state;
+    }
+};
+export const gamePlatformDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GET_ALL_GAME_PLATFORMS_REQUEST:
+            return { loading: true,platformData:[]};
+        case GET_ALL_GAME_PLATFORMS_SUCCESS:
+            return { loading: false, platformData: action.payload};
         default:
             return state;
     }

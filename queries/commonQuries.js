@@ -48,6 +48,7 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = 
             bgs.id,
             bgs.start_time,
             bgs.end_time,
+            bgs.betting_platforms_json,
             bgs.is_active,
             JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -69,6 +70,21 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = 
             LIMIT 1;
 
 
+    `;
+};
+
+export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
+    return `
+        SELECT
+            bgs.id,
+            bgs.start_time,
+            bgs.end_time,
+            bgs.betting_platforms_json,
+            bgs.is_active
+        FROM
+            betting_game_session bgs
+        ORDER BY
+            bgs.start_time;
     `;
 };
 

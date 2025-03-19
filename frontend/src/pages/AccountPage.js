@@ -382,7 +382,7 @@ export default function AccountPage() {
                                      </div>
                                      : ''
                                  }
-                                 <div onClick={() => goToPage('/admin-admin-users-list')}
+                                 <div onClick={() => goToPage('/admin-game-session-list')}
                                       className="settingPanel__container-items__item ar-1px-b">
                                      <div className="settingPanel__container-items__title">
                                          <svg className="svg-icon icon-serverTicket svg_min_icon"  id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

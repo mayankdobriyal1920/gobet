@@ -46,7 +46,9 @@ import {
     actionToGetGameLastResultDataApiCall,
     actionToGetUserActiveSubscriptionDataApiCall,
     actionToGetAppSubscriptionPlanDataApiCall,
-    actionToActivateSubscriptionPlanApiCall
+    actionToActivateSubscriptionPlanApiCall,
+    actionToGetGameSessionOrAllSessionAndGamePlatformApiCall,
+    actionToGetGamePlatformDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -84,6 +86,30 @@ commonRouter.post(
     '/actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall',
     expressAsyncHandler(async (req, res) => {
         actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall(req.body)
+            .then(data => {
+                res.status(200).send(data);
+            }).catch(error => {
+            res.status(500).send(error);
+        })
+    })
+);
+
+commonRouter.post(
+    '/actionToGetGameSessionOrAllSessionAndGamePlatformApiCall',
+    expressAsyncHandler(async (req, res) => {
+        actionToGetGameSessionOrAllSessionAndGamePlatformApiCall()
+            .then(data => {
+                res.status(200).send(data);
+            }).catch(error => {
+            res.status(500).send(error);
+        })
+    })
+);
+
+commonRouter.post(
+    '/actionToGetGamePlatformDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        actionToGetGamePlatformDataApiCall()
             .then(data => {
                 res.status(200).send(data);
             }).catch(error => {
