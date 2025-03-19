@@ -12,7 +12,7 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
-    actionToGetGameSessionOrAllSessionAndGamePlatform,
+    actionToGetGameSessionOrAllSessionAndGamePlatform, actionToSaveGameSessionData,
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 
@@ -21,11 +21,12 @@ export default function GetBetGameSessionListPage() {
     const {loading,gameSessionData} = useSelector((state) => state.gameSessionAndAllSession);
     const {platformData} = useSelector((state) => state.gamePlatformData);
     const [isAddEditSessionPopupOpen,setIsAddEditSessionPopupOpen] = useState(false);
-    const [multipleGamePlatforms,setMultipleGamePlatforms] = useState([{id: 1, name: "DAMAN", game_type: "win_go"}]);
+    const [sessionDataToEdit,setSessionDataToEdit] = useState(null);
+    const [multipleGamePlatforms,setMultipleGamePlatforms] = useState(platformData?.filter(p => p.id === 1) || []);
     const [updateLoading,setUpdateLoading] = useState(false);
-    const userAuthDetail = useSelector((state) => state.userAuthDetail);
+    const [sessionStartTime,setSessionStartTime] = useState(moment().format());
+    const [gameType,setGameType] = useState('win_go');
     const dispatch = useDispatch();
-    console.log('platformData',platformData)
     const goBack = ()=>{
         history.goBack();
         window.history.back();
@@ -47,8 +48,42 @@ export default function GetBetGameSessionListPage() {
         )
     }
 
-    const callFunctionToSetIsAddEditSessionPopupOpen = (data = {}) =>{
+    const resetUpdate = () =>{
+        setSessionDataToEdit(null);
+        setMultipleGamePlatforms(platformData?.filter(p => p.id === 1) || [])
+        setUpdateLoading(false);
+        setSessionStartTime(moment().format())
+        setGameType('win_go')
+        setIsAddEditSessionPopupOpen(false);
+        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
+    }
+   
+    const callFunctionToSetIsAddEditSessionPopupOpen = (data = null) =>{
         setIsAddEditSessionPopupOpen(true);
+        if(data?.id){
+            setSessionDataToEdit(data);
+            setSessionStartTime(moment(`${moment().format('YYYY-MM-DD')} ${data?.start_time}`,'YYYY-MM-DD HH:mm:ss').format());
+            const storedPlatform = JSON.parse(data?.betting_platforms_json ?? "[]");
+            const selectedPlatforms = platformData?.filter((platform) =>
+                storedPlatform.some((target) => platform.id === target.id)
+            ) ?? [];
+
+            // Set selected platforms
+            setMultipleGamePlatforms(selectedPlatforms);
+            setGameType(data?.game_type);
+        }else{
+            setSessionDataToEdit(null);
+            setMultipleGamePlatforms(platformData?.filter(p => p.id === 1) || [])
+            setSessionStartTime(moment().format())
+            setGameType('win_go')
+        }
+    }
+
+    const callFunctionToSaveSessionData = () =>{
+        if(multipleGamePlatforms?.length && sessionStartTime && gameType){
+            setUpdateLoading(true);
+            dispatch(actionToSaveGameSessionData(sessionDataToEdit,multipleGamePlatforms,gameType,sessionStartTime,resetUpdate))
+        }
     }
 
     const renderVirtualElement = (dataItems)=>{
@@ -59,7 +94,7 @@ export default function GetBetGameSessionListPage() {
                         <span
                             className={"title"}>START TIME {moment(dataItems?.start_time, 'HH:mm:ss').format('hh:mm A')}</span>
                     </div>
-                    <span className={`action_button update`}>EDIT</span>
+                    <span onClick={()=>callFunctionToSetIsAddEditSessionPopupOpen(dataItems)} className={`action_button update`}>EDIT</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     {getPlatformData(dataItems?.betting_platforms_json)}
@@ -142,13 +177,54 @@ export default function GetBetGameSessionListPage() {
                     <div className={"list_status_type"}>
                         <IonRow>
                             <IonCol size="12">
-                                <IonSelect label={"Select platforms"} value={multipleGamePlatforms}
-                                           multiple={true}
-                                           onIonChange={(e)=>setMultipleGamePlatforms(e.detail.value)}>
-                                    {(platformData?.map((platform)=>(
-                                        <IonSelectOption key={platform?.id} value={platform}>{platform?.name}</IonSelectOption>
-                                    )))}
+                                <IonSelect
+                                    label="Select platforms"
+                                    value={multipleGamePlatforms}
+                                    multiple={true}
+                                    onIonChange={(e) => {
+                                        const selectedValues = e.detail.value; // This will be an array
+                                        setMultipleGamePlatforms(selectedValues);
+                                    }}
+                                >
+                                    {platformData?.map((platform) => (
+                                        <IonSelectOption
+                                            key={platform.id}
+                                            value={platform}
+                                        >
+                                            {platform.name}
+                                        </IonSelectOption>
+                                    ))}
                                 </IonSelect>
+
+                            </IonCol>
+                        </IonRow>
+                        <IonRow>
+                            <IonCol size="12">
+                                <IonSelect
+                                    label="Select Game Type"
+                                    value={gameType}
+                                    onIonChange={(e) => {
+                                        const selectedValues = e.detail.value; // This will be an array
+                                        setGameType(selectedValues);
+                                    }}
+                                >
+                                    <IonSelectOption
+                                        value={'win_go'}
+                                    >
+                                        Win Go
+                                    </IonSelectOption>
+                                    <IonSelectOption
+                                        value={'aviator'}
+                                    >
+                                        Aviator
+                                    </IonSelectOption>
+                                    <IonSelectOption
+                                        value={'limbo'}
+                                    >
+                                        Limbo
+                                    </IonSelectOption>
+                                </IonSelect>
+
                             </IonCol>
                         </IonRow>
                         <IonRow>
@@ -156,12 +232,16 @@ export default function GetBetGameSessionListPage() {
                                 <div>Select time</div>
                             </IonCol>
                             <IonCol size="6">
-                                <IonDatetime presentation={"time"}/>
+                                <IonDatetime
+                                    presentation="time"
+                                    value={sessionStartTime}
+                                    onIonChange={(e) => setSessionStartTime(e.detail.value)}
+                                />
                             </IonCol>
                         </IonRow>
                         <IonRow>
                             <IonCol size="12">
-                                <button type={"button"}
+                                <button onClick={callFunctionToSaveSessionData} type={"button"}
                                         className={"submit-transfer-btn"}>
                                     SAVE SESSION
                                 </button>

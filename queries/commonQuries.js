@@ -79,12 +79,13 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
             bgs.id,
             bgs.start_time,
             bgs.end_time,
+            bgs.game_type,
             bgs.betting_platforms_json,
             bgs.is_active
         FROM
             betting_game_session bgs
         ORDER BY
-            bgs.start_time;
+            bgs.start_time DESC;
     `;
 };
 

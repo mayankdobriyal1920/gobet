@@ -48,7 +48,7 @@ import {
     actionToGetAppSubscriptionPlanDataApiCall,
     actionToActivateSubscriptionPlanApiCall,
     actionToGetGameSessionOrAllSessionAndGamePlatformApiCall,
-    actionToGetGamePlatformDataApiCall
+    actionToGetGamePlatformDataApiCall, actionToSaveGameSessionDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -103,6 +103,20 @@ commonRouter.post(
             }).catch(error => {
             res.status(500).send(error);
         })
+    })
+);
+
+commonRouter.post(
+    '/actionToSaveGameSessionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToSaveGameSessionDataApiCall(req?.session?.userSessionData?.id,req.body)
+                .then(data => {
+                    res.status(200).send(data);
+                }).catch(error => {
+                res.status(500).send(error);
+            })
+        }
     })
 );
 

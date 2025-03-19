@@ -137,6 +137,37 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformApiCall = () => {
 
 }
 
+export const actionToSaveGameSessionDataApiCall = (userId,body) => {
+    const {
+        id,
+        start_time, // Default to current time if null
+        end_time,
+        betting_platforms_json,
+        game_type
+    } = body;
+    return new Promise(function(resolve) {
+        if(!id){
+            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+            let aliasArray = ['?','?','?','?','?'];
+            let columnArray = ["start_time","end_time","betting_platforms_json","game_type","created_by"];
+            let valuesArray = [start_time,end_time,betting_platforms_json,game_type,userId];
+            let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_game_session'};
+            insertCommonApiCall(insertData).then(()=>{
+                resolve({status:1});
+            })
+            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+        }else{
+            let setData = `start_time = ?,end_time = ?,betting_platforms_json = ?,game_type = ?`;
+            const whereCondition = `id = ?`;
+            let dataToSend = {column: setData, value: [start_time,end_time,betting_platforms_json,game_type,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_game_session'};
+            updateCommonApiCall(dataToSend).then(()=> {
+                resolve({status: 1});
+            })
+        }
+    })
+
+}
+
 export const actionToGetGamePlatformDataApiCall = () => {
     return new Promise(function(resolve, reject) {
         let resultData = [];
@@ -1256,6 +1287,26 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                 return;
             }
             if (results?.length > 1) {
+                // Update betting_active_users status
+                const setDataActive = `status = ?`;
+                const whereConditionActive = `is_test_user = ?`;
+                const dataToSendActive = {
+                    column: setDataActive,
+                    value: [3,0],
+                    whereCondition: whereConditionActive,
+                    tableName: 'betting_active_users'
+                };
+
+                updateCommonApiCall(dataToSendActive)
+                    .then(() => {})
+                    .catch((error) => {
+                        console.error('Error updating status:', error);
+                    });
+
+
+
+
+
                 const filteredUsers = results
                     .filter(user => user.is_test_user === 1 || user.subscription_id) // Remove test users & users without a subscription
                     .map(user => ({

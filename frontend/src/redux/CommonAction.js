@@ -60,6 +60,7 @@ import {
     GET_ALL_GAME_PLATFORMS_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
+import moment from "moment-timezone";
 const api = Axios.create({
     baseURL: 'https://unikpayindia.com/api-get-bet/common/',
     withCredentials:true
@@ -240,8 +241,9 @@ export const actionToGetBetActiveUserData = () => async (dispatch) => {
     }
 }
 
-export const actionToGetBetGameSessionData = (sessionId) => async (dispatch) => {
-    dispatch({ type: BET_GAME_SESSION_REQUEST});
+export const actionToGetBetGameSessionData = (sessionId,isLoading = true) => async (dispatch) => {
+    if(isLoading)
+      dispatch({ type: BET_GAME_SESSION_REQUEST});
     try {
         api.post(`actionToGetBetGameSessionDataApiCall`, {session_id:sessionId}).then(responseData => {
             dispatch({ type: BET_GAME_SESSION_SUCCESS, payload: {...responseData.data}});
@@ -350,8 +352,9 @@ export const actionTransferMoneyToMainWallet = (setWalletTransferLoader) => asyn
     }
 }
 
-export const actionToGetUserBetPredictionHistory = () => async (dispatch) => {
-    dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
+export const actionToGetUserBetPredictionHistory = (isLoading = true) => async (dispatch) => {
+    if(isLoading)
+       dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
     try {
         api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
             dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData.data]});
@@ -377,6 +380,24 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatform = (gameType) => a
     try {
         api.post(`actionToGetGameSessionOrAllSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
             dispatch({ type: GAME_SESSION_AND_ALL_SESSION_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToSaveGameSessionData = (sessionDataToEdit,multipleGamePlatforms,gameType,sessionStartTime,resetUpdate) => async (dispatch) => {
+    try {
+        let payload = {
+            id: sessionDataToEdit?.id,
+            start_time: moment(sessionStartTime || new Date()).format("HH:mm:ss"), // Default to current time if null
+            end_time: moment(sessionStartTime || new Date()).add(1, "hour").format("HH:mm:ss"),
+            betting_platforms_json: JSON.stringify(multipleGamePlatforms ?? []), // Ensure it's always an array
+            game_type:gameType
+        };
+        api.post(`actionToSaveGameSessionDataApiCall`, payload).then(() => {
+            if(resetUpdate)
+                resetUpdate()
         })
     } catch (error) {
         console.log(error);

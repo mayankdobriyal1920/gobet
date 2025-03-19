@@ -2065,12 +2065,12 @@ ion-alert .alert-button-group .alert-button {
     right: 21px;
 }
 .inactive_session {
-    color: #ff0000;
+    color: #000000;
     margin-left: .8rem;
     font-size: 1rem;
 }
 .active_session {
-    color: #56ff47;
+    color: #075200;
     margin-left: .8rem;
     font-size: 1rem;
 }

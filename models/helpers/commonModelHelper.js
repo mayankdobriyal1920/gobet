@@ -1,10 +1,10 @@
 
-import {getAliveUsersQuery} from "../../queries/commonQuries.js";
 import {calculateUserBetAmount} from "./bettingDistributionHelper.js";
 import {Vonage} from "@vonage/server-sdk";
 import pool from "../connection.js";
 import {actionToRunCheckForAliveUsers} from "../commonModel.js";
 import {userSocketIdsObject} from "../../server.js";
+import moment from "moment-timezone";
 
 const vonage = new Vonage({
     apiKey: "93669403",
@@ -375,40 +375,62 @@ export function actionToExecuteFunctionInLast10Seconds() {
         const currentSeconds = now.getSeconds();
         const millisecondsUntilNextMinute = (60 - currentSeconds) * 1000 - now.getMilliseconds();
 
-        // Ensure the function runs at the last 10 seconds of the minute
+        // Ensure execution in the last 10 seconds
         const delay = millisecondsUntilNextMinute - 10000;
 
         setTimeout(() => {
             executeAndScheduleNext();
-        }, delay);
+        }, Math.max(delay, 0)); // Prevent negative timeout values
     }
 
     function executeAndScheduleNext() {
         const now = new Date();
         console.log(`Executing function at: ${now.toLocaleTimeString()}`);
+
         const query = `SELECT
-                       bgs.id
-                   FROM betting_game_session bgs
-                   WHERE
-                       bgs.game_type = ? AND is_active = ?
-                     AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
-                   GROUP BY
-                       bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
-                   ORDER BY
-                       bgs.start_time
-                       LIMIT 1`;
-        pool.query(query,["win_go",1], (error, results) => {
-            if(results?.length){
+                           bgs.id, bgs.end_time
+                       FROM betting_game_session bgs
+                       WHERE
+                           bgs.game_type = ? AND is_active = ?
+                         AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
+                       GROUP BY
+                           bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
+                       ORDER BY
+                           bgs.start_time
+                           LIMIT 1`;
+
+        pool.query(query, ["win_go", 1], (error, results) => {
+            if (results?.length) {
                 actionToRunCheckForAliveUsers(results[0]?.id);
+
+                if (results[0]?.end_time) {
+                    let endDateTime = moment(`${moment().format("YYYY-MM-DD")} ${results[0]?.end_time}`, "YYYY-MM-DD HH:mm:ss");
+                    let delay = endDateTime.diff(moment()); // Get milliseconds until `end_time`
+
+                    if (delay > 0) {
+                        setTimeout(() => {
+                            const dataToSendActive = {
+                                column: `is_active = ?`,
+                                value: [0, results[0]?.id],
+                                whereCondition: `id = ?`,
+                                tableName: 'betting_game_session'
+                            };
+                            updateCommonApiCall(dataToSendActive)
+                                .then(() => console.log("Session status updated."))
+                                .catch((error) => console.error("Error updating status:", error));
+                        }, Math.max(delay, 0)); // Prevent negative timeout
+                    }
+                }
             }
-        })
-        // Calculate the time until the next exact minute (X:00:00)
+        });
+
+        // Schedule next execution at the next minute (X:00:00)
         const nextExecutionDelay = (60 - new Date().getSeconds()) * 1000;
         setTimeout(scheduleNextExecution, nextExecutionDelay);
     }
 
-    // Start the first execution scheduling
-    scheduleNextExecution();
+    // Run first execution immediately, then schedule the next
+    executeAndScheduleNext();
 }
 /**
  * Distributes betting amounts among selected users and updates their balances.
@@ -427,7 +449,6 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                 // Ensure result is added properly
                 userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
             });
-            console.log('userPayloadData',userPayloadData)
 
             if(userPayloadData?.length) {
                 const gameBetId = userPayloadData[0]?.bet_id;
