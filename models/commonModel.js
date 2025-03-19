@@ -554,74 +554,102 @@ export const actionToActivateSubscriptionPlanApiCall = (userId,plan) => {
         if(!plan.id){
             resolve({status:false});
         }
-        let query = `SELECT * from subscriptions WHERE id = ?`;
-        pool.query(query, [plan.id], (error, results) => {
-            if (error) {
-                reject(error)
-            }
+
+
+
+        let query = `SELECT 
+                            us.id,
+                            us.balance,
+                            us.created_at,
+                            us.expiry_date,
+                            us.is_active
+                        FROM user_subscriptions us
+                        WHERE us.created_by = ? AND us.is_active = ?;
+                        `;
+
+        pool.query(query,[userId,1], (error, results) => {
+            let topupBalance = 0;
             if (results?.length) {
-                let subscription_id = results[0]?.id;
-                let plan_type = results[0]?.name;
-                let plan_price = Number(results[0]?.price);
-                let total_value = results[0]?.value;
-                let balance = results[0]?.value;
-                let created_by = userId;
-                let expiry_date = moment().add(30,'days').format();
-                query = `SELECT wallet_balance from app_user WHERE id = ?`;
-                pool.query(query, [userId], (error, results) => {
+                let subscriptionData = results[0];
+                if (subscriptionData?.id && subscriptionData?.balance > 0 && new Date(subscriptionData?.expiry_date) > new Date()) {
+                    topupBalance = subscriptionData?.balance;
+                }
+            }
+            let setData = `is_active = ?`;
+            const whereCondition = `created_by = ? AND is_active = ?`;
+            let dataToSend = {column: setData, value: [0,userId,1], whereCondition: whereCondition, returnColumnName:'id',tableName: 'user_subscriptions'};
+            updateCommonApiCall(dataToSend).then(()=>{
+                query = `SELECT * from subscriptions WHERE id = ?`;
+                pool.query(query, [plan.id], (error, results) => {
                     if (error) {
                         reject(error)
                     }
                     if (results?.length) {
-                        let userWalletBalance = results[0]?.wallet_balance;
+                        let subscription_id = results[0]?.id;
+                        let plan_type = results[0]?.name;
+                        let plan_price = Number(results[0]?.price);
+                        let total_value = results[0]?.value;
+                        let balance = Number(results[0]?.value) + Number(topupBalance);
+                        let created_by = userId;
+                        let expiry_date = moment().add(30,'days').format();
+                        query = `SELECT wallet_balance from app_user WHERE id = ?`;
+                        pool.query(query, [userId], (error, results) => {
+                            if (error) {
+                                reject(error)
+                            }
+                            if (results?.length) {
+                                let userWalletBalance = results[0]?.wallet_balance;
 
-                        if (Number(plan_price) > Number(userWalletBalance)) {
-                            resolve({status: 0, error: 'Given amount is greater then wallet balance'});
-                        } else {
-                            let aliasArray = ['?', '?', '?', '?', '?', '?'];
-                            let columnArray = ["subscription_id", "plan_type", "total_value", "balance", "created_by","expiry_date"];
-                            let valuesArray = [subscription_id, plan_type, total_value, balance,created_by,expiry_date];
-                            let insertData = {
-                                alias: aliasArray,
-                                column: columnArray,
-                                values: valuesArray,
-                                tableName: 'user_subscriptions'
-                            };
-                            insertCommonApiCall(insertData).then(() => {
-                                let setData = `wallet_balance = ?`;
-                                const whereCondition = `id = ?`;
-                                let dataToSend = {
-                                    column: setData,
-                                    value: [Number(userWalletBalance) - Number(plan_price), userId],
-                                    whereCondition: whereCondition,
-                                    returnColumnName: 'id',
-                                    tableName: 'app_user'
-                                };
-                                updateCommonApiCall(dataToSend).then(() => {
-                                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                                    const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                                    let aliasArray = ['?', '?', '?', '?'];
-                                    let columnArray = ["id", "amount", "user_id", "type"];
-                                    let valuesArray = [user_transaction_history_id, plan_price, userId, 'purchased_subscription_plan'];
+                                if (Number(plan_price) > Number(userWalletBalance)) {
+                                    resolve({status: 0, error: 'Given amount is greater then wallet balance'});
+                                } else {
+                                    let aliasArray = ['?', '?', '?', '?', '?', '?'];
+                                    let columnArray = ["subscription_id", "plan_type", "total_value", "balance", "created_by","expiry_date"];
+                                    let valuesArray = [subscription_id, plan_type, total_value, balance,created_by,expiry_date];
                                     let insertData = {
                                         alias: aliasArray,
                                         column: columnArray,
                                         values: valuesArray,
-                                        tableName: 'user_transaction_history'
+                                        tableName: 'user_subscriptions'
                                     };
                                     insertCommonApiCall(insertData).then(() => {
-                                        resolve({status: 1});
+                                        let setData = `wallet_balance = ?`;
+                                        const whereCondition = `id = ?`;
+                                        let dataToSend = {
+                                            column: setData,
+                                            value: [Number(userWalletBalance) - Number(plan_price), userId],
+                                            whereCondition: whereCondition,
+                                            returnColumnName: 'id',
+                                            tableName: 'app_user'
+                                        };
+                                        updateCommonApiCall(dataToSend).then(() => {
+                                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                                            const user_transaction_history_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                                            let aliasArray = ['?', '?', '?', '?'];
+                                            let columnArray = ["id", "amount", "user_id", "type"];
+                                            let valuesArray = [user_transaction_history_id, plan_price, userId, 'purchased_subscription_plan'];
+                                            let insertData = {
+                                                alias: aliasArray,
+                                                column: columnArray,
+                                                values: valuesArray,
+                                                tableName: 'user_transaction_history'
+                                            };
+                                            insertCommonApiCall(insertData).then(() => {
+                                                resolve({status: 1});
+                                            })
+                                            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
+                                        })
                                     })
-                                    ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-                                })
-                            })
 
-                        }
+                                }
+                            }
+                        })
+                    }else{
+                        resolve({status:false});
                     }
                 })
-            }else{
-                resolve({status:false});
-            }
+            })
+
         })
     })
 }
@@ -1286,27 +1314,17 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                 console.error('Database Query Error:', error);
                 return;
             }
+
+
+            ////////////// REUPDATE TO 3 STATUS /////////////
+            // Update betting_active_users status
+            let setData = `status = ?`;
+            const whereCondition = `is_test_user = ?`;
+            let dataToSend = {column: setData, value: [3,0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+            updateCommonApiCall(dataToSend).then(()=>{})
+            ////////////// REUPDATE TO 3 STATUS /////////////
+
             if (results?.length > 1) {
-                // Update betting_active_users status
-                const setDataActive = `status = ?`;
-                const whereConditionActive = `is_test_user = ?`;
-                const dataToSendActive = {
-                    column: setDataActive,
-                    value: [3,0],
-                    whereCondition: whereConditionActive,
-                    tableName: 'betting_active_users'
-                };
-
-                updateCommonApiCall(dataToSendActive)
-                    .then(() => {})
-                    .catch((error) => {
-                        console.error('Error updating status:', error);
-                    });
-
-
-
-
-
                 const filteredUsers = results
                     .filter(user => user.is_test_user === 1 || user.subscription_id) // Remove test users & users without a subscription
                     .map(user => ({
@@ -1318,15 +1336,9 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                     const hasRealUser = results.some(user => user.is_test_user === 0);
                     if (hasRealUser) {
                         actionToDistributeBettingFunctionAmongUsers(filteredUsers, sessionId);
-                        return;
                     }
                 }
             }
-
-            let setData = `status = ?`;
-            const whereCondition = `is_test_user = ?`;
-            let dataToSend = {column: setData, value: [3,0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
-            updateCommonApiCall(dataToSend).then(()=>{})
         });
     } catch (error) {
         console.error('Error:', error);

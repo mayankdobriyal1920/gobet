@@ -6,7 +6,7 @@ import {
     actionToCancelNextBetOrderActivateUser,
     actionToGetBetActiveUserData,
     actionToGetBetGameSessionData,
-    actionToGetGameLastResultData,
+    actionToGetGameLastResultData, actionToGetUserActiveSubscriptionData,
     actionToGetUserBetPredictionData,
     actionToGetUserBetPredictionHistory,
     actionToGetUserWalletAndGameBalance,
@@ -113,6 +113,8 @@ export default function WinAndGoBettingMainPage() {
             dispatch(actionToGetUserBetPredictionData(activeUserData?.id));
             dispatch(actionToGetGameLastResultData(session_id));
             dispatch(actionToGetUserBetPredictionHistory(false));
+            dispatch(actionToGetUserWalletAndGameBalance());
+            dispatch(actionToGetUserActiveSubscriptionData());
             setTimeout(()=>{
                 dispatch(actionToGetBetGameSessionData(session_id,false));
             },1000 * 40)

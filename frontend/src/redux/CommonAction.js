@@ -61,6 +61,7 @@ import {
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
+import {useSelector} from "react-redux";
 const api = Axios.create({
     baseURL: 'https://unikpayindia.com/api-get-bet/common/',
     withCredentials:true
@@ -661,9 +662,11 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
         console.log('Disconnected from socket server');
     });
 }
-export const actionToGetUserBetPredictionData = (betting_active_users_id) => async (dispatch) => {
-    dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
-    dispatch(actionToStartTimeIntervalOfUserTime());
+export const actionToGetUserBetPredictionData = (betting_active_users_id,isLoading = true) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+        dispatch(actionToStartTimeIntervalOfUserTime());
+    }
     try {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
@@ -700,7 +703,7 @@ export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFu
 export const actionToOrderNextBetActivateUser = (betId) => async (dispatch) => {
     try {
         api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(() => {
-            dispatch(actionToGetUserBetPredictionData(betId));
+            dispatch(actionToGetUserBetPredictionData(betId,false));
         })
     } catch (error) {
         console.log(error);

@@ -474,8 +474,6 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                         const updatesArray = [];
                         const updatesSubscriptionBalanceArray = [];
                         const valuesArrayUserTransaction = [];
-                        const updatesBetUserActiveArray = [];
-                        const betActiveUserIds = [];
                         const betPredictionHistoryIdsArray = [];
 
                         userPayloadData.forEach((userPredData) => {
@@ -494,14 +492,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                                     conditionValue: userPredData.subscription_id,
                                     set: {balance: userPredData?.amount}
                                 });
-
-                                betActiveUserIds.push(userPredData.betting_active_users_id);
                             }
-
-                            updatesBetUserActiveArray.push({
-                                conditionValue: userPredData.betting_active_users_id,
-                                set: {status: 1}
-                            });
 
                             valuesArrayUserTransaction.push([user_transaction_history, userPredData?.amount, userPredData?.user_id, 'game_play_deduct']);
                         });
@@ -518,68 +509,6 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                                     .then(() => {
                                     bulkUpdateCommonApiCall({tableName: "user_subscriptions", updates: updatesSubscriptionBalanceArray, conditionColumn: "id",amountUpdateCase:`balance - ?`})
                                         .then(() => {
-                                            // Update betting_active_users status
-                                            bulkUpdateCommonApiCall({
-                                                tableName: "betting_active_users",
-                                                conditionColumn: "id",
-                                                updates: updatesBetUserActiveArray
-                                            })
-                                                .then(() => {
-                                                    const nextExecutionDelay = (60 - new Date().getSeconds()) * 1000;
-                                                    setTimeout(()=>{
-                                                        Object.keys(userSocketIdsObject).forEach((key) => {
-                                                            if (userSocketIdsObject[key] && Array.isArray(allSelectedGroupUserData)) {
-                                                                userSocketIdsObject[key].emit('message', JSON.stringify({
-                                                                    selectedGroup: [...allSelectedGroupUserData], // Ensure userIdsArray exists
-                                                                    type: "USER_BETTING_DATA_RECEIVED",
-                                                                }));
-                                                            }
-                                                        });
-
-                                                        // Update betting_active_users status
-                                                        const setDataActive = `status = ?`;
-                                                        const whereConditionActive = `id IN (${betActiveUserIds.map(() => '?').join(',')})`;
-                                                        const dataToSendActive = {
-                                                            column: setDataActive,
-                                                            value: [3, ...betActiveUserIds],
-                                                            whereCondition: whereConditionActive,
-                                                            tableName: 'betting_active_users'
-                                                        };
-
-                                                        updateCommonApiCall(dataToSendActive)
-                                                            .then(() => {})
-                                                            .catch((error) => {
-                                                                console.error('Error updating status:', error);
-                                                            });
-
-
-
-
-                                                        /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
-                                                        setTimeout(() => {
-                                                            const setData = `status = ?`;
-                                                            const whereCondition = `id IN (${betPredictionHistoryIdsArray.map(() => '?').join(',')})`;
-                                                            const values = [0, ...betPredictionHistoryIdsArray];
-                                                            const dataToSend = {
-                                                                column: setData,
-                                                                value: values,
-                                                                whereCondition: whereCondition,
-                                                                tableName: 'bet_prediction_history',
-                                                            };
-                                                            updateCommonApiCall(dataToSend)
-                                                                .then(() => {})
-                                                                .catch((error) => {
-                                                                    console.error('Error updating status:', error);
-                                                                });
-                                                        }, 50000);
-                                                        /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
-
-
-
-                                                    },nextExecutionDelay)
-                                                })
-                                                .catch((error) => console.error("Bulk update error:", error));
-
 
                                             // Insert user transaction history
                                             bulkInsertCommonApiCall({
@@ -589,6 +518,37 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                                             })
                                                 .then(() => console.log("User transaction history inserted."))
                                                 .catch((error) => console.error('Error:', error));
+
+                                            const nextExecutionDelay = (60 - new Date().getSeconds()) * 1000;
+                                            setTimeout(()=>{
+                                                Object.keys(userSocketIdsObject).forEach((key) => {
+                                                    if (userSocketIdsObject[key] && Array.isArray(allSelectedGroupUserData)) {
+                                                        userSocketIdsObject[key].emit('message', JSON.stringify({
+                                                            selectedGroup: [...allSelectedGroupUserData], // Ensure userIdsArray exists
+                                                            type: "USER_BETTING_DATA_RECEIVED",
+                                                        }));
+                                                    }
+                                                });
+
+                                                /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
+                                                setTimeout(() => {
+                                                    const setData = `status = ?`;
+                                                    const whereCondition = `id IN (${betPredictionHistoryIdsArray.map(() => '?').join(',')})`;
+                                                    const values = [0, ...betPredictionHistoryIdsArray];
+                                                    const dataToSend = {
+                                                        column: setData,
+                                                        value: values,
+                                                        whereCondition: whereCondition,
+                                                        tableName: 'bet_prediction_history',
+                                                    };
+                                                    updateCommonApiCall(dataToSend)
+                                                        .then(() => {})
+                                                        .catch((error) => {
+                                                            console.error('Error updating status:', error);
+                                                        });
+                                                }, 50000);
+                                                /////////////////////   STOP TIMER AND EXPIRE BET AFTER 1 MIN ////////////////
+                                            },nextExecutionDelay)
 
                                         })
                                         .catch((error) => console.error("Bulk update error:", error));

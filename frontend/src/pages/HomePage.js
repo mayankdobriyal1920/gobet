@@ -143,7 +143,15 @@ export default function HomePage() {
                         </div>
                         <div className="foot_insub">
                             <div className="step_txt">Subscription Value: ₹{subscriptionData?.total_value}</div>
-                            <div className="step_txt">Expiry Date: {new Date(subscriptionData?.expiry_date).toLocaleDateString()}</div>
+                            <div className="step_txt">Expiry
+                                Date: {new Date(subscriptionData?.expiry_date).toLocaleDateString()}</div>
+                            <div className="progress" onClick={() => setIsSubscriptionModalOpen(true)}>
+                                <div className="step">Upgrade Subscription</div>
+                            </div>
+                            <SubscriptionModal isOpen={isSubscriptionModalOpen}
+                                               onClose={() => setIsSubscriptionModalOpen(false)}
+                                               onSelectPlan={handlePlanSelect}/>
+
                         </div>
                     </div>
                 ) : (
