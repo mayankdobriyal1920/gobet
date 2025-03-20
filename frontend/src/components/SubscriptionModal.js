@@ -11,16 +11,17 @@ import {
     IonLabel,
     IonRadio,
     IonRadioGroup,
-    IonFooter, IonButtons
+    IonButtons
 } from "@ionic/react";
 import {useSelector} from "react-redux";
+import moment from "moment-timezone";
 
 const SubscriptionModal = ({ isOpen, onClose, onSelectPlan }) => {
     const [selectedPlan, setSelectedPlan] = useState(null);
     const {subscriptionPlan} = useSelector((state) => state.appSubscriptionPlanData);
 
     return (
-        <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.5} breakpoints={[0,0.5, 1]}>
+        <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.8} breakpoints={[0,0.8, 1]}>
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>Choose Plan</IonTitle>
@@ -45,9 +46,24 @@ const SubscriptionModal = ({ isOpen, onClose, onSelectPlan }) => {
                         {subscriptionPlan?.map((plan) => (
                             <IonItem className={"sub_item_text"} key={plan.id}>
                                 <IonLabel>
-                                    {plan.name} Duration 30 Days (Value: ₹{plan.value})
+                                    <div className="sysMessage__container-msgWrapper__item">
+                                        <div className="sysMessage__container-msgWrapper__item-title">
+                                            <div>
+                                                <span className={"title"}>{plan.name}</span>
+                                            </div>
+                                            <span className={`action_button`}>
+                                                <IonRadio slot="end" value={plan}/>
+                                            </span>
+                                        </div>
+                                        <div className="sysMessage__container-msgWrapper__item-time">
+                                            <strong>Duration :</strong> 30 Days
+                                            <br/>
+                                            <strong>Value :</strong> ₹{plan.value}
+                                            <br/>
+                                            <strong>Price</strong> : ₹{plan.price}
+                                         </div>
+                                    </div>
                                 </IonLabel>
-                                <IonRadio slot="end" value={plan} />
                             </IonItem>
                         ))}
                     </IonRadioGroup>
