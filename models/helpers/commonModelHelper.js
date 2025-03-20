@@ -166,10 +166,10 @@ export const bulkUpdateCommonApiCall = (body) => {
         return new Promise((resolve, reject) => {
             // Validate inputs
             if (!updates || !Array.isArray(updates) || updates.length === 0) {
-                return reject(new Error("Updates array is empty or invalid."));
+                return;
             }
             if (!tableName || typeof tableName !== 'string') {
-                return reject(new Error("Table name is invalid."));
+                return;
             }
 
             // Construct the CASE statement for each column to update
@@ -290,11 +290,22 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
 
             // Group users based on the number of digits in their balance
             const groupedUsers = allLiveUsersData.reduce((acc, user) => {
-                const digitCount = Number(user.balance).toString().length;
-                if (!acc[digitCount]) {
-                    acc[digitCount] = [];
+                const balance = Number(user.balance);
+                let groupDigit;
+
+                if (balance <= 500) {
+                    groupDigit = 10;
+                } else if (balance <= 2000) {
+                    groupDigit = 100;
+                } else {
+                    groupDigit = 1000;
                 }
-                acc[digitCount].push(user);
+
+                if (!acc[groupDigit]) {
+                    acc[groupDigit] = [];
+                }
+                acc[groupDigit].push(user);
+
                 return acc;
             }, {});
 
@@ -314,7 +325,6 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
                 const groupSize = getRandomGroupSize(minGroupSize, maxGroupSize);
 
                 const selectedGroup = selectRandomGroup(usersInGroup, groupSize);
-                //console.log('selectedGroup.length === 0 || !selectedGroup.some(user => user.is_test_user === 0)',selectedGroup.length , selectedGroup.some(user => user.is_test_user === 0))
 
                 if (selectedGroup.length === 0 || !selectedGroup.some(user => user.is_test_user === 0)) {
                     return; // Skip invalid groups
@@ -336,32 +346,35 @@ const actionToCallProcedureToSelectRightGroup = (allLiveUsersData = []) => {
                 return generateRandomGroups();
             }
 
+            const bulkInsertData = {
+                column: ["group_id", "game_type","balance_length", "group_json"],
+                valuesArray: groupsToInsert.map(g => [g.group_id, g.game_type,g.balance_length, JSON.stringify(g.group_json)]),
+                tableName: 'user_game_group_history'
+            };
+
+            bulkInsertCommonApiCall(bulkInsertData)
+                .then(() => resolve(groupsToInsert))
+                .catch(reject);
+
+
             // Check if groups already exist in database
-            const groupIds = groupsToInsert.map(g => g.group_id);
-            const query = `SELECT group_id FROM user_game_group_history WHERE group_id IN (?) AND game_type = ?`;
-
-            pool.query(query, [groupIds, "win_go"], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                const existingGroupIds = new Set(results.map(row => row.group_id));
-                const uniqueGroupsToInsert = groupsToInsert.filter(g => !existingGroupIds.has(g.group_id));
-
-                if (uniqueGroupsToInsert.length === 0) {
-                    return generateRandomGroups(); // Retry if all groups exist
-                }
-
-                const bulkInsertData = {
-                    column: ["group_id", "game_type","balance_length", "group_json"],
-                    valuesArray: uniqueGroupsToInsert.map(g => [g.group_id, g.game_type,g.balance_length, JSON.stringify(g.group_json)]),
-                    tableName: 'user_game_group_history'
-                };
-
-                bulkInsertCommonApiCall(bulkInsertData)
-                    .then(() => resolve(uniqueGroupsToInsert))
-                    .catch(reject);
-            });
+            // const groupIds = groupsToInsert.map(g => g.group_id);
+            // const query = ``;
+            // SELECT group_id FROM user_game_group_history WHERE group_id IN (?) AND game_type = ?
+            // pool.query(query, [groupIds, "win_go"], (error, results) => {
+            //     if (error) {
+            //         return reject(error);
+            //     }
+            //
+            //     const existingGroupIds = new Set(results.map(row => row.group_id));
+            //     const uniqueGroupsToInsert = groupsToInsert.filter(g => !existingGroupIds.has(g.group_id));
+            //
+            //     if (uniqueGroupsToInsert.length === 0) {
+            //         return generateRandomGroups(); // Retry if all groups exist
+            //     }
+            //
+            //
+            // });
         };
 
         generateRandomGroups();
@@ -375,8 +388,8 @@ export function actionToExecuteFunctionInLast10Seconds() {
         const currentSeconds = now.getSeconds();
         const millisecondsUntilNextMinute = (60 - currentSeconds) * 1000 - now.getMilliseconds();
 
-        // Ensure execution in the last 10 seconds
-        const delay = millisecondsUntilNextMinute - 10000;
+        // Ensure execution in the last 7 seconds
+        const delay = millisecondsUntilNextMinute - 7000;
 
         setTimeout(() => {
             executeAndScheduleNext();
@@ -385,7 +398,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
 
     function executeAndScheduleNext() {
         const now = new Date();
-        console.log(`Executing function at: ${now.toLocaleTimeString()}`);
+        console.log(`Executing function at UTC : ${now}`);
 
         const query = `SELECT
                            bgs.id, bgs.end_time
@@ -441,17 +454,22 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
     actionToCallProcedureToSelectRightGroup(allLiveUsersData)
         .then((allSelectedGroupUserData) => {
             // Schedule the betting distribution after 1 minute
-            console.log('allSelectedGroupUserData',allSelectedGroupUserData)
             const userPayloadData = [];
             allSelectedGroupUserData?.forEach((userGroup) => {
-                let minimumBetAmount = Number(userGroup?.balance_length) === 2 ? 10 : Number(userGroup?.balance_length) === 3 ? 100 : 1000;
-                let maximumBetAmount = minimumBetAmount === 10 ? 100 : minimumBetAmount === 100 ? 1000 : 10000;
-                // Ensure result is added properly
-                userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
+                const hasRealUser = userGroup?.group_json?.some(user => user.is_test_user === 0);
+                if (hasRealUser) {
+                    let minimumBetAmount = Number(userGroup?.balance_length);
+                    let maximumBetAmount = Number(userGroup?.balance_length) * 10;
+                    // Ensure result is added properly
+                    userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
+                }
             });
 
-            console.log('userPayloadData',userPayloadData)
-
+            const hasRealUser = userPayloadData?.some(user => user.is_test_user === 0);
+            if (!hasRealUser) {
+                console.error("Blank user selected array no real user present.");
+                return;
+            }
             if(userPayloadData?.length) {
                 const gameBetId = userPayloadData[0]?.bet_id;
                 const totalBetAmount = userPayloadData[0]?.total_bet_amount;
@@ -511,7 +529,6 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                                     .then(() => {
                                     bulkUpdateCommonApiCall({tableName: "user_subscriptions", updates: updatesSubscriptionBalanceArray, conditionColumn: "id",amountUpdateCase:`balance - ?`})
                                         .then(() => {
-
                                             // Insert user transaction history
                                             bulkInsertCommonApiCall({
                                                 column: ["id", "amount", "user_id", "type"],

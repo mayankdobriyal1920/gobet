@@ -322,7 +322,7 @@ export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
 
 export const actionToGetGameLastResultDataApiCall = (sessionId) => {
     return new Promise(function(resolve, reject) {
-        const query = 'SELECT id,result,game_id from game_result WHERE betting_game_session_id = ? AND result IS NULL ORDER BY game_id DESC LIMIT 1';
+        const query = 'SELECT id,result,game_id,created_at from game_result WHERE betting_game_session_id = ? AND result IS NULL ORDER BY game_id DESC LIMIT 1';
         let userData = {};
         pool.query(query,[sessionId], (error, results) => {
             if (error) {
@@ -1050,13 +1050,14 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
                     whereCondition = `id = ?`;
                     dataToSend = {
                         column: setData,
-                        value: [Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount)), allBetData.user_id],
+                        value: [parseFloat((Number(allBetData.amount) * 2) - (0.02 * Number(allBetData.amount))).toFixed(2)
+                            , allBetData.user_id],
                         whereCondition: whereCondition,
                         returnColumnName: 'id',
                         tableName: 'app_user',
                     };
                     userTrnsectionType = 'game_loose_amount_credit';
-                    amountToDeduct = Number(allBetData.amount * 2) - (0.02 * Number(allBetData.amount));
+                    amountToDeduct = (Number(allBetData.amount) * 2) - (0.02 * Number(allBetData.amount));
                 }else{
                     // Update user's game balance
                     setData = `game_balance = game_balance + ?`;
@@ -1347,12 +1348,12 @@ export function actionToRunCheckForAliveUsers(sessionId) {
 
 
             ////////////// REUPDATE TO 3 STATUS /////////////
-            // Update betting_active_users status
-            let setData = `status = ?`;
-            const whereCondition = `is_test_user = ?`;
-            let dataToSend = {column: setData, value: [3,0], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
-            updateCommonApiCall(dataToSend).then(()=>{})
+            updateCommonApiCall({column: `status = ?`, value: [3,0], whereCondition: `is_test_user = ?`, returnColumnName:'id',tableName: 'betting_active_users'}).then(()=>{})
             ////////////// REUPDATE TO 3 STATUS /////////////
+
+            //////////// UPDATE PREV TO 3 STATUS /////////////
+            updateCommonApiCall({column: `status = ?`, value: [0,1], whereCondition: 'status = ?', returnColumnName:'id',tableName: 'bet_prediction_history'}).then(()=>{})
+            ////////////// UPDATE PREV TO 3 STATUS /////////////
 
             if (results?.length > 1) {
                 const filteredUsers = results

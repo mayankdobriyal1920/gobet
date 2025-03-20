@@ -1,22 +1,23 @@
-// Generate a unique time-based ID
 function generateTimeBasedId() {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-    const counter = String(minutesSinceMidnight).padStart(4, '0'); // Ensure 4 digits
-    return `${year}${month}${day}1000${counter}`;
+    const minutesSinceMidnight = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const counter = 10000 + minutesSinceMidnight;
+    return `${year}${month}${day}1000${counter + 2}`;
 }
 
 // Calculate the total bet amount and distribute it among members
 export function calculateUserBetAmount(members = [], minBetAmount = 100, maximumBetAmount = 10000) {
-    if (!members || members.length === 0) return [];
-    members.forEach(member => {
-        member.balance = parseFloat(member.balance.toString());
-    });
+    if (!members.length) return [];
+
+    // Convert balance to numbers
+    members.forEach(member => member.balance = Number(member.balance));
+
+    // Filter valid members who meet minBetAmount
     const validMembers = members.filter(member => member.balance >= minBetAmount);
-    if (validMembers.length === 0) return [];
+    if (!validMembers.length) return [];
 
     const totalMembers = validMembers.length;
     const minTotalBet = minBetAmount * totalMembers;
@@ -25,98 +26,114 @@ export function calculateUserBetAmount(members = [], minBetAmount = 100, maximum
         maximumBetAmount * totalMembers
     );
 
-    if (minTotalBet > maxTotalBet){
-        return [];
-    }
+    if (minTotalBet > maxTotalBet) return [];
 
-    // Randomly select a total bet amount within the valid range, ensuring it's a multiple of 10, 100, or 1000
+    // Get a valid total bet amount
     const totalBetAmount = getValidBetAmount(minTotalBet, maxTotalBet);
-
-    return distributeBetAmount(validMembers, totalBetAmount, minBetAmount,maximumBetAmount);
+    return distributeBetAmount(validMembers, totalBetAmount, minBetAmount, maximumBetAmount);
 }
 
-// Get a valid bet amount that is a multiple of 10, 100, or 1000
+// Get a valid bet amount that is a multiple of 10
 function getValidBetAmount(min, max) {
-    const multiples = [10, 100, 1000];
-    let validAmounts = [];
-
-    multiples.forEach(multiple => {
-        for (let i = min; i <= max; i += multiple) {
-            if (i % multiple === 0) {
-                validAmounts.push(i);
-            }
-        }
-    });
-
-    // Randomly select a valid amount
-    return validAmounts[Math.floor(Math.random() * validAmounts.length)];
+    min = Math.ceil(min / 10) * 10; // Round up to nearest multiple of 10
+    return min > max ? null : Math.floor(Math.random() * ((max - min) / 10 + 1)) * 10 + min;
 }
 
 // Distribute the bet amount among members
-function distributeBetAmount(members, totalBetAmount, minBetAmount,maximumBetAmount) {
-    console.log('members',members)
+function distributeBetAmount(members, totalBetAmount, minBetAmount, maximumBetAmount) {
     members.sort((a, b) => a.balance - b.balance);
 
-    let groups = { small: [], big: [] };
-    members.forEach((member, index) => groups[index % 2 === 0 ? 'small' : 'big'].push(member));
+    const groups = { small: [], big: [] };
+    members.forEach((member, i) => groups[i % 2 ? 'big' : 'small'].push(member));
 
-    let halfAmount = totalBetAmount / 2;
-    let smallDistribution = divideAmount(halfAmount, groups.small, minBetAmount,maximumBetAmount);
-    let bigDistribution = divideAmount(halfAmount, groups.big, minBetAmount,maximumBetAmount);
+    const halfAmount = totalBetAmount / 2;
+    const smallDistribution = divideAmount(halfAmount, groups.small, minBetAmount, maximumBetAmount);
+    const bigDistribution = divideAmount(halfAmount, groups.big, minBetAmount, maximumBetAmount);
 
-    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount,maximumBetAmount,members);
+    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount, maximumBetAmount);
 }
 
-// Divide the amount among members, ensuring amounts are multiples of 10, 100, or 1000
+// Divide the amount among members, ensuring multiples of 10
 function divideAmount(amount, members, minBetAmount, maximumBetAmount) {
-    let parts = members.length;
-    if (parts === 0) return [];
+    if (!members.length) return [];
 
-    let divisions = new Array(parts).fill(minBetAmount);
-    let remainingAmount = amount - (minBetAmount * parts);
+    amount = Math.floor(amount / 10) * 10; // Ensure multiple of 10
+    const totalAvailable = Math.min(
+        amount,
+        members.reduce((sum, m) => sum + Math.min(maximumBetAmount, Math.floor(m.balance / 10) * 10), 0)
+    );
 
-    for (let i = 0; i < parts; i++) {
-        if (remainingAmount <= 0) break;
+    const parts = members.length;
+    let divisions = Array(parts).fill(minBetAmount);
+    let remainingAmount = totalAvailable - (minBetAmount * parts);
 
-        let maxAllocatable = Math.min(remainingAmount, members[i].balance - minBetAmount, maximumBetAmount - minBetAmount);
-        let part = getValidBetAmount(0, maxAllocatable);
+    for (let i = 0; i < parts && remainingAmount > 0; i++) {
+        let maxAllocatable = Math.min(
+            remainingAmount,
+            Math.floor((members[i].balance - minBetAmount) / 10) * 10,
+            maximumBetAmount - minBetAmount
+        );
 
+        let part = getValidBetAmount(0, maxAllocatable) || 0;
         divisions[i] += part;
         remainingAmount -= part;
     }
 
-    // Distribute any remaining amount evenly, ensuring multiples of 10
     let index = 0;
-    while (remainingAmount > 0) {
-        let increment = Math.min(10, remainingAmount, maximumBetAmount - divisions[index % parts]);
-        if (increment > 0) {
-            divisions[index % parts] += increment;
-            remainingAmount -= increment;
+    while (remainingAmount >= 10) {
+        let i = index % parts;
+        let maxIncrement = Math.min(
+            10,
+            remainingAmount,
+            Math.floor((members[i].balance - divisions[i]) / 10) * 10,
+            maximumBetAmount - divisions[i]
+        );
+
+        if (maxIncrement > 0) {
+            divisions[i] += maxIncrement;
+            remainingAmount -= maxIncrement;
         }
-        index++;
+
+        if (++index > parts * 2) break; // Prevent infinite loop
     }
 
     return divisions;
 }
 
-
 // Finalize the bet distribution and balance SMALL and BIG groups
-function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount,maximumBetAmount,members) {
+function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount, maximumBetAmount) {
     let totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
     let totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
-
     let diff = totalSmall - totalBig;
 
-    if(diff !== 0) {
-        return calculateUserBetAmount(members, minBetAmount, maximumBetAmount);
+    // Adjust bets to make totalSmall === totalBig
+    if (diff !== 0) {
+        let adjustmentArray = diff > 0 ? smallAmounts : bigAmounts;
+        let adjustIndex = 0;
+
+        while (Math.abs(diff) >= 10) {
+            let i = adjustIndex % adjustmentArray.length;
+            let maxAdjustable = Math.min(10, Math.abs(diff), adjustmentArray[i] - minBetAmount);
+
+            if (maxAdjustable > 0) {
+                adjustmentArray[i] -= maxAdjustable;
+                diff += diff > 0 ? -maxAdjustable : maxAdjustable;
+            }
+
+            if (++adjustIndex > adjustmentArray.length * 2) break;
+        }
+
+        totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
+        totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
     }
 
-    let finalDistribution = [];
+    // Ensure totalSmall === totalBig by discarding extra values if necessary
+    if (totalSmall !== totalBig) totalSmall = totalBig = Math.min(totalSmall, totalBig);
 
-    groups.small.forEach((member, index) => finalDistribution.push(createBetObject(member, smallAmounts[index], 'SMALL', totalSmall, totalBig)));
-    groups.big.forEach((member, index) => finalDistribution.push(createBetObject(member, bigAmounts[index], 'BIG', totalSmall, totalBig)));
-
-    return finalDistribution;
+    return [
+        ...groups.small.map((member, i) => createBetObject(member, smallAmounts[i], 'SMALL', totalSmall, totalBig)),
+        ...groups.big.map((member, i) => createBetObject(member, bigAmounts[i], 'BIG', totalSmall, totalBig))
+    ];
 }
 
 // Create a bet object for each member
@@ -127,7 +144,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
         is_test_user: member.is_test_user,
         betting_active_users_id: member.betting_active_users_id,
         option_name: option,
-        amount: amount,
+        amount,
         balance: member.balance - amount,
         bet_id: generateTimeBasedId(),
         subscription_id: member.subscription_id,
@@ -138,6 +155,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 }
 
 
+
 // // Example usage
 // const members =  [
 //     {
@@ -146,7 +164,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 14",
 //         uid: "8123126794",
 //         is_test_user: 1,
-//         balance: 187422936,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -159,7 +177,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 18",
 //         uid: "8123126798",
 //         is_test_user: 1,
-//         balance: 199999963,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -172,7 +190,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 46",
 //         uid: "8123126826",
 //         is_test_user: 1,
-//         balance: 199528130,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -185,7 +203,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 43",
 //         uid: "8123126823",
 //         is_test_user: 1,
-//         balance: 198469512,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -198,7 +216,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 22",
 //         uid: "8123126802",
 //         is_test_user: 1,
-//         balance: 198729807,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -211,7 +229,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 27",
 //         uid: "8123126807",
 //         is_test_user: 1,
-//         balance: 102093065,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -224,7 +242,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 11",
 //         uid: "8123126791",
 //         is_test_user: 1,
-//         balance: 177409230,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -237,7 +255,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 36",
 //         uid: "8123126816",
 //         is_test_user: 1,
-//         balance: 25613918,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -250,7 +268,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 16",
 //         uid: "8123126796",
 //         is_test_user: 1,
-//         balance: 199845060,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -263,7 +281,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 20",
 //         uid: "8123126800",
 //         is_test_user: 1,
-//         balance: 175278813,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -276,7 +294,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 50",
 //         uid: "8123126830",
 //         is_test_user: 1,
-//         balance: 133280013,
+//         balance: 1947,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -289,7 +307,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //         name: "Test user 41",
 //         uid: "8123126821",
 //         is_test_user: 1,
-//         balance: 198786147,
+//         balance: 197,
 //         subscription_id: null,
 //         plan_type: null,
 //         total_value: null,
@@ -298,6 +316,4 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
 //     }
 // ];
 //
-// const bets = calculateUserBetAmount(members, 10, 100);
-//
-// console.log(bets);
+// console.log(calculateUserBetAmount(members, 100, 1000));
