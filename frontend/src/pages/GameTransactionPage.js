@@ -25,35 +25,35 @@ export default function GameTransactionPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            // <IonRow key={dataItems?.id} className={"list_row_items"}>
-            //     <IonCol>{moment(dataItems?.created_at).format('DD MMM')}</IonCol>
-            //     <IonCol>₹{dataItems?.amount}</IonCol>
-            //     <IonCol>{dataItems?.option_name}</IonCol>
-            //     <IonCol>{dataItems?.win_status === 1 ? 'Win' : 'Loss' }</IonCol>
-            // </IonRow>
-            //
-
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
+                        <span className={"title"}>PERIOD - {moment(dataItems?.created_at).format('YYYY-MM-DD hh:mm a')}</span>
                     </div>
                     <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }`}>{dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
-                   <strong>ID</strong> : {dataItems?.bet_id}
+                    <strong>ID</strong> : {dataItems?.bet_id}
                     <br/>
                     <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
                     <br/>
-                   <strong>PREDICTION</strong> : {dataItems?.option_name}
+                    <strong>ORDER</strong> : {dataItems?.option_name}
+                    <br/>
+                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL'}
                 </div>
-                <div className="sysMessage__container-msgWrapper__item-content">
-                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
-                </div>
-            </div>
+                {dataItems?.win_status === 1 ?
+                    <div className="sysMessage__container-msgWrapper__item-content">
+                        <strong>₹{0.02 * dataItems?.amount}</strong> Amount Credited to your game wallet
+                    </div>
+                    :
+                    <div className="sysMessage__container-msgWrapper__item-content">
+                        <strong>₹{(dataItems?.amount * 2) - (0.02 * dataItems?.amount)}</strong> Amount Credited to your game wallet
+                    </div>
+                }
+              </div>
 
-        )
-    }
+                    )
+                }
 
     const callFunctionToApplyTypeFilter = (filter, optionValue) => {
         if (statusTypeFilter !== filter) {
