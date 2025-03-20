@@ -58,7 +58,7 @@ const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,us
                  className="sysMessage__container-msgWrapper__item for_session">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}>{dataItems?.platform_name}</span>
+                        <span className={"title"}><strong>{dataItems?.platform_name}</strong></span>
                         {(userInfo?.role !== 1) ?
                             <div className="settingPanel__container-items-right">
                                 {(gameSessionData?.is_active) ?

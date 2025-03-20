@@ -169,7 +169,7 @@ export default function GetBetGameSessionListPage() {
                 className="add-money-to-game-wallet-modal"
                 isOpen={isAddEditSessionPopupOpen}
                 onDidDismiss={() => setIsAddEditSessionPopupOpen(false)}
-                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                initialBreakpoint={0.7} breakpoints={[0.7,1,1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
                         <h2>Add Edit Session</h2>
@@ -195,7 +195,6 @@ export default function GetBetGameSessionListPage() {
                                         </IonSelectOption>
                                     ))}
                                 </IonSelect>
-
                             </IonCol>
                         </IonRow>
                         <IonRow>
@@ -224,7 +223,6 @@ export default function GetBetGameSessionListPage() {
                                         Limbo
                                     </IonSelectOption>
                                 </IonSelect>
-
                             </IonCol>
                         </IonRow>
                         <IonRow>

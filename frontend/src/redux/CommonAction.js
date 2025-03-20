@@ -61,16 +61,10 @@ import {
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
-import {useSelector} from "react-redux";
 const api = Axios.create({
     baseURL: 'https://unikpayindia.com/api-get-bet/common/',
     withCredentials:true
 })
-
-// const api = Axios.create({
-//     baseURL: process.env.REACT_APP_NODE_ENV === 'PRODUCTION' ? `https://gobet.onrender.com/api-call/common/` : 'http://localhost:4000/api-call/common/',
-//     withCredentials:true
-// })
 
 export const actionToGetUserSessionData = () => async (dispatch) => {
     dispatch({type: USER_SESSION_REQUEST});
@@ -643,19 +637,19 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
         let websocketData = JSON.parse(data);
         switch (websocketData?.type) {
             case 'USER_BETTING_DATA_RECEIVED':
-                // if (websocketData?.selectedGroup?.length) {
-                //     const userIdsArray = websocketData.selectedGroup.map(user => user.id);
-                //     if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
-                //         let currentUserBetData = websocketData.selectedGroup.find((user) =>
-                //             user?.id === getState().userAuthDetail?.userInfo?.id
-                //         );
-                //         if (currentUserBetData?.betting_active_users_id) {
-                //             dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
-                //         }
-                //         dispatch(actionToGetUserWalletAndGameBalance())
-                //         dispatch(actionToGetUserActiveSubscriptionData())
-                //     }
-                // }
+                if (websocketData?.selectedGroup?.length) {
+                    const userIdsArray = websocketData.selectedGroup.map(user => user.id);
+                    if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
+                        let currentUserBetData = websocketData.selectedGroup.find((user) =>
+                            user?.id === getState().userAuthDetail?.userInfo?.id
+                        );
+                        if (currentUserBetData?.betting_active_users_id) {
+                            dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
+                        }
+                        dispatch(actionToGetUserWalletAndGameBalance())
+                        dispatch(actionToGetUserActiveSubscriptionData())
+                    }
+                }
                 break;
         }
     });
