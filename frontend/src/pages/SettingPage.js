@@ -81,7 +81,7 @@ export default function SettingPage() {
                             UID
                         </h5>
                             <div>
-                                <span>{userInfo?.id}</span>
+                                <span>{userInfo?.uid}</span>
                                 <svg className="svg-icon icon-copy" viewBox="0 0 48 48" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path

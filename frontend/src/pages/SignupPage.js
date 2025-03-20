@@ -7,7 +7,7 @@ import {
 } from "@ionic/react";
 import {countries as countriesList} from 'countries-list';
 import {useDispatch, useSelector} from "react-redux";
-import {actionToSendOtp, actionToSignupUser, actionToVerifyLoginUserOtp} from "../redux/CommonAction";
+import {actionToSendOtp, actionToSignupUser} from "../redux/CommonAction";
 import {Capacitor} from "@capacitor/core";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
@@ -18,6 +18,7 @@ let otpInterval = null;
 export default function SignupPage(){
     const [otp,setOtp] = useState('');
     const [passcode,setPasscode] = useState('');
+    const [fullName,setFullName] = useState('');
     const userAuthDetail = useSelector((state) => state.userAuthDetail);
     const userOtpDetails = useSelector((state) => state.userOtpDetails);
     const signupFormError = useSelector((state) => state.signupSigninFormError);
@@ -25,7 +26,10 @@ export default function SignupPage(){
     const [countries, setCountries] = useState([]);
     const [timer, setTimer] = useState(60);
     const [isOtpExpired, setIsOtpExpired] = useState(true);
+    const [nameError,setNameError] = useState(false);
+    const [nameErrorMessage,setNameErrorMessage] = useState('');
     const [phoneError,setPhoneError] = useState(false);
+
     const [phoneErrorMessage,setPhoneErrorMessage] = useState('');
 
     const [otpError,setOtpError] = useState(false);
@@ -51,6 +55,8 @@ export default function SignupPage(){
             StatusBar.setStyle({ style:Style.Dark });
         }
         setPhoneError(false);
+        setNameError(false);
+        setNameErrorMessage('');
         setPassCodeErrorMessage('');
         setOtpErrorMessage('');
         setOtpError(false);
@@ -105,16 +111,16 @@ export default function SignupPage(){
     }
 
     const callFunctionToSignupUser = ()=>{
-        const isValidate = validateFields('signup');
+        const isValidate = validateFields();
         if (isValidate){
-            dispatch(actionToSignupUser(phone, otp, passcode));
+            dispatch(actionToSignupUser(phone,fullName, otp, passcode));
         }
     }
 
 
     const callFunctionToSendOtp = () =>{
         //if(phone?.length === 10) {
-            const isValidate = validateFields('get otp');
+            const isValidate = validateFields();
             if (isValidate){
                 dispatch(actionToSendOtp(phone,callFunctionToSendOtpTimeInterval))
             }
@@ -130,10 +136,9 @@ export default function SignupPage(){
 
     /**
      * This function is used to validate the form for get otp and signup actions
-     * @param action
      * @returns {boolean}
      */
-    const validateFields = (action) =>{
+    const validateFields = () =>{
         let isFormValid = true;
         setPhoneError(false);
         setOtpError(false);
@@ -141,7 +146,13 @@ export default function SignupPage(){
         setPhoneErrorMessage('');
         setOtpErrorMessage('');
         setPassCodeErrorMessage('');
-        if (phone.trim() === '') {
+        setNameError(false);
+        setNameErrorMessage('');
+        if (fullName.trim() === '') {
+            isFormValid = false;
+            setNameError(true);
+            setNameErrorMessage('Name is required');
+        }else if (phone.trim() === '') {
             isFormValid = false;
             setPhoneErrorMessage('Phone number is required');
             setPhoneError(true);
@@ -149,18 +160,14 @@ export default function SignupPage(){
             isFormValid = false;
             setPhoneErrorMessage('Phone number must be 10 digits');
             setPhoneError(true);
-        }
-        if (action === 'signup'){
-            if (otp.trim() === ''){
-                isFormValid = false;
-                setOtpErrorMessage('OTP is required');
-                setOtpError(true);
-            }
-            if (passcode.trim() === ''){
-                isFormValid = false;
-                setPassCodeErrorMessage('OTP is required');
-                setPassCodeError(true);
-            }
+        }else if (otp.trim() === ''){
+            isFormValid = false;
+            setOtpErrorMessage('OTP is required');
+            setOtpError(true);
+        }else if (passcode.trim() === ''){
+            isFormValid = false;
+            setPassCodeErrorMessage('Passcode is required');
+            setPassCodeError(true);
         }
         return isFormValid;
     }
@@ -209,6 +216,33 @@ export default function SignupPage(){
                         <form>
                             <IonRow className={"form_second_label_input"}>
                                 <div className={"login_form_label"}>
+                                    <svg fill="#f57b2c" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.671 60.671">
+                                        <g>
+                                            <g>
+                                                <ellipse  cx="30.336" cy="12.097" rx="11.997" ry="12.097"/>
+                                                <path  d="M35.64,30.079H25.031c-7.021,0-12.714,5.739-12.714,12.821v17.771h36.037V42.9
+                                                    C48.354,35.818,42.661,30.079,35.64,30.079z"/>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    Full Name
+                                </div>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol size={12}>
+                                    <input className={"form_input_section input"}
+                                           value={fullName}
+                                           onChange={(e)=>setFullName(e.target.value)}
+                                           placeholder={"Enter Full Name"} type={"text"} required={true}/>
+                                </IonCol>
+                            </IonRow>
+                            {nameError && <IonRow>
+                                <IonCol size={12}>
+                                    <p className="error fontsize2">{nameErrorMessage}</p>
+                                </IonCol>
+                            </IonRow>}
+                            <IonRow className={"form_second_label_input"}>
+                                <div className={"login_form_label"}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24"
                                          fill="none">
                                         <path fillRule="evenodd" clipRule="evenodd"
@@ -237,9 +271,9 @@ export default function SignupPage(){
                                            placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                                 </IonCol>
                             </IonRow>
-                            {otpError && <IonRow>
+                            {phoneError && <IonRow>
                                 <IonCol size={12}>
-                                    {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
+                                    <p className="error fontsize2">{phoneErrorMessage}</p>
                                 </IonCol>
                             </IonRow>}
                             <IonRow className={"form_second_label_input"}>

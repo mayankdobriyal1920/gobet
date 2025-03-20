@@ -137,10 +137,12 @@ export const actionToSendOtpForLogin = (phone,callFunctionToSendOtpTimeInterval)
     }
 }
 
-export const actionToSignupUser = (phone,otp,passcode) => async (dispatch) => {
+export const actionToSignupUser = (phone,fullName,otp,passcode) => async (dispatch) => {
     //dispatch({type: USER_SIGNIN_REQUEST});
     try {
-        api.post(`actionToSignupUserApiCall`, {phone,otp,passcode}).then(responseData => {
+        const firstName = fullName.split(" ")[0]; // Extract first name
+        const lastFiveDigits = phone.slice(-5); // Extract last 5 digits of phone number
+        api.post(`actionToSignupUserApiCall`, {phone,otp,name:fullName,passcode,uid:`${firstName}${lastFiveDigits}`}).then(responseData => {
             if(responseData?.data?.success){
                 dispatch({ type: USER_SIGNIN_SUCCESS, payload: {...responseData?.data.userData}});
             }else{

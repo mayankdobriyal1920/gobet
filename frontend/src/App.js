@@ -51,7 +51,6 @@ import GeneratedPasscodeListPage from "./pages/admin/GeneratedPasscodeListPage";
 import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
 import AppBackButtonHandler from "./components/AppBackButtonHandler";
-import AdminWinAndGoBettingMainPage from "./pages/admin/AdminWinAndGoBettingMainPage";
 import GetBetGameSessionListPage from "./pages/admin/GetBetGameSessionListPage";
 setupIonicReact();
 

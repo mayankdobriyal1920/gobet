@@ -4,10 +4,10 @@
 
 
 .fontsize1{
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 .fontsize2{
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 body{
     font-family: 'Roboto', 'Inter', sans-serif;;
@@ -236,14 +236,8 @@ ion-header {
 .userInfo__container-content-uid {
     padding: .2rem 0;
     font-size: 1rem;
-    display: -webkit-box;
-    display: -webkit-flex;
     display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
     align-items: center;
-    -webkit-justify-content: space-around;
-    justify-content: space-around;
 }
 .profile_account_main_userinfo_content{
     display: -webkit-box;

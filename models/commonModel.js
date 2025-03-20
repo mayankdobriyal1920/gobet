@@ -62,7 +62,7 @@ export const actionToSendOtpApiCall = (body) => {
 }
 
 export const actionSignupApiCall = (body) => {
-    const {phone, userId} = body;
+    const {phone,name,uid, userId} = body;
     return new Promise(function(resolve, reject) {
         let userData = {};
         const query = signupQuery();
@@ -72,7 +72,7 @@ export const actionSignupApiCall = (body) => {
         const stringPart1 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 1 (e.g., rtthyfgh)
         const stringPart2 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 2 (e.g., ljkhersf)
         const userIdVal = `${numericPart}-${stringPart1}-${stringPart2}`;
-        const dataArray = [userIdVal, 'krishna', phone, 'avatar-3', userId, 0, 3, currentDateTime];
+        const dataArray = [userIdVal, name,uid, phone, 'avatar-3', userId, 0, 3, currentDateTime];
         pool.query(query,dataArray, (error, results) => {
             if (error) {
                 console.log(error)

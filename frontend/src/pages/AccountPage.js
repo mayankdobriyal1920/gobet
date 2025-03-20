@@ -76,7 +76,7 @@ export default function AccountPage() {
                                 </div>
                             </div>
                             <div className="userInfo__container-content-uid">
-                                <span>UID</span><span>&nbsp;-&nbsp;</span><span>{userInfo?.id}</span>
+                                <span>UID</span><span>&nbsp;-&nbsp;</span><span>{userInfo?.uid}</span>
                             </div>
                             <div className="userInfo__container-content-logintime">
                                 <span>Sub Admin:&nbsp;</span><span>{userInfo?.sub_admin?.name}</span>

@@ -262,7 +262,7 @@ export default function WinAndGoBettingMainPage() {
                                                     ''
                                                 }
                                                 <div className={"text_up"}>
-                                                    UPDATE PREVIOUS GAME RESULT <br/> {moment(gameLastResult?.gameResult?.created_at).format('YYYY-MM-DD HH:mm')}
+                                                    UPDATE PREVIOUS GAME RESULT <br/>b {moment(gameLastResult?.gameResult?.created_at).format('YYYY-MM-DD HH:mm')}
                                                 </div>
                                                 <div className={"update_user_game_prev_result_button"}>
                                                     <button
