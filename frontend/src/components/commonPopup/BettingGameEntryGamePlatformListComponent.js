@@ -54,11 +54,11 @@ const BettingGameEntryGamePlatformListComponent = ({setUserEnterInGameConfirm,us
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <div key={dataItems?.platform_id} onClick={() => callFunctionToEnterBet(gameSessionData,dataItems?.platform_id)}
+            <div key={dataItems?.id} onClick={() => callFunctionToEnterBet(gameSessionData,dataItems?.platform_id)}
                  className="sysMessage__container-msgWrapper__item for_session">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}><strong>{dataItems?.platform_name}</strong></span>
+                        <span className={"title"}><strong>{dataItems?.name}</strong></span>
                         {(userInfo?.role !== 1) ?
                             <div className="settingPanel__container-items-right">
                                 {(gameSessionData?.is_active) ?

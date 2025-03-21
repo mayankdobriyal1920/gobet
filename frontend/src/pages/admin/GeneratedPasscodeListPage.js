@@ -54,25 +54,25 @@ export default function GeneratedPasscodeListPage() {
     }
 
     const callFunctionToCopyCode = async (code) => {
-        console.log('Code to copy:', code);
-
         if (Capacitor.isNativePlatform()) {
-            // Use Capacitor Clipboard for native platforms
+            // Use Capacitor Clipboard for Native (iOS/Android)
             try {
-                await Clipboard.write({
-                    string: code,
-                });
+                await Clipboard.write({ string: code });
                 console.log('Copied to clipboard using Capacitor!');
             } catch (error) {
                 console.error('Failed to copy using Capacitor:', error);
             }
         } else {
-            // Use Navigator Clipboard API for web platforms
-            try {
-                await navigator.clipboard.writeText(code);
-                console.log('Copied to clipboard using Navigator API!');
-            } catch (error) {
-                console.error('Failed to copy using Navigator API:', error);
+            // Use Navigator Clipboard API for Web
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    console.log('Copied to clipboard using Navigator API!');
+                } catch (error) {
+                    console.error('Failed to copy using Navigator API:', error);
+                }
+            } else {
+                console.error('Clipboard API not available or page not served over HTTPS');
             }
         }
 

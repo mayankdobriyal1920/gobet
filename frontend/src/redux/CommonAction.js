@@ -365,7 +365,11 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatform = (game
     dispatch({type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST});
     try {
         api.post(`actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
-            dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...responseData.data}});
+            let allData = responseData.data;
+            if(allData?.betting_platforms_json){
+                allData.platforms = JSON.parse(allData?.betting_platforms_json);
+            }
+            dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...allData}});
         })
     } catch (error) {
         console.log(error);

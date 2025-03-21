@@ -99,8 +99,7 @@ export default function AccountPage() {
                                     </div>
                                     <div className="totalSavings__container-header__title">
                                         <span className={"acc_balance_title_tip"}>Betting balance</span>
-                                        <span
-                                            className={"acc_balance_tip"}>₹{bettingBalance ? bettingBalance : '0.00'}</span>
+                                        <span className={"acc_balance_tip"}>₹{bettingBalance ? bettingBalance : '0.00'}</span>
                                     </div>
                                 </div>
                                 <div className="totalSavings__container-header-box re_svg">

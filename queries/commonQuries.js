@@ -5,6 +5,7 @@ export const loginUserQuery = () => {
             app_user.name,
             app_user.profile_url,
             app_user.role,
+            app_user.uid,
             app_user.phone_number,
             app_user.wallet_balance,
             JSON_OBJECT(
@@ -49,20 +50,11 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = 
             bgs.start_time,
             bgs.end_time,
             bgs.betting_platforms_json,
-            bgs.is_active,
-            JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                            'platform_id', bp.id,
-                            'platform_name', bp.name
-                    )
-            ) AS platforms
+            bgs.is_active
         FROM
-            betting_platform bp
-                CROSS JOIN
             betting_game_session bgs
         WHERE
-            bp.game_type = ?
-          AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
+           (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
         GROUP BY
             bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
         ORDER BY

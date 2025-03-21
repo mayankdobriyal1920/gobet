@@ -37,6 +37,8 @@ export default function GameTransactionPage() {
                     <br/>
                     <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
                     <br/>
+                    <strong>ORDER AMOUNT</strong> : ₹{dataItems?.amount}
+                    <br/>
                     <strong>ORDER</strong> : {dataItems?.option_name}
                     <br/>
                     <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL'}

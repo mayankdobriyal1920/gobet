@@ -72,7 +72,7 @@ export default function WalletPage() {
                     <div className={"wallet-container-content"}>
                         <div className="container">
                             <div className="progressBars">
-                                <div className="progressBarsL">
+                                <div className="progressBarsM">
                                     <div className="van-circle">
                                         <svg viewBox="0 0 1100 1100">
                                             <path className="van-circle__layer"
@@ -91,6 +91,8 @@ export default function WalletPage() {
                                     </div>
                                     <h3>₹{walletBalance ? walletBalance : '0.00'}</h3><span>Main wallet</span>
                                 </div>
+                            </div>
+                            <div className="progressBars">
                                 <div className="progressBarsL">
                                     <div className="van-circle">
                                         <svg viewBox="0 0 1100 1100">
@@ -130,7 +132,8 @@ export default function WalletPage() {
                                     <h3>₹{gameBalance ? gameBalance : 0.00}</h3><span>Game wallet</span></div>
                             </div>
                             <div className="recycleBtnD">
-                                <button onClick={addMoneyToGameWalletAction} className="recycleBtn">Main wallet transfer
+                                <button onClick={addMoneyToGameWalletAction} className="recycleBtn">Main wallet
+                                    transfer
                                 </button>
                             </div>
                             <div className="userDetail">

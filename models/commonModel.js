@@ -64,7 +64,6 @@ export const actionToSendOtpApiCall = (body) => {
 export const actionSignupApiCall = (body) => {
     const {phone,name,uid, userId} = body;
     return new Promise(function(resolve, reject) {
-        let userData = {};
         const query = signupQuery();
         const currentDateTime = new Date().toISOString();
         const numericPart = Math.floor(Math.random() * 1000000);  // Numeric part: Generates a random number (e.g., 435324)
@@ -73,15 +72,13 @@ export const actionSignupApiCall = (body) => {
         const stringPart2 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 2 (e.g., ljkhersf)
         const userIdVal = `${numericPart}-${stringPart1}-${stringPart2}`;
         const dataArray = [userIdVal, name,uid, phone, 'avatar-3', userId, 0, 3, currentDateTime];
-        pool.query(query,dataArray, (error, results) => {
+        pool.query(query,dataArray, (error) => {
             if (error) {
-                console.log(error)
                 reject(error)
             }
-            if(results?.length){
-                userData = results[0];
-            }
-            resolve(userData);
+            actionToGetCurrentUserProfileDataApiCall(userIdVal).then((userData)=>{
+                resolve(userData);
+            })
         })
     })
 }
