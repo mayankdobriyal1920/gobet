@@ -48,7 +48,7 @@ import {
     actionToGetAppSubscriptionPlanDataApiCall,
     actionToActivateSubscriptionPlanApiCall,
     actionToGetGameSessionOrAllSessionAndGamePlatformApiCall,
-    actionToGetGamePlatformDataApiCall, actionToSaveGameSessionDataApiCall
+    actionToGetGamePlatformDataApiCall, actionToSaveGameSessionDataApiCall, actionToDeleteGameSessionDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -111,6 +111,20 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToSaveGameSessionDataApiCall(req?.session?.userSessionData?.id,req.body)
+                .then(data => {
+                    res.status(200).send(data);
+                }).catch(error => {
+                res.status(500).send(error);
+            })
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToDeleteGameSessionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToDeleteGameSessionDataApiCall(req.body)
                 .then(data => {
                     res.status(200).send(data);
                 }).catch(error => {
@@ -249,8 +263,8 @@ commonRouter.post(
         let responseToSend = {
             success:0,
         }
-        const {phone,otp,passcode}= req.body;
-            if (storeUserPhoneOtbObj[phone] == otp){
+        const {phone,otp,passcode,name,uid}= req.body;
+            if (Number(storeUserPhoneOtbObj[phone]) === Number(otp)){
                 actionToSendOtpApiCall(phone)
                     .then(user => {
                         if(user?.id) {
@@ -272,8 +286,10 @@ commonRouter.post(
                                         res.status(200).send(responseToSend);
                                     }else{
                                         const passCodeId = passCodeData.id;
-                                        actionSignupApiCall({phone:phone, userId:passCodeData.user_id})
+                                        const passCodeRole = passCodeData.role;
+                                        actionSignupApiCall({phone:phone,name:name,uid:uid,role:passCodeRole, userId:passCodeData.user_id})
                                             .then(savedUser => {
+                                                console.log(savedUser);
                                                 if(!savedUser?.id) {
                                                     responseToSend = {
                                                         success:0,
@@ -287,19 +303,13 @@ commonRouter.post(
                                                     actionUpdatePassCodeApiCall({passCodeId: passCodeId, newUserId: newUserId})
                                                         .then(updatedPassCode => {
                                                             if(updatedPassCode?.status && updatedPassCode?.status === 'success') {
-                                                                /*responseToSend = {
-                                                                    success:1, message:'User Registered Successfully'
-                                                                }
-                                                                res.status(200).send(responseToSend);*/
-
-                                                                createNewSessionWithUserDataAndRole(req,user).then(()=>{
+                                                                createNewSessionWithUserDataAndRole(req,newUser).then(()=>{
                                                                     res.status(200).send({
                                                                         success: 1,
                                                                         userData:newUser,
                                                                         message: 'Session data retrieved successfully',
                                                                     });
                                                                 })
-
                                                             }else{
                                                                 responseToSend = {
                                                                     success:0,
@@ -732,10 +742,7 @@ commonRouter.post(
                 res.status(200).send(responseData);
             })
         }else{
-            res.status(200).send({
-                success: false,
-                message: 'No active session found. User is not logged in.',
-            });
+            res.status(200).send([]);
         }
     })
 );

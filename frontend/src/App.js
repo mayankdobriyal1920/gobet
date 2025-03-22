@@ -92,6 +92,11 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-withdrawal-pending-request" component={PendingWithdrawalRequestListPage}/>
                 <Route exact={true} path="/admin-deposit-pending-request" component={PendingDepositRequestListPage}/>
                 <Route exact={true} path="/admin-generated-passcode-list" component={GeneratedPasscodeListPage}/>
+                <Route
+                    exact
+                    path="/admin-generated-passcode-list-for-admin"
+                    render={(props) => <GeneratedPasscodeListPage {...props} isAdminPasscodePage={true} />}
+                />
                 <Route exact={true} path="/admin-sub-admin-users-list" component={AllUsersUnderSubAdminPage}/>
                 <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
                 <Route exact={true} path="/admin-game-session-list" component={GetBetGameSessionListPage}/>

@@ -120,7 +120,7 @@ export default function SignupPage(){
 
     const callFunctionToSendOtp = () =>{
         //if(phone?.length === 10) {
-            const isValidate = validateFields();
+            const isValidate = validateFields(true);
             if (isValidate){
                 dispatch(actionToSendOtp(phone,callFunctionToSendOtpTimeInterval))
             }
@@ -138,7 +138,7 @@ export default function SignupPage(){
      * This function is used to validate the form for get otp and signup actions
      * @returns {boolean}
      */
-    const validateFields = () =>{
+    const validateFields = (isOtp = false) =>{
         let isFormValid = true;
         setPhoneError(false);
         setOtpError(false);
@@ -148,26 +148,34 @@ export default function SignupPage(){
         setPassCodeErrorMessage('');
         setNameError(false);
         setNameErrorMessage('');
-        if (fullName.trim() === '') {
-            isFormValid = false;
-            setNameError(true);
-            setNameErrorMessage('Name is required');
-        }else if (phone.trim() === '') {
-            isFormValid = false;
-            setPhoneErrorMessage('Phone number is required');
-            setPhoneError(true);
-        } else if (!/^\d{10}$/.test(phone)) {
-            isFormValid = false;
-            setPhoneErrorMessage('Phone number must be 10 digits');
-            setPhoneError(true);
-        }else if (otp.trim() === ''){
-            isFormValid = false;
-            setOtpErrorMessage('OTP is required');
-            setOtpError(true);
-        }else if (passcode.trim() === ''){
-            isFormValid = false;
-            setPassCodeErrorMessage('Passcode is required');
-            setPassCodeError(true);
+        if(isOtp) {
+            if (phone.trim() === '') {
+                isFormValid = false;
+                setPhoneErrorMessage('Phone number is required');
+                setPhoneError(true);
+            }
+        }else{
+            if (fullName.trim() === '') {
+                isFormValid = false;
+                setNameError(true);
+                setNameErrorMessage('Name is required');
+            } else if (phone.trim() === '') {
+                isFormValid = false;
+                setPhoneErrorMessage('Phone number is required');
+                setPhoneError(true);
+            } else if (!/^\d{10}$/.test(phone)) {
+                isFormValid = false;
+                setPhoneErrorMessage('Phone number must be 10 digits');
+                setPhoneError(true);
+            } else if (otp.trim() === '') {
+                isFormValid = false;
+                setOtpErrorMessage('OTP is required');
+                setOtpError(true);
+            } else if (passcode.trim() === '') {
+                isFormValid = false;
+                setPassCodeErrorMessage('Passcode is required');
+                setPassCodeError(true);
+            }
         }
         return isFormValid;
     }

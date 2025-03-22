@@ -62,16 +62,15 @@ export const actionToSendOtpApiCall = (body) => {
 }
 
 export const actionSignupApiCall = (body) => {
-    const {phone,name,uid, userId} = body;
+    const {phone,name,uid,role, userId} = body;
     return new Promise(function(resolve, reject) {
         const query = signupQuery();
-        const currentDateTime = new Date().toISOString();
         const numericPart = Math.floor(Math.random() * 1000000);  // Numeric part: Generates a random number (e.g., 435324)
         const length = 8;
         const stringPart1 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 1 (e.g., rtthyfgh)
         const stringPart2 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 2 (e.g., ljkhersf)
         const userIdVal = `${numericPart}-${stringPart1}-${stringPart2}`;
-        const dataArray = [userIdVal, name,uid, phone, 'avatar-3', userId, 0, 3, currentDateTime];
+        const dataArray = [userIdVal,name,uid,phone,'avatar-3',userId,0,role];
         pool.query(query,dataArray, (error) => {
             if (error) {
                 reject(error)
@@ -180,6 +179,16 @@ export const actionToGetGamePlatformDataApiCall = () => {
         })
     })
 
+}
+
+export const actionToDeleteGameSessionDataApiCall = ({id}) => {
+    return new Promise(function(resolve) {
+        let condition = `id = ?`;
+        let tableName = "betting_game_session";
+        deleteCommonApiCall({condition, tableName, values: [id]}).then(() => {
+            resolve({status:true});
+        })
+    })
 }
 
 export const actionUpdatePassCodeApiCall = (body) => {
@@ -391,16 +400,6 @@ export const actionToGetCurrentUserProfileDataApiCall = (userId) => {
 
             if (results?.length) {
                 userData = results[0];
-                // Parse the JSON string in the `sub_admin` field
-                // if (userData.sub_admin) {
-                //     try {
-                //         userData.sub_admin = JSON.parse(userData.sub_admin);
-                //     } catch (parseError) {
-                //         console.error("Error parsing sub_admin JSON:", parseError);
-                //         // If parsing fails, keep the original string or set it to null
-                //         userData.sub_admin = null;
-                //     }
-                // }
             }
 
             resolve(userData);
@@ -462,6 +461,14 @@ export const actionToGeneratePasscodeRequestBySubAdminApiCall = (userId,body) =>
 export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (userId,body) => {
     return new Promise(function(resolve, reject) {
         const {requestPasscodeCount} = body;
+        function generateRandomString(length = 8) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result.toUpperCase();
+        }
 
         const query = `SELECT role,wallet_balance from app_user WHERE id = ?`;
         pool.query(query, [userId], (error, results) => {
@@ -477,11 +484,11 @@ export const actionToApprovePasscodeRequestAndGeneratePasscodeApiCall = (userId,
                     let valuesArray = [];
 
                     for (let i = 0; i < lengthLoop; i++) {
-                        valuesArray.push([userId, Math.floor(100000 + Math.random() * 900000), userId]);
+                        valuesArray.push([userId,generateRandomString(),role === 1 ? 2 : 3, userId]);
                     }
 
                     const insertData = {
-                        column: ["user_id", "code", "created_by"],
+                        column: ["user_id", "code","role","created_by"],
                         valuesArray: valuesArray,
                         tableName: 'pass_code'
                     };
@@ -938,10 +945,10 @@ export const actionToGetPendingDepositRequestListDataApiCall = (userId,body) => 
 }
 
 export const actionToGetAdminUserPasscodeListDataListApiCall = (userId,body) => {
-    let {payload} = body;
+    let {isAdminPasscodePage} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const {query,values} = getAdminPassCodeListQuery(userId,payload);
+        const {query,values} = getAdminPassCodeListQuery(userId,isAdminPasscodePage);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

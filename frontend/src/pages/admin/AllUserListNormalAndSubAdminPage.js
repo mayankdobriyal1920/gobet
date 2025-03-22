@@ -81,7 +81,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                     <div>
                         <span className={"title"}>{dataItems?.name}</span>
                     </div>
-                    <span onClick={()=>callFunctionToSetChangeUserData(dataItems)} className={`action_button update`}>update role</span>
+                    {/*<span onClick={()=>callFunctionToSetChangeUserData(dataItems)} className={`action_button update`}>update role</span>*/}
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>Mobile</strong> : {dataItems?.phone_number}

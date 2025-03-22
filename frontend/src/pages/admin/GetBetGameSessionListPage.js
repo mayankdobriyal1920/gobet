@@ -4,7 +4,7 @@ import {
     IonContent, IonDatetime,
     IonHeader,
     IonIcon, IonLabel, IonLoading, IonModal,
-    IonPage, IonRow, IonSelect, IonSelectOption, IonToast, useIonToast,
+    IonPage, IonRow, IonSelect, IonSelectOption, IonToast, useIonAlert, useIonToast,
 } from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
@@ -12,9 +12,11 @@ import moment from "moment-timezone";
 import {useDispatch, useSelector} from "react-redux";
 import { Virtuoso } from 'react-virtuoso'
 import {
+    actionToDeleteGameSessionData,
     actionToGetGameSessionOrAllSessionAndGamePlatform, actionToSaveGameSessionData,
 } from "../../redux/CommonAction";
 import LineLoaderComponent from "../../components/LineLoaderComponent";
+import {App as CapacitorApp} from "@capacitor/app";
 
 export default function GetBetGameSessionListPage() {
     const history = useHistory();
@@ -27,6 +29,7 @@ export default function GetBetGameSessionListPage() {
     const [sessionStartTime,setSessionStartTime] = useState(moment().format());
     const [gameType,setGameType] = useState('win_go');
     const dispatch = useDispatch();
+    const [presentAlert] = useIonAlert();
     const goBack = ()=>{
         history.goBack();
         window.history.back();
@@ -58,6 +61,23 @@ export default function GetBetGameSessionListPage() {
         dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
     }
    
+    const callFunctionToDeleteSessionData = (data = null) =>{
+        if(data?.id){
+            presentAlert({
+                header: 'Are you sure?',
+                cssClass: 'custom_site_alert_toast',
+                message: 'You want to delete the session.',
+                buttons: [
+                    {text: 'Cancel', role: 'cancel'},
+                    {text: 'Delete', role: 'confirm', handler: () => {
+                            setUpdateLoading(true);
+                            dispatch(actionToDeleteGameSessionData(data?.id,resetUpdate))
+                    }},
+                ],
+            });
+        }
+    }
+
     const callFunctionToSetIsAddEditSessionPopupOpen = (data = null) =>{
         setIsAddEditSessionPopupOpen(true);
         if(data?.id){
@@ -94,7 +114,10 @@ export default function GetBetGameSessionListPage() {
                         <span
                             className={"title"}>START TIME {moment(dataItems?.start_time, 'HH:mm:ss').format('hh:mm A')}</span>
                     </div>
-                    <span onClick={()=>callFunctionToSetIsAddEditSessionPopupOpen(dataItems)} className={`action_button update`}>EDIT</span>
+                    <span onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(dataItems)}
+                          className={`action_button update`}>EDIT</span>
+                    <span onClick={() => callFunctionToDeleteSessionData(dataItems)}
+                          className={`action_button delete`}>DELETE</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     {getPlatformData(dataItems?.betting_platforms_json)}
@@ -121,7 +144,7 @@ export default function GetBetGameSessionListPage() {
                                 </div>
                                 <div onClick={()=>callFunctionToSetIsAddEditSessionPopupOpen()} className="navbar__content-right">
                                     <div className="navbar__content-button">
-                                        Add new session
+                                        ADD
                                     </div>
                                 </div>
                             </div>

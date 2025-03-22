@@ -291,7 +291,7 @@ export default function AccountPage() {
                                                  </g>
                                              </g>
                                          </svg>
-                                         <span>Passcodes</span>
+                                         <span>Passcodes (For Sub Admin or User)</span>
                                      </div>
                                      <div className="settingPanel__container-items-right">
                                          <svg xmlns="http://www.w3.org/2000/svg"
@@ -304,6 +304,43 @@ export default function AccountPage() {
                                          </svg>
                                      </div>
                                  </div>
+                                 {(userInfo?.role === 1) ?
+                                     <div onClick={() => goToPage('/admin-generated-passcode-list-for-admin')}
+                                          className="settingPanel__container-items__item ar-1px-b">
+                                         <div className="settingPanel__container-items__title">
+                                             <svg fill="#ffaf7b" className="svg-icon icon-rechargeHistory svg_min_icon"
+                                                  version="1.1" id="Layer_1"
+                                                  xmlns="http://www.w3.org/2000/svg"
+                                                  viewBox="0 0 512 512">
+                                                 <g>
+                                                     <g>
+                                                         <path d="M408.99,52.133h-89.452V33.442C319.538,14.972,304.565,0,286.096,0h-60.192c-18.47,0-33.442,14.972-33.442,33.442v18.691
+                                                        H103.01c-9.234,0-16.721,7.487-16.721,16.721v426.425c0,9.234,7.487,16.721,16.721,16.721H408.99
+                                                        c9.234,0,16.721-7.487,16.721-16.721V68.854C425.711,59.619,418.224,52.133,408.99,52.133z M319.538,99.709h14.489
+                                                        c9.234,0,16.721,7.487,16.721,16.721c0,9.234-7.487,16.721-16.721,16.721h-14.489V99.709z M225.903,33.442h60.192v100.944h-60.192
+                                                        V33.442z M256,179.836c33.578,0,60.799,27.221,60.799,60.799c0,33.578-27.221,60.799-60.799,60.799s-60.799-27.221-60.799-60.799
+                                                        S222.422,179.836,256,179.836z M177.972,99.709h14.489v33.442h-14.489c-9.234,0-16.721-7.487-16.721-16.721
+                                                        C161.251,107.195,168.737,99.709,177.972,99.709z M371.935,457.146h-231.87c-4.617,0-8.36-3.743-8.36-8.36
+                                                        c0-33.2,12.929-64.414,36.405-87.89s54.69-36.405,87.89-36.405s64.414,12.929,87.89,36.405s36.406,54.69,36.406,87.89
+                                                        C380.295,453.402,376.553,457.146,371.935,457.146z"/>
+                                                     </g>
+                                                 </g>
+                                             </svg>
+                                             <span>Passcodes (For Admin)</span>
+                                         </div>
+                                         <div className="settingPanel__container-items-right">
+                                             <svg xmlns="http://www.w3.org/2000/svg"
+                                                  className="van-badge__wrapper van-icon van-icon-arrow"
+                                                  fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
+                                                  id="Layer_1"
+                                                  viewBox="0 0 330 330">
+                                                 <path id="XMLID_222_"
+                                                       d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+                                             </svg>
+                                         </div>
+                                     </div>
+                                     : ''
+                                 }
                                  {(userInfo?.role === 2) ?
                                      <div onClick={() => goToPage('/admin-sub-admin-users-list')}
                                           className="settingPanel__container-items__item ar-1px-b">

@@ -30,7 +30,7 @@ export default function GameTransactionPage() {
                     <div>
                         <span className={"title"}>PERIOD - {moment(dataItems?.created_at).format('YYYY-MM-DD hh:mm a')}</span>
                     </div>
-                    <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }`}>{dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }</span>
+                    <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' :dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING' }`}>{dataItems?.win_status === 1 ? 'WIN' :dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING'}</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>ID</strong> : {dataItems?.bet_id}
@@ -41,21 +41,26 @@ export default function GameTransactionPage() {
                     <br/>
                     <strong>ORDER</strong> : {dataItems?.option_name}
                     <br/>
-                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL'}
+                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name :(dataItems?.win_status === 0) ? (dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL') : 'PENDING'}
                 </div>
                 {dataItems?.win_status === 1 ?
                     <div className="sysMessage__container-msgWrapper__item-content">
                         <strong>₹{0.02 * dataItems?.amount}</strong> Amount Credited to your game wallet
                     </div>
-                    :
-                    <div className="sysMessage__container-msgWrapper__item-content">
-                        <strong>₹{(dataItems?.amount * 2) - (0.02 * dataItems?.amount)}</strong> Amount Credited to your game wallet
-                    </div>
+                    : (dataItems?.win_status === 1) ?
+                        <div className="sysMessage__container-msgWrapper__item-content">
+                            <strong>₹{(dataItems?.amount * 2) - (0.02 * dataItems?.amount)}</strong> Amount Credited to
+                            your game wallet
+                        </div>
+                        :
+                        <div className="sysMessage__container-msgWrapper__item-content">
+                            Result is pending to update by admin
+                        </div>
                 }
-              </div>
+            </div>
 
-                    )
-                }
+        )
+    }
 
     const callFunctionToApplyTypeFilter = (filter, optionValue) => {
         if (statusTypeFilter !== filter) {

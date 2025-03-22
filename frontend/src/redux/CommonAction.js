@@ -132,9 +132,13 @@ export const actionToSendOtpForLogin = (phone,callFunctionToSendOtpTimeInterval)
 }
 
 export const actionToSignupUser = (phone,fullName,otp,passcode) => async (dispatch) => {
-    //dispatch({type: USER_SIGNIN_REQUEST});
     try {
-        const firstName = fullName.split(" ")[0]; // Extract first name
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+        for (let i = 0; i < 5; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        const firstName = result.toUpperCase(); // Extract first name
         const lastFiveDigits = phone.slice(-5); // Extract last 5 digits of phone number
         api.post(`actionToSignupUserApiCall`, {phone,otp,name:fullName,passcode,uid:`${firstName}${lastFiveDigits}`}).then(responseData => {
             if(responseData?.data?.success){
@@ -404,6 +408,16 @@ export const actionToSaveGameSessionData = (sessionDataToEdit,multipleGamePlatfo
         console.log(error);
     }
 }
+export const actionToDeleteGameSessionData = (id,resetUpdate) => async () => {
+    try {
+        api.post(`actionToDeleteGameSessionDataApiCall`, {id}).then(() => {
+            if(resetUpdate)
+                resetUpdate()
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 export const actionToGetGamePlatformData = () => async (dispatch) => {
     dispatch({type: GET_ALL_GAME_PLATFORMS_REQUEST});
@@ -553,7 +567,7 @@ export const actionToGetAdminUserPasscodeListDataList = (isLoading = true,payloa
         dispatch({type: GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST});
     }
     try {
-        api.post(`actionToGetAdminUserPasscodeListDataListApiCall`, {payload}).then(responseData => {
+        api.post(`actionToGetAdminUserPasscodeListDataListApiCall`, payload).then(responseData => {
             dispatch({ type: GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {

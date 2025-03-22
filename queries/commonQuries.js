@@ -37,6 +37,7 @@ export const isPassCodeValidQuery = () => {
         SELECT
             pass_code.id,
             pass_code.user_id,
+            pass_code.role,
             pass_code.code
         FROM pass_code
         WHERE pass_code.allot_to IS NULL AND pass_code.code = ?;
@@ -82,7 +83,7 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
 };
 
 export const signupQuery = () => {
-    return `INSERT INTO app_user(id, name,uid, phone_number, profile_url, sub_admin, wallet_balance, role, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    return `INSERT INTO app_user(id, name,uid, phone_number, profile_url, sub_admin, wallet_balance, role) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
 };
 
 export const updatePassCodeQuery = () => {
@@ -269,14 +270,28 @@ export const getPendingDepositRequestListQuery = (userId, body) => {
     return { values, query };
 };
 
-export const getAdminPassCodeListQuery = (userId) => {
-    let values = [userId];  // Initial values array with userId
-    let condition = `user_id = ? AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
+export const getAdminPassCodeListQuery = (userId,isAdminPasscodePage) => {
+    if(isAdminPasscodePage) {
+        let values = [1];  // Initial values array with userId
+        let condition = `role = ? AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
+        // Final query
+        let query = `SELECT *
+                     FROM pass_code
+                     WHERE ${condition}
+                     ORDER BY created_at DESC`;
+        return {values, query};
+    }else{
+        let values = [userId];  // Initial values array with userId
+        let condition = `user_id = ? AND (allot_to IS NULL OR allot_to = '')`;  // Initial condition with userId
 
-    // Final query
-    let query = `SELECT * FROM pass_code WHERE ${condition} ORDER BY created_at DESC`;
+        // Final query
+        let query = `SELECT *
+                     FROM pass_code
+                     WHERE ${condition}
+                     ORDER BY created_at DESC`;
 
-    return { values, query };
+        return {values, query};
+    }
 };
 
 export const getUserByIdQuery = () => {

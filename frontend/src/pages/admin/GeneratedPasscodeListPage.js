@@ -19,7 +19,7 @@ import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {Capacitor} from "@capacitor/core";
 import {Clipboard} from "@capacitor/clipboard";
 
-export default function GeneratedPasscodeListPage() {
+export default function GeneratedPasscodeListPage({isAdminPasscodePage = false}) {
     const history = useHistory();
     const {walletBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const [isCopyStatus,setIsCopyStatus] = useState(false);
@@ -35,14 +35,9 @@ export default function GeneratedPasscodeListPage() {
         window.history.back();
     }
 
-    useEffect(() => {
-        dispatch(actionToGetPasscodeRequestBySubAdmin())
-        dispatch(actionToGetAdminUserPasscodeListDataList())
-    },[])
-
     const callFunctionToResetPasscodeRequest = () => {
-        dispatch(actionToGetAdminUserPasscodeListDataList())
-        dispatch(actionToGetUserWalletAndGameBalance())
+        dispatch(actionToGetAdminUserPasscodeListDataList());
+        dispatch(actionToGetUserWalletAndGameBalance());
         present({
             message: 'Passcodes generated successfully!',
             duration: 2000,
@@ -89,9 +84,10 @@ export default function GeneratedPasscodeListPage() {
 
     const callFunctionToDirectGeneratePassCode = ()=>{
         let moneyCount = requestPasscodeCount * (userAuthDetail.userInfo.role === 1 ? 10000 : 1000);
+        let role = requestPasscodeCount * (userAuthDetail.userInfo.role === 1 ? 2 : 3);
         if(moneyCount <= walletBalance) {
             setUpdateLoading(true);
-            dispatch(actionToApprovePasscodeRequestAndGeneratePasscode({requestPasscodeCount}, callFunctionToResetPasscodeRequest));
+            dispatch(actionToApprovePasscodeRequestAndGeneratePasscode({requestPasscodeCount,role}, callFunctionToResetPasscodeRequest));
             setIsRequestPasscodePopupOpen(false);
         }else{
             present({
@@ -109,7 +105,11 @@ export default function GeneratedPasscodeListPage() {
                     <div>
                         <span className={"title"}>CODE {dataItems?.code}</span>
                     </div>
-                    <span onClick={()=>callFunctionToCopyCode(dataItems?.code)} className={`action_button update`}>COPY</span>
+                    <span onClick={() => callFunctionToCopyCode(dataItems?.code?.toString())}
+                          className={`action_button update`}>COPY</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    Role : {dataItems?.role === 1 ? 'ADMIN' :dataItems?.role === 2 ? 'SUB ADMIN' : 'USER'}
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-content">
                     Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
@@ -117,6 +117,10 @@ export default function GeneratedPasscodeListPage() {
             </div>
         )
     }
+
+    useEffect(() => {
+        dispatch(actionToGetAdminUserPasscodeListDataList(true,{isAdminPasscodePage}))
+    },[])
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -134,12 +138,14 @@ export default function GeneratedPasscodeListPage() {
                                         <span>Pass Codes</span>
                                     </div>
                                 </div>
-                                <div onClick={callFunctionToOpenPasscodeRequestPopup}
-                                     className="navbar__content-right">
-                                    <div className="navbar__content-button">
-                                        Generate
-                                    </div>
-                                </div>
+                                {(!isAdminPasscodePage) ?
+                                    <div onClick={callFunctionToOpenPasscodeRequestPopup}
+                                         className="navbar__content-right">
+                                        <div className="navbar__content-button">
+                                            Generate
+                                        </div>
+                                    </div>:''
+                                }
                             </div>
                         </div>
                     </div>

@@ -1920,6 +1920,14 @@ overflow: hidden;
     color: #fff;
     background: var(--main-color);
 }
+.sysMessage__container-msgWrapper__item-title .action_button.delete {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 10px 16px;
+    color: #fff;
+    background: indianred;
+}
 .sysMessage__container-msgWrapper__item-time {
     margin-block: .2rem 0.6rem;
     color: var(--text_color_L2);
