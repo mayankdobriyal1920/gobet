@@ -1650,7 +1650,7 @@ overflow: hidden;
 .ar-searchbar__selector>div:first-of-type svg {
     position: absolute;
     top: 35%;
-    right: 0rem;
+    right: 0.5rem;
 }
 
 .infiniteScroll {
@@ -2120,4 +2120,7 @@ button.exit-from-game-button.big {
 .wallet-container-content .container .progressBars>div .van-circle {
     width: 100%;
     height: 8.5rem;
+}
+.ar-searchbar__selector {
+    width: 100%!important;
 }

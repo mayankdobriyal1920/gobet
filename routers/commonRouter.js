@@ -738,7 +738,7 @@ commonRouter.post(
     '/actionToGetAllUsersUnderSubAdminListApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToGetAllUsersUnderSubAdminListApiCall(req?.session?.userSessionData?.id).then(responseData => {
+            actionToGetAllUsersUnderSubAdminListApiCall(req?.session?.userSessionData?.id, req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

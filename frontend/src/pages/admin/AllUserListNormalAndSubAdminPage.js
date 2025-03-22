@@ -22,6 +22,7 @@ export default function AllUserListNormalAndSubAdminPage() {
     const [updateLoading,setUpdateLoading] = useState(false);
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
+    const [uidSearchText,setUidSearchText] = useState('');
     const [optionFilter,setOptionFilter] = useState('All');
     const {loading,userData} = useSelector((state) => state.allUsersNormalAndSunAdminList);
     const dispatch = useDispatch();
@@ -30,10 +31,17 @@ export default function AllUserListNormalAndSubAdminPage() {
         window.history.back();
     }
 
+    const callFunctionToSearchUid = (searchText) => {
+        if(uidSearchText !== searchText){
+            setUidSearchText(searchText);
+            callFunctionToGetAllUsersNormalAndSubAdminList(statusTypeFilter,searchText)
+        }
+    }
     const callFunctionClearToAddFilterAndGetData = () => {
         setStatusTypeFilter('All');
         setOptionFilter('All');
-        callFunctionToGetAllUsersNormalAndSubAdminList('All')
+        setUidSearchText('');
+        callFunctionToGetAllUsersNormalAndSubAdminList('All','')
     }
 
     const callFunctionToApplyTypeFilter = (filter, optionValue) => {
@@ -41,29 +49,23 @@ export default function AllUserListNormalAndSubAdminPage() {
             setStatusTypeFilter(filter);
             setOptionFilter(optionValue);
             setIsTypeFilterOpen(false);
-            callFunctionToGetAllUsersNormalAndSubAdminList(filter);
+            callFunctionToGetAllUsersNormalAndSubAdminList(filter,uidSearchText);
         }
     }
 
-    const callFunctionToGetAllUsersNormalAndSubAdminList = (typeFilter) => {
-        dispatch(actionToGetAllUsersNormalAndSubAdminList( {type: typeFilter}))
+    const callFunctionToGetAllUsersNormalAndSubAdminList = (typeFilter,uidText) => {
+        dispatch(actionToGetAllUsersNormalAndSubAdminList( {type: typeFilter,uidSearchText:uidText}))
     }
 
     useEffect(() => {
         dispatch(actionToGetAllUsersNormalAndSubAdminList())
     },[])
 
-
     const callFunctionToResetRequest = () => {
         dispatch(actionToGetAllUsersNormalAndSubAdminList( {type: statusTypeFilter}));
         setTimeout(()=>{
             setUpdateLoading(false);
         })
-    }
-
-    const callFunctionToSetChangeUserData = (userData) => {
-        setUserRoleData(userData?.role);
-        setChangeUserRoleData(userData);
     }
 
     const callFunctionToSubmitPasscodeRequest = () => {
@@ -79,11 +81,12 @@ export default function AllUserListNormalAndSubAdminPage() {
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}>{dataItems?.name}</span>
+                        <span className={"title"}>UID - {dataItems?.uid}</span>
                     </div>
-                    {/*<span onClick={()=>callFunctionToSetChangeUserData(dataItems)} className={`action_button update`}>update role</span>*/}
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>Full Name</strong> : {dataItems?.name}
+                    <br/>
                     <strong>Mobile</strong> : {dataItems?.phone_number}
                     <br/>
                     <strong>Role</strong> : {dataItems?.role === 1 ? 'ADMIN' : dataItems?.role === 2 ? 'SUB ADMIN' : 'USER'}
@@ -142,8 +145,29 @@ export default function AllUserListNormalAndSubAdminPage() {
                                     </div>
                                 </div>
 
+                                <div className="ar-searchbar__selector">
+                                    <div className="transaction-type-dropdown">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             fill="rgb(136, 136, 136)" height="13px"
+                                             className="van-badge__wrapper van-icon van-icon-arrow in_front_of_search_input"
+                                             width="13px" version="1.1" id="Capa_1" viewBox="0 0 488.4 488.4">
+                                            <g>
+                                                <g>
+                                                    <path
+                                                        d="M0,203.25c0,112.1,91.2,203.2,203.2,203.2c51.6,0,98.8-19.4,134.7-51.2l129.5,129.5c2.4,2.4,5.5,3.6,8.7,3.6    s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-129.6-129.5c31.8-35.9,51.2-83,51.2-134.7c0-112.1-91.2-203.2-203.2-203.2    S0,91.15,0,203.25z M381.9,203.25c0,98.5-80.2,178.7-178.7,178.7s-178.7-80.2-178.7-178.7s80.2-178.7,178.7-178.7    S381.9,104.65,381.9,203.25z"/>
+                                                </g>
+                                            </g>
+                                            </svg>
+                                        <input className={"search_text_input_for_filter"}
+                                               onChange={(e) => callFunctionToSearchUid(e.target.value)}
+                                               placeholder={"Search uid..."}
+                                               value={uidSearchText}
+                                        />
+                                    </div>
+                                </div>
+
                                 {(statusTypeFilter !== 'All') ?
-                                    <div onClick={() => callFunctionClearToAddFilterAndGetData('All')}
+                                    <div onClick={() => callFunctionClearToAddFilterAndGetData()}
                                          className="ar-searchbar__selector_clear">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
                                              viewBox="0 0 24 24" fill="var(--main-color)">

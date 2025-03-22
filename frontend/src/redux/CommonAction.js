@@ -608,10 +608,10 @@ export const actionToCompleteStatusOfDepositRequest = (id,callFunctionToReloadLi
     }
 }
 
-export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
+export const actionToGetAllUsersUnderSubAdminList = (payload = {}) => async (dispatch) => {
     dispatch({type: ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST});
     try {
-        api.post(`actionToGetAllUsersUnderSubAdminListApiCall`, {}).then(responseData => {
+        api.post(`actionToGetAllUsersUnderSubAdminListApiCall`, payload).then(responseData => {
             dispatch({ type: ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
@@ -622,7 +622,7 @@ export const actionToGetAllUsersUnderSubAdminList = () => async (dispatch) => {
 export const actionToGetAllUsersNormalAndSubAdminList = (payload = {}) => async (dispatch) => {
     dispatch({type: ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST});
     try {
-        api.post(`actionToGetAllUsersNormalAndSubAdminListApiCall`, {payload}).then(responseData => {
+        api.post(`actionToGetAllUsersNormalAndSubAdminListApiCall`, payload).then(responseData => {
             dispatch({ type: ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
