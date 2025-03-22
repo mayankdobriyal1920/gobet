@@ -16,6 +16,7 @@ ion-header {
     box-shadow: none!important;
     height: 3.5rem;
 }
+
 .main_logo_and_slogan_container_header {
     background: var(--theme-gradiant-color);
     display: flex;
@@ -1710,13 +1711,13 @@ overflow: hidden;
     margin: auto;
 }
 .custom-datetime {
-    font-size: 1rem!important;; /* Set font size */
+    font-size: 1.1rem!important;; /* Set font size */
 }
 .custom-datetime::part(month-year-button) {
-    font-size: .8rem!important; /* Adjust individual picker item font size */
+    font-size: 1.1rem!important; /* Adjust individual picker item font size */
 }
 .custom-datetime::part(calendar-day) {
-    font-size: .8rem!important;
+    font-size: 1.1rem!important;
 }
 
 .settingPanel__container {
@@ -1791,6 +1792,9 @@ overflow: hidden;
 }
 .sysMessage__container.session_container_active .sysMessage__container_item {
     margin-top: 0.8rem;
+}
+.settingPanel__container.home_admin {
+    padding: 0.6rem 0.9rem .4rem;
 }
 .sysMessage__container-msgWrapper__item-footer .action_button.update {
     border: 1px solid #ccc;
@@ -2186,4 +2190,113 @@ button.exit-from-game-button.big {
 }
 .ar-searchbar__selector {
     width: 100%!important;
+}
+.GameRecord__C.game-record.game-result-records {}
+
+.GameRecord__C.game-record.game-result-records .GameRecord__C-body {
+    background: #ff0000;
+}
+.sysMessage__container_game_result .sysMessage__container-msgWrapper__item{
+    line-height: 1.7rem;
+}
+.sysMessage__container_game_result {
+    margin-top: 1rem;
+    background: #cccccc;
+}
+
+.sysMessage__container_game_result .sysMessage__container-msgWrapper__item {
+    padding: 0.5rem;
+    border-radius: 0.8rem;
+    border: 1px solid #e4e4e4;
+}
+
+.grid_for_dashboard_data_grid .grid_for_dashboard_data_col {
+    background: #ffffff;
+    border-radius: .6rem;
+}
+
+.grid_for_dashboard_data_grid .grid_for_dashboard_data_col .title_for_das_heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.grid_for_dashboard_data_grid .grid_for_dashboard_data_col .title_for_das_text {
+    font-size: 1rem;
+}
+
+.grid_for_dashboard_data_grid .grid_for_dashboard_data_col .title_for_das_text_link {
+    font-size: 0.9rem;
+}
+.profile_account_main_page_header_container_background_dashboard {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: flex-end;
+    border-radius: 0 0 1.6rem 1.6rem;
+    padding: 0px;
+    background: var(--theme-gradiant-color);
+}
+
+.grid_for_dashboard_data_grid {
+    padding: 16px;
+}
+
+.grid_for_dashboard_data_row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 1rem;
+}
+
+.grid_for_dashboard_data_col {
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard-card {
+    width: 100%;
+    max-width: 350px;
+    margin: 0px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+}
+
+.dashboard-icon {
+    font-size: 1.6rem;
+    color: var(--ion-color-primary);
+    margin-bottom: 10px;
+}
+
+.title_for_das_heading {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.title_for_das_text {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--ion-color-success);
+    margin-bottom: 10px;
+}
+
+.title_for_das_text_link {
+    font-size: 0.9rem;
+    color: var(--ion-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: color 0.2s ease-in-out;
+}
+
+.title_for_das_text_link:hover {
+    color: var(--ion-color-tertiary);
+}
+
+.arrow-icon {
+    font-size: 1.2rem;
 }

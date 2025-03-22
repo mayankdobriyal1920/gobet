@@ -53,34 +53,6 @@ export default function DepositHistoryListPage() {
         dispatch(actionToGetDepositRequestHistoryData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
-    useEffect(() => {
-        setTimeout(()=>{
-            const datetimeElement = datetimeRef.current;
-            const shadowRoot = datetimeElement?.shadowRoot;
-
-            if (shadowRoot) {
-                // Access the buttons inside the calendar
-                const buttons = shadowRoot.querySelectorAll('.calendar-next-prev ion-button');
-                buttons?.forEach((button) => {
-                    button.style.fontSize = '.7rem';  // Reduce font size
-                    button.style.height = '50px';    // Reduce height
-                    button.style.width = '50px';     // Reduce width
-                    button.style.padding = '0';      // Remove padding
-                });
-
-                // Optionally reduce icon size
-                const icons = shadowRoot.querySelectorAll('.calendar-next-prev ion-icon');
-                icons?.forEach((icon) => {
-                    icon.style.fontSize = '.7rem';  // Reduce icon size
-                });
-
-
-                const weekDaysButtons = shadowRoot.querySelector('.calendar-days-of-week');
-                if(weekDaysButtons)
-                    weekDaysButtons.style.fontSize = '.5rem';  // Reduce icon size
-            }
-        },100)
-    }, [datetimeRef.current,isDateFilterOpen]);
 
     useEffect(() => {
         setStatusTypeFilter('All');

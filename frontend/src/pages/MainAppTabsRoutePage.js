@@ -6,19 +6,21 @@ import {
     IonTabButton,
     IonLabel,
     IonIcon,
-    IonTabs, IonAlert
+    IonTabs,
 } from '@ionic/react';
 import { Route, Redirect } from 'react-router-dom';
-import { home, wallet, person } from 'ionicons/icons';
+import {home, wallet, person, gridOutline} from 'ionicons/icons';
 import AccountPage from "./AccountPage";
 import WalletPage from "./WalletPage";
 import HomePage from "./HomePage";
 import {actionToGetGamePlatformData} from "../redux/CommonAction";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import DashboardPage from "./admin/DashboardPage";
 
 export default function MainAppTabsRoutePage() {
     const [isFirstTimeEnterInApp,setIsFirstTimeEnterInApp] = useState(localStorage.getItem('isFirstTimeEnterInApp'));
     const dispatch = useDispatch();
+    const userInfo = useSelector((state) => state.userAuthDetail.userInfo);
     const closeFirstTimeScreen = ()=>{
         setIsFirstTimeEnterInApp('yes');
         localStorage.setItem('isFirstTimeEnterInApp','yes');
@@ -67,6 +69,7 @@ export default function MainAppTabsRoutePage() {
                     {/* Main Router Outlet */}
                     <IonRouterOutlet>
                         <Route path="/dashboard/wallet" component={WalletPage} exact={true} />
+                        <Route path="/dashboard/dashboard" component={DashboardPage} exact={true} />
                         <Route path="/dashboard/account" component={AccountPage} exact={true} />
                         <Route path="/dashboard/home" component={HomePage} exact={true} />
                         <Route exact path="/dashboard">
@@ -79,10 +82,17 @@ export default function MainAppTabsRoutePage() {
                             <IonIcon icon={home} />
                             <IonLabel>Home</IonLabel>
                         </IonTabButton>
-                        <IonTabButton className={"ion_tab_button_cont"} tab="wallet" href="/dashboard/wallet">
-                            <IonIcon icon={wallet} />
-                            <IonLabel>Wallet</IonLabel>
-                        </IonTabButton>
+                        {(userInfo?.role !== 1) ?
+                            <IonTabButton className={"ion_tab_button_cont"} tab="wallet" href="/dashboard/wallet">
+                                <IonIcon icon={wallet} />
+                                <IonLabel>Wallet</IonLabel>
+                            </IonTabButton>
+                            :
+                            <IonTabButton className={"ion_tab_button_cont"} tab="wallet" href="/dashboard/dashboard">
+                                <IonIcon icon={gridOutline} />
+                                <IonLabel>Dashboard</IonLabel>
+                            </IonTabButton>
+                        }
                         <IonTabButton className={"ion_tab_button_cont"} tab="account" href="/dashboard/account">
                             <IonIcon icon={person} />
                             <IonLabel>Account</IonLabel>

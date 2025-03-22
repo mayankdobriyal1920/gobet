@@ -78,13 +78,20 @@ export default function AccountPage() {
                             <div className="userInfo__container-content-uid">
                                 <span>UID</span><span>&nbsp;-&nbsp;</span><span>{userInfo?.uid}</span>
                             </div>
-                            <div className="userInfo__container-content-logintime">
-                                <span>Sub Admin:&nbsp;</span><span>{userInfo?.sub_admin?.name}</span>
-                            </div>
+                            {(userInfo?.role !== 1) ?
+                                <div className="userInfo__container-content-logintime">
+                                    <span>Sub Admin:&nbsp;</span><span>{userInfo?.sub_admin?.name}</span>
+                                </div>
+                                :
+                                <div className="userInfo__container-content-logintime">
+                                    <span>Role: </span><span>Admin</span>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div className={"profile_account_main_userinfo_content"}>
-                        <div className={"totalSavings__container"}>
+                        {(userInfo?.role !== 1) ?
+                            <div className={"totalSavings__container"}>
                             <div className="totalSavings__container-header">
                                 <div className="totalSavings__container-header-box blanc_title">
                                     <div className="totalSavings__container-header__title">
@@ -117,7 +124,10 @@ export default function AccountPage() {
                                 </div>
                             </div>
                         </div>
-                        <div className="financialServices__container">
+                            :''
+                        }
+                        {(userInfo?.role !== 1) ?
+                           <div className="financialServices__container">
                             <div className="financialServices__container-box">
                                 <div onClick={() => goToPage('/game-history')}>
                                     <svg className="svg-icon icon-betHistory" viewBox="0 0 80 80" fill="none"
@@ -180,14 +190,12 @@ export default function AccountPage() {
                                 </div>
                             </div>
                         </div>
-
+                            :''
+                        }
 
                         {/*///////////// ADMIN OPTIONS ///////////////////*/}
                         {(userInfo?.role === 1 || userInfo?.role === 2) ?
                          <div className="settingPanel__container">
-                            <div className="content-sub_title">
-                                <div>{userInfo?.role === 1 ? 'Admin' : 'Sub admin'} menu</div>
-                            </div>
                              <div className="settingPanel__container-items">
                                  {(userInfo?.role === 1) ?
                                  <div onClick={() => goToPage('/admin-game-result')}
@@ -420,46 +428,6 @@ export default function AccountPage() {
                                      </div>
                                      : ''
                                  }
-                                 <div onClick={() => goToPage('/admin-game-session-list')}
-                                      className="settingPanel__container-items__item ar-1px-b">
-                                     <div className="settingPanel__container-items__title">
-                                         <svg className="svg-icon icon-serverTicket svg_min_icon"  id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                                <path style={{fill:"#E0E0E0"}} d="M256,512c-54.624,0-106.273-8.809-145.435-24.803c-44.671-18.245-69.273-44.658-69.273-74.371
-                                                    c0-29.715,24.601-56.127,69.272-74.373C149.726,322.459,201.376,313.65,256,313.65s106.273,8.809,145.436,24.803
-                                                    c44.671,18.245,69.272,44.658,69.272,74.373c0,29.714-24.601,56.126-69.273,74.371C362.273,503.191,310.624,512,256,512z"/>
-                                                                                             <path style={{fill:"#F0A479"}} d="M419.944,259.914c-28.845-29.98-90.778-48.947-161.629-49.498c-1.047-0.008-2.078-0.012-3.121-0.012
-                                                    c-45.319,0-88.327,7.7-121.099,21.684c-37.809,16.133-59.082,39.634-59.898,66.176c-0.459,14.903,5.715,29.45,17.857,42.068
-                                                    c28.845,29.981,90.779,48.949,161.629,49.498c1.047,0.008,2.081,0.012,3.124,0.012c45.32,0,88.327-7.7,121.098-21.683
-                                                    c37.809-16.132,59.08-39.633,59.898-66.175C438.262,287.081,432.085,272.533,419.944,259.914z"/>
-                                                                                             <path style={{fill:"#E0E0E0"}} d="M256,99.693c-74.844,0-150.611,24.799-150.611,72.196S181.155,244.085,256,244.085
-                                                    c74.844,0,150.61-24.799,150.61-72.196S330.844,99.693,256,99.693z"/>
-                                                                                             <path style={{fill:"#F0A479"}} d="M252.483,116.419c-42.701,0-75.767-23.383-76.915-54.392c-1.201-32.413,33.068-59.591,78.015-61.874
-                                                    C255.557,0.052,257.554,0,259.518,0c42.7,0,75.766,23.383,76.914,54.392c1.201,32.415-33.069,59.594-78.018,61.875
-                                                    C256.443,116.367,254.446,116.419,252.483,116.419z"/>
-                                                                                             <path style={{fill:"#F4F4F4"}} d="M256.785,313.657c-0.263,0-0.523-0.008-0.785-0.008c-54.624,0-106.273,8.809-145.435,24.803
-                                                    c-44.671,18.245-69.272,44.658-69.272,74.373c0,29.714,24.601,56.126,69.273,74.371c39.162,15.995,90.811,24.803,145.435,24.803
-                                                    c0.263,0,0.523-0.008,0.785-0.008V313.657H256.785z"/>
-                                                                                             <path style={{fill:"#F5CDB3"}} d="M256.785,210.409c-0.529-0.001-1.06-0.006-1.59-0.006c-45.319,0-88.327,7.7-121.099,21.684
-                                                    c-37.809,16.133-59.082,39.634-59.898,66.176c-0.459,14.903,5.715,29.45,17.857,42.068c28.845,29.981,90.779,48.948,161.629,49.497
-                                                    c1.04,0.008,2.068,0.012,3.103,0.012V210.409H256.785z"/>
-                                                                                             <path style={{fill:"#F4F4F4"}} d="M256.785,99.697c-0.261,0-0.523-0.004-0.785-0.004c-74.844,0-150.611,24.799-150.611,72.196
-                                                    S181.157,244.084,256,244.084c0.261,0,0.523-0.004,0.785-0.004V99.697L256.785,99.697z"/>
-                                                                                             <path style={{fill:"#F5CDB3"}} d="M256.785,0.035c-1.069,0.026-2.139,0.062-3.203,0.116c-44.948,2.284-79.216,29.463-78.016,61.874
-                                                    c1.148,31.009,34.214,54.392,76.915,54.392c1.425,0,2.865-0.036,4.302-0.089V0.035H256.785z"/>
-                                                </svg>
-                                         <span>Game Sessions</span>
-                                     </div>
-                                     <div className="settingPanel__container-items-right">
-                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                              className="van-badge__wrapper van-icon van-icon-arrow"
-                                              fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
-                                              id="Layer_1"
-                                              viewBox="0 0 330 330">
-                                             <path id="XMLID_222_"
-                                                   d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
-                                         </svg>
-                                     </div>
-                                 </div>
                              </div>
                          </div> : ''
                         }
@@ -467,8 +435,9 @@ export default function AccountPage() {
 
 
                         <div className="serviceCenter-wrap">
-                            <div className="serviceCenter__container"><h1
-                            >Service center</h1>
+                            {(userInfo?.role !== 1) ?
+                            <div className="serviceCenter__container">
+                                <h1>Service center</h1>
                                 <div className="serviceCenter__container-items">
                                     <div className="serviceCenter__container-items__item"
                                          onClick={() => goToPage('/setting')}>
@@ -562,6 +531,8 @@ export default function AccountPage() {
                                         >About us</span></div>
                                 </div>
                             </div>
+                                :''
+                            }
                             <div className="serviceCenter-wrap-header">
                                 <button onClick={() => setUserLogoutAlertConfirm(true)}>
                                     <svg className="svg-icon icon-logout" xmlns="http://www.w3.org/2000/svg"

@@ -52,6 +52,7 @@ import AllUsersUnderSubAdminPage from "./pages/admin/AllUsersUnderSubAdminPage";
 import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAndSubAdminPage";
 import AppBackButtonHandler from "./components/AppBackButtonHandler";
 import GetBetGameSessionListPage from "./pages/admin/GetBetGameSessionListPage";
+import AllUsersSubscriptionPage from "./pages/AllUsersSubscriptionPage";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -87,6 +88,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/money-transaction" component={MoneyTransactionPage}/>
                 <Route exact={true} path="/coming-soon" component={ComingSoonPage}/>
                 <Route exact={true} path="/withdrawal-history" component={WithdrawalHistoryListPage}/>
+                <Route exact={true} path="/all-user-subscriptions" component={AllUsersSubscriptionPage}/>
                 <Route exact={true} path="/deposit-history" component={DepositHistoryListPage}/>
                 <Route exact={true} path="/admin-game-result" component={AdminGameResultListPage}/>
                 <Route exact={true} path="/admin-withdrawal-pending-request" component={PendingWithdrawalRequestListPage}/>

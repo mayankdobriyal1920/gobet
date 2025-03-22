@@ -57,7 +57,10 @@ import {
     APP_SUBSCRIPTION_PLAN_SUCCESS,
     GAME_SESSION_AND_ALL_SESSION_REQUEST,
     GAME_SESSION_AND_ALL_SESSION_SUCCESS,
-    GET_ALL_GAME_PLATFORMS_REQUEST, GET_ALL_GAME_PLATFORMS_SUCCESS
+    GET_ALL_GAME_PLATFORMS_REQUEST,
+    GET_ALL_GAME_PLATFORMS_SUCCESS,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS, ALL_USERS_SUBSCRIPTION_DATA_REQUEST, ALL_USERS_SUBSCRIPTION_DATA_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -114,6 +117,27 @@ export const gameLastResultReducer = (state = {}, action) => {
             return { loading: true };
         case GET_GAME_LAST_RESULT_SUCCESS:
             return { loading: false, gameResult: action.payload };
+        default:
+            return state;
+    }
+};
+export const allUsersSubscriptionsDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ALL_USERS_SUBSCRIPTION_DATA_REQUEST:
+            return { loading: true };
+        case ALL_USERS_SUBSCRIPTION_DATA_SUCCESS:
+            return { loading: false, subscriptionsData: action.payload };
+        default:
+            return state;
+    }
+};
+
+export const adminDashboardAllCountDataReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST:
+            return { loading: true };
+        case ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS:
+            return { loading: false, dashboardCount: action.payload };
         default:
             return state;
     }

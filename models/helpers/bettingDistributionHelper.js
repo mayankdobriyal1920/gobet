@@ -1,15 +1,6 @@
-function generateTimeBasedId() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const minutesSinceMidnight = now.getUTCHours() * 60 + now.getUTCMinutes();
-    const counter = 10000 + minutesSinceMidnight;
-    return `${year}${month}${day}1000${counter + 2}`;
-}
 
 // Calculate the total bet amount and distribute it among members
-export function calculateUserBetAmount(members = [], minBetAmount = 100, maximumBetAmount = 10000) {
+export function calculateUserBetAmount(members = [], minBetAmount = 100, maximumBetAmount = 10000,gameBetId) {
     if (!members.length) return [];
 
     // Convert balance to numbers
@@ -30,7 +21,7 @@ export function calculateUserBetAmount(members = [], minBetAmount = 100, maximum
 
     // Get a valid total bet amount
     const totalBetAmount = getValidBetAmount(minTotalBet, maxTotalBet);
-    return distributeBetAmount(validMembers, totalBetAmount, minBetAmount, maximumBetAmount);
+    return distributeBetAmount(validMembers, totalBetAmount, minBetAmount, maximumBetAmount,gameBetId);
 }
 
 // Get a valid bet amount that is a multiple of 10
@@ -40,7 +31,7 @@ function getValidBetAmount(min, max) {
 }
 
 // Distribute the bet amount among members
-function distributeBetAmount(members, totalBetAmount, minBetAmount, maximumBetAmount) {
+function distributeBetAmount(members, totalBetAmount, minBetAmount, maximumBetAmount,gameBetId) {
     members.sort((a, b) => a.balance - b.balance);
 
     const groups = { small: [], big: [] };
@@ -50,7 +41,7 @@ function distributeBetAmount(members, totalBetAmount, minBetAmount, maximumBetAm
     const smallDistribution = divideAmount(halfAmount, groups.small, minBetAmount, maximumBetAmount);
     const bigDistribution = divideAmount(halfAmount, groups.big, minBetAmount, maximumBetAmount);
 
-    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount, maximumBetAmount);
+    return finalizeBetDistribution(groups, smallDistribution, bigDistribution, minBetAmount,gameBetId);
 }
 
 // Divide the amount among members, ensuring multiples of 10
@@ -101,7 +92,7 @@ function divideAmount(amount, members, minBetAmount, maximumBetAmount) {
 }
 
 // Finalize the bet distribution and balance SMALL and BIG groups
-function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount, maximumBetAmount) {
+function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount, gameBetId) {
     let totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
     let totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
     let diff = totalSmall - totalBig;
@@ -131,13 +122,13 @@ function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount,
     if (totalSmall !== totalBig) totalSmall = totalBig = Math.min(totalSmall, totalBig);
 
     return [
-        ...groups.small.map((member, i) => createBetObject(member, smallAmounts[i], 'SMALL', totalSmall, totalBig)),
-        ...groups.big.map((member, i) => createBetObject(member, bigAmounts[i], 'BIG', totalSmall, totalBig))
+        ...groups.small.map((member, i) => createBetObject(member, smallAmounts[i], 'SMALL', totalSmall, totalBig,gameBetId)),
+        ...groups.big.map((member, i) => createBetObject(member, bigAmounts[i], 'BIG', totalSmall, totalBig,gameBetId))
     ];
 }
 
 // Create a bet object for each member
-function createBetObject(member, amount, option, totalSmall, totalBig) {
+function createBetObject(member, amount, option, totalSmall, totalBig,gameBetId) {
     return {
         user_id: member.id,
         name: member.name,
@@ -146,7 +137,7 @@ function createBetObject(member, amount, option, totalSmall, totalBig) {
         option_name: option,
         amount,
         balance: member.balance - amount,
-        bet_id: generateTimeBasedId(),
+        bet_id: gameBetId,
         subscription_id: member.subscription_id,
         total_bet_amount: totalSmall + totalBig,
         total_small_amount: totalSmall,

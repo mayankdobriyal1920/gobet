@@ -1,6 +1,7 @@
 import pool from "./connection.js";
 import crypto from 'crypto';
 import {
+    actionToGetAllUsersSubscriptionsDataQuery,
     actionToGetGameSessionOrAllSessionAndGamePlatformQuery,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
     checkMobNumberAlreadyExistQuery,
@@ -312,9 +313,9 @@ export const actionToGetBetActiveUserDataApiCall = (userId) => {
 
 export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
     return new Promise(function(resolve, reject) {
-        const query = 'SELECT * from betting_game_session WHERE id = ?';
+        const query = 'SELECT * from betting_game_session WHERE id = ? AND is_active = ?';
         let userData = {};
-        pool.query(query,[sessionId], (error, results) => {
+        pool.query(query,[sessionId,1], (error, results) => {
             if (error) {
                 reject(error)
             }
@@ -328,9 +329,10 @@ export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
 
 export const actionToGetGameLastResultDataApiCall = (sessionId) => {
     return new Promise(function(resolve, reject) {
-        const query = 'SELECT id,result,game_id,created_at from game_result WHERE betting_game_session_id = ? AND result IS NULL ORDER BY game_id DESC LIMIT 1';
+        const gameId = moment().subtract(1, 'minute').format('YYYYMMDDHHmm');
+        const query = 'SELECT id,result,game_id,created_at from game_result WHERE betting_game_session_id = ? AND game_id = ? AND result IS NULL';
         let userData = {};
-        pool.query(query,[sessionId], (error, results) => {
+        pool.query(query,[sessionId,gameId], (error, results) => {
             if (error) {
                 reject(error)
             }
@@ -341,6 +343,83 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
         })
     })
 }
+
+export const actionToGetAdminAllDashboardCountDataApiCall = () => {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT
+                -- Total Transactions
+                (SELECT COUNT(id) FROM user_transaction_history) AS total_transactions_count,
+                (SELECT COALESCE(SUM(amount), 0) FROM user_transaction_history) AS total_transaction_amount,
+
+                -- Game Transactions
+                (SELECT COUNT(id) FROM bet_prediction_history) AS game_transactions_count,
+                (SELECT COALESCE(SUM(amount), 0) FROM bet_prediction_history) AS game_transaction_amount,
+
+                -- Today's Earnings
+                (SELECT COALESCE(SUM(subscriptions.price), 0)
+                 FROM user_subscriptions
+                          INNER JOIN subscriptions ON user_subscriptions.subscription_id = subscriptions.id
+                 WHERE DATE(user_subscriptions.created_at) = CURDATE()) AS todays_earning,
+
+                -- Total Earnings
+                (SELECT COALESCE(SUM(subscriptions.price), 0)
+            FROM user_subscriptions
+                INNER JOIN subscriptions ON user_subscriptions.subscription_id = subscriptions.id) AS total_earning,
+
+                -- Today's Betting
+                (SELECT COALESCE(SUM(total_bet_amount), 0)
+            FROM game_result
+            WHERE DATE(created_at) = CURDATE()) AS todays_betting,
+
+            -- Total Betting
+                (SELECT COALESCE(SUM(total_bet_amount), 0) FROM game_result) AS total_betting,
+
+                -- Online Users
+                (SELECT COUNT(*) FROM betting_active_users WHERE status = 1) AS online_users,
+
+                                                           -- Current Order
+            (SELECT COUNT(*) FROM betting_active_users WHERE status = 1) AS current_orders_count,
+       (SELECT COALESCE(SUM(app_user.betting_balance), 0)
+            FROM betting_active_users
+                INNER JOIN app_user ON betting_active_users.user_id = app_user.id
+            WHERE betting_active_users.status = 1) AS total_betting_balance,
+
+            -- Total Subscriptions
+                (SELECT COUNT(*) FROM user_subscriptions) AS total_subscriptions,
+
+                -- Total Active Subscriptions
+                (SELECT COUNT(*) FROM user_subscriptions WHERE is_active = 1) AS total_active_subscriptions;
+        `;
+
+        let userData = {
+            total_transactions_count: 0,
+            total_transaction_amount: 0,
+            game_transactions_count: 0,
+            game_transaction_amount: 0,
+            todays_earning: 0,
+            total_earning: 0,
+            todays_betting: 0,
+            total_betting: 0,
+            online_users: 0,
+            current_orders_count: 0,
+            total_betting_balance: 0,
+            total_subscriptions: 0,
+            total_active_subscriptions: 0
+        };
+
+        pool.query(query, [], (error, results) => {
+            if (error) {
+                console.error("Database Query Error:", error);
+                return reject(error);
+            }
+            if (results && results.length > 0) {
+                userData = results[0];
+            }
+            resolve(userData);
+        });
+    });
+};
 
 export const actionToGetUserActiveSubscriptionDataApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
@@ -860,11 +939,11 @@ export const actionToGetDepositRequestHistoryDataApiCall = (userId,body) => {
     })
 }
 
-export const actionToGetGameHistoryDataApiCall = (userId,body) => {
+export const actionToGetGameHistoryDataApiCall = (userId,role,body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const {query,values} = getGameHistoryQuery(userId,payload);
+        const {query,values} = getGameHistoryQuery(userId,role,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
@@ -877,11 +956,28 @@ export const actionToGetGameHistoryDataApiCall = (userId,body) => {
     })
 }
 
-export const actionToGetMoneyTransactionDataApiCall = (userId,body) => {
+export const actionToGetAllUsersSubscriptionsDataApiCall = (body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const {query,values} = getMoneyTransactionsQuery(userId,payload);
+        const {query,values} = actionToGetAllUsersSubscriptionsDataQuery(payload);
+        pool.query(query,values, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                responseData = results;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetMoneyTransactionDataApiCall = (userId,role,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query,values} = getMoneyTransactionsQuery(userId,role,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
@@ -1017,6 +1113,17 @@ export const actionToGetAllUsersNormalAndSubAdminListApiCall = (userId, body) =>
     })
 }
 
+export const actionToInactiveCurrentSessionApiCall = (body) => {
+    const {id} = body;
+    return new Promise(function(resolve) {
+        let setData = `is_active = ?`;
+        const whereCondition = `id = ?`;
+        let dataToSend = {column: setData, value: [0,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_game_session'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            resolve({success:1});
+        })
+    })
+}
 export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
     const { id, result } = body;
 
@@ -1220,7 +1327,7 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     })
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId,platformId) => {
+export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId) => {
     return new Promise(function(resolve) {
         let setData = `started_by = ? , is_active = ?`;
         const whereCondition = `id = ?`;
@@ -1232,37 +1339,7 @@ export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,se
             tableName: 'betting_game_session'
         };
         updateCommonApiCall(dataToSend).then(() => {
-            const query = 'SELECT id from betting_active_users WHERE user_id = ?';
-            pool.query(query,[userId], (error, results) => {
-                if (results?.length) {
-                    let setData = `status = ? , betting_game_session_id = ? , betting_platform_id = ?`;
-                    const whereCondition = `id = ? AND status != ? AND status != ?`;
-                    let dataToSend = {
-                        column: setData,
-                        value: [3, sessionId, platformId, results[0]?.id, 2, 1],
-                        whereCondition: whereCondition,
-                        returnColumnName: 'id',
-                        tableName: 'betting_active_users'
-                    };
-                    updateCommonApiCall(dataToSend).then(() => {
-                        resolve({success: 1, betting_active_users_id: results[0]?.id});
-                    })
-                } else {
-                    let getRandomAliveUserId = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                    let aliasArray = ['?', '?', '?'];
-                    let columnArray = ["id", "user_id", "status"];
-                    let valuesArray = [getRandomAliveUserId, userId, 3];
-                    let insertData = {
-                        alias: aliasArray,
-                        column: columnArray,
-                        values: valuesArray,
-                        tableName: 'betting_active_users'
-                    };
-                    insertCommonApiCall(insertData).then(() => {
-                        resolve({success: 1, betting_active_users_id: getRandomAliveUserId});
-                    })
-                }
-            })
+            resolve({success: 1});
         })
     })
 }
@@ -1356,7 +1433,7 @@ export const actionTransferMoneyToMainWalletApiCall = (userId) => {
 export function actionToSetAllCronJobsToBettingSlot() {
     actionToExecuteFunctionInLast10Seconds();
 }
-export function actionToRunCheckForAliveUsers(sessionId) {
+export function actionToRunCheckForAliveUsers(sessionId,gameType,gameResultId,gameBetId) {
     try {
         pool.query(getAliveUsersQuery(), [1], (error, results) => {
             if (error) {
@@ -1384,7 +1461,7 @@ export function actionToRunCheckForAliveUsers(sessionId) {
                 if (filteredUsers.length > 1) {
                     const hasRealUser = results.some(user => user.is_test_user === 0);
                     if (hasRealUser) {
-                        actionToDistributeBettingFunctionAmongUsers(filteredUsers, sessionId);
+                        actionToDistributeBettingFunctionAmongUsers(filteredUsers,sessionId,gameType,gameResultId,gameBetId);
                     }
                 }
             }

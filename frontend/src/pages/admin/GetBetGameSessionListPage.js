@@ -100,15 +100,15 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
         }
     }
 
-    const callFunctionToEnterBet =(sessionData,platformId)=>{
+    const callFunctionToEnterBet =(sessionData)=>{
         if (sessionData.is_active) {
-            callFunctionToActiveSectionAndStartGame(sessionData?.id,platformId);
+            callFunctionToActiveSectionAndStartGame(sessionData?.id);
         }else{
             const now = moment();
             const startTime = moment(sessionData?.start_time, 'HH:mm:ss');
             const endTime = moment(sessionData?.end_time, 'HH:mm:ss');
             if (now.isBetween(startTime, endTime, null, '[]')) {
-                callFunctionToActiveSectionAndStartGame(sessionData?.id,platformId);
+                callFunctionToActiveSectionAndStartGame(sessionData?.id);
             } else if (now.isBefore(startTime)) {
                 present({
                     message: 'It\'s too early to start the session!',

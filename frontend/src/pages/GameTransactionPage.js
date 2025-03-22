@@ -12,6 +12,7 @@ export default function GameTransactionPage() {
     const dispatch = useDispatch();
     const history = useHistory();
     const {loading,gameHistory} = useSelector((state) => state.userGameHistory);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
@@ -30,10 +31,14 @@ export default function GameTransactionPage() {
                     <div>
                         <span className={"title"}>PERIOD - {moment(dataItems?.created_at).format('YYYY-MM-DD hh:mm a')}</span>
                     </div>
+                    {userInfo?.role !== 1 ?
                     <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' :dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING' }`}>{dataItems?.win_status === 1 ? 'WIN' :dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING'}</span>
-                </div>
+                    :''}
+                    </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>ID</strong> : {dataItems?.bet_id}
+                    <br/>
+                    <strong>UID :</strong> {dataItems?.user_data?.uid}
                     <br/>
                     <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
                     <br/>
@@ -41,7 +46,7 @@ export default function GameTransactionPage() {
                     <br/>
                     <strong>ORDER</strong> : {dataItems?.option_name}
                     <br/>
-                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name :(dataItems?.win_status === 0) ? (dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL') : 'PENDING'}
+                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : (dataItems?.win_status === 0) ? (dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL') : 'PENDING'}
                 </div>
                 {dataItems?.win_status === 1 ?
                     <div className="sysMessage__container-msgWrapper__item-content">
@@ -90,34 +95,6 @@ export default function GameTransactionPage() {
         dispatch(actionToGetGameHistoryData(true, {status: typeFilter, created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
-    useEffect(() => {
-        setTimeout(()=>{
-            const datetimeElement = datetimeRef.current;
-            const shadowRoot = datetimeElement?.shadowRoot;
-
-            if (shadowRoot) {
-                // Access the buttons inside the calendar
-                const buttons = shadowRoot.querySelectorAll('.calendar-next-prev ion-button');
-                buttons?.forEach((button) => {
-                    button.style.fontSize = '.7rem';  // Reduce font size
-                    button.style.height = '50px';    // Reduce height
-                    button.style.width = '50px';     // Reduce width
-                    button.style.padding = '0';      // Remove padding
-                });
-
-                // Optionally reduce icon size
-                const icons = shadowRoot.querySelectorAll('.calendar-next-prev ion-icon');
-                icons?.forEach((icon) => {
-                    icon.style.fontSize = '.7rem';  // Reduce icon size
-                });
-
-
-                const weekDaysButtons = shadowRoot.querySelector('.calendar-days-of-week');
-                if(weekDaysButtons)
-                    weekDaysButtons.style.fontSize = '.5rem';  // Reduce icon size
-            }
-        },100)
-    }, [datetimeRef.current,isDateFilterOpen]);
 
     useEffect(() => {
         //console.log('on page load');

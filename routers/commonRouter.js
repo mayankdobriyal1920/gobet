@@ -48,7 +48,12 @@ import {
     actionToGetAppSubscriptionPlanDataApiCall,
     actionToActivateSubscriptionPlanApiCall,
     actionToGetGameSessionOrAllSessionAndGamePlatformApiCall,
-    actionToGetGamePlatformDataApiCall, actionToSaveGameSessionDataApiCall, actionToDeleteGameSessionDataApiCall
+    actionToGetGamePlatformDataApiCall,
+    actionToSaveGameSessionDataApiCall,
+    actionToDeleteGameSessionDataApiCall,
+    actionToInactiveCurrentSessionApiCall,
+    actionToGetAdminAllDashboardCountDataApiCall,
+    actionToGetAllUsersSubscriptionsDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -536,6 +541,33 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToGetAdminAllDashboardCountDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id && req?.session?.userSessionData?.role === 1) {
+            actionToGetAdminAllDashboardCountDataApiCall().then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                total_transactions_count: 0,
+                total_transaction_amount: 0,
+                game_transactions_count: 0,
+                game_transaction_amount: 0,
+                todays_earning: 0,
+                total_earning: 0,
+                todays_betting: 0,
+                total_betting: 0,
+                online_users: 0,
+                current_orders_count: 0,
+                total_betting_balance: 0,
+                total_subscriptions: 0,
+                total_active_subscriptions: 0
+            });
+        }
+    })
+);
+
+commonRouter.post(
     '/actionToGetUserActiveSubscriptionDataApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
@@ -656,7 +688,20 @@ commonRouter.post(
     '/actionToGetGameHistoryDataApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToGetGameHistoryDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+            actionToGetGameHistoryDataApiCall(req?.session?.userSessionData?.id,req?.session?.userSessionData?.role,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetAllUsersSubscriptionsDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id && req?.session?.userSessionData?.role === 1) {
+            actionToGetAllUsersSubscriptionsDataApiCall(req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{
@@ -669,7 +714,7 @@ commonRouter.post(
     '/actionToGetMoneyTransactionDataApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToGetMoneyTransactionDataApiCall(req?.session?.userSessionData?.id,req.body).then(responseData => {
+            actionToGetMoneyTransactionDataApiCall(req?.session?.userSessionData?.id,req?.session?.userSessionData?.role,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{
@@ -777,6 +822,19 @@ commonRouter.post(
 );
 
 commonRouter.post(
+    '/actionToInactiveCurrentSessionApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToInactiveCurrentSessionApiCall(req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
     '/actionToUpdateUserAliveForGameApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
@@ -796,7 +854,7 @@ commonRouter.post(
     '/actionToCallFunctionToActiveSectionAndStartGameApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToCallFunctionToActiveSectionAndStartGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId,req.body.platformId).then(responseData => {
+            actionToCallFunctionToActiveSectionAndStartGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

@@ -1,8 +1,9 @@
 import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
+    adminDashboardAllCountDataReducer,
     adminGameResultListReducer,
-    allUsersNormalAndSunAdminListReducer,
+    allUsersNormalAndSunAdminListReducer, allUsersSubscriptionsDataReducer,
     allUsersUnsetSubAdminListReducer,
     appSubscriptionPlanDataReducer,
     betActiveUserDataReducer,
@@ -49,17 +50,21 @@ const initialState = {
     passcodeRequestBySubAdmin: {loading:true,passcodeRequest:{}},
     userBetPredictionStatus: {status:0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()},
     nearestGameSessionAndActiveSession: {loading:true,gameSessionData:{}},
+    adminDashboardAllCountData: {loading:true,dashboardCount:{}},
     gameSessionAndAllSession: {loading:true,gameSessionData:[]},
     gamePlatformData: {loading:true,platformData:[]},
     betActiveUserData: {loading:true,activeUserData:{}},
     betGameSessionData: {loading:true,sessionData:{}},
     gameLastResult: {loading:true,gameResult:{}},
     userSubscriptionData: {loading:true,subscriptionData:{}},
-    appSubscriptionPlanData: {loading:true,subscriptionPlan:[]}
+    appSubscriptionPlanData: {loading:true,subscriptionPlan:[]},
+    allUsersSubscriptionsData: {loading:true,subscriptionsData:[]},
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
     betActiveUserData: betActiveUserDataReducer,
+    allUsersSubscriptionsData: allUsersSubscriptionsDataReducer,
+    adminDashboardAllCountData: adminDashboardAllCountDataReducer,
     gamePlatformData: gamePlatformDataReducer,
     appSubscriptionPlanData: appSubscriptionPlanDataReducer,
     userSubscriptionData: userSubscriptionDataReducer,

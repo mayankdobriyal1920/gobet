@@ -1,84 +1,100 @@
-import React, {createRef, useEffect, useRef, useState} from "react";
-import {
-    IonCol,
-    IonContent, IonDatetime, IonGrid,
-    IonHeader,
-    IonIcon,
-    IonModal,
-    IonPage, IonRow,
-} from "@ionic/react";
+import React, {createRef, useEffect, useState} from "react";
+import {IonCol, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage} from "@ionic/react";
 import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
-import moment from "moment-timezone";
+import {actionToGetAllUsersSubscriptionsData} from "../redux/CommonAction";
 import {useDispatch, useSelector} from "react-redux";
-import {actionToGetWithdrawalRequestHistoryData} from "../redux/CommonAction";
 import LineLoaderComponent from "../components/LineLoaderComponent";
-import { Virtuoso } from 'react-virtuoso'
-export default function WithdrawalHistoryListPage() {
+import {Virtuoso} from "react-virtuoso";
+import moment from "moment-timezone";
+
+export default function AllUsersSubscriptionPage() {
+    const dispatch = useDispatch();
     const history = useHistory();
+    const {loading,subscriptionsData} = useSelector((state) => state.allUsersSubscriptionsData);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
-    const [statusTypeFilter,setStatusTypeFilter] = useState('All');
-    const {loading,withdrawalHistory} = useSelector((state) => state.userWithdrawalAmountHistory);
+    const [statusTypeFilter,setStatusTypeFilter] = useState(2);
+    const [optionFilter,setOptionFilter] = useState('All');
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
     const datetimeRef = createRef();
-    const dispatch = useDispatch();
     const goBack = ()=>{
         history.goBack();
         window.history.back();
     }
-
-    const callFunctionToApplyTypeFilter = (filter)=>{
-        if(statusTypeFilter !== filter){
-            setStatusTypeFilter(filter);
-            setIsTypeFilterOpen(false);
-            callFunctionToAddFilterAndGetData(filter,dateTypeFilter);
-        }
-    }
-
-    const callFunctionToApplyDateFilter = (filter)=>{
-        if(dateTypeFilter !== filter){
-            setDateTypeFilter(filter);
-            setIsDateFilterOpen(false);
-            callFunctionToAddFilterAndGetData(statusTypeFilter,filter);
-        }
-    }
-    const callFunctionClearToAddFilterAndGetData = ()=>{
-        setStatusTypeFilter('All');
-        setDateTypeFilter(null);
-        callFunctionToAddFilterAndGetData('All',null)
-    }
-
-    const callFunctionToAddFilterAndGetData = (typeFilter,dateFilter)=>{
-       dispatch(actionToGetWithdrawalRequestHistoryData(true,{status:typeFilter,created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
-    }
-
-
-    useEffect(() => {
-        setStatusTypeFilter('All');
-        setDateTypeFilter(null);
-        dispatch(actionToGetWithdrawalRequestHistoryData())
-    },[])
 
     const renderVirtualElement = (dataItems)=>{
         return (
             <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
                     <div>
-                        <span className={"title"}>AMOUNT ₹{dataItems?.amount}</span>
+                        <span className="title">Plan Type - {dataItems?.subscription_data?.name}</span>
                     </div>
-                    <span
-                        className={`action_button ${dataItems?.status === 1 ? 'approved' : 'pending'}`}>{dataItems?.status === 1 ? 'approved' : 'pending'}</span>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
-                    User Id : {dataItems?.user_id}
-                </div>
-                <div className="sysMessage__container-msgWrapper__item-content">
-                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                    <strong>Expiry date</strong>: {moment(dataItems?.expiry_date).format('YYYY-MM-DD')}
+                    <br/>
+                    <strong>UID:</strong> {dataItems?.user_data?.id}
+                    <br/>
+                    <strong>User Name:</strong> {dataItems?.user_data?.name}
+                    <br/>
+                    <strong>Email:</strong> {dataItems?.user_data?.email}
+                    <br/>
+                    <strong>IS ACTIVE:</strong> {dataItems?.is_active ? "ACTIVE" : "INACTIVE"}
+                    <br/>
+                    <strong>ORDER AMOUNT:</strong> ₹{dataItems?.total_value}
+                    <br/>
+                    <strong>Balance:</strong> ₹{dataItems?.balance}
+                    <br/>
+                    <strong>Subscription Price:</strong> ₹{dataItems?.subscription_data?.price}
+                    <br/>
+                    <strong>Subscription Duration:</strong> {dataItems?.subscription_data?.duration_days} Days
                 </div>
             </div>
+
+
         )
     }
+
+    const callFunctionToApplyTypeFilter = (filter, optionValue) => {
+        if (statusTypeFilter !== filter) {
+            setStatusTypeFilter(filter);
+            setOptionFilter(optionValue);
+            setIsTypeFilterOpen(false);
+            callFunctionToAddFilterAndGetData(filter, dateTypeFilter);
+        }
+    }
+
+    const callFunctionToApplyDateFilter = (filter) => {
+        if (dateTypeFilter !== filter) {
+            setDateTypeFilter(filter);
+            setIsDateFilterOpen(false);
+            callFunctionToAddFilterAndGetData(statusTypeFilter, filter);
+        }
+    }
+
+    const callFunctionClearToAddFilterAndGetData = () => {
+        setStatusTypeFilter(2);
+        setOptionFilter('All');
+        setDateTypeFilter(null);
+        callFunctionToAddFilterAndGetData(2, null)
+    }
+
+    const callFunctionToAddFilterAndGetData = (typeFilter, dateFilter) => {
+        dispatch(actionToGetAllUsersSubscriptionsData(true, {
+            status: typeFilter,
+            created_at: dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null
+        }))
+    }
+
+
+    useEffect(() => {
+        //console.log('on page load');
+        setStatusTypeFilter(2);
+        setDateTypeFilter(null);
+        dispatch(actionToGetAllUsersSubscriptionsData())
+    }, [])
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -93,7 +109,7 @@ export default function WithdrawalHistoryListPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Withdrawal History</span>
+                                        <span>Game History</span>
                                     </div>
                                 </div>
                             </div>
@@ -106,10 +122,10 @@ export default function WithdrawalHistoryListPage() {
                     <div style={{background: "var(--bg_color_L1)"}}>
                         <div className="bet-container-searchBar">
                             <div className="ar-searchbar">
-                                <div onClick={()=>setIsTypeFilterOpen(true)} className="ar-searchbar__selector">
+                                <div onClick={() => setIsTypeFilterOpen(true)} className="ar-searchbar__selector">
                                     <div>
                                         <span
-                                        className="ar-searchbar__selector-default">{statusTypeFilter}</span>
+                                            className="ar-searchbar__selector-default">{optionFilter}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              className="van-badge__wrapper van-icon van-icon-arrow"
                                              fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
@@ -120,7 +136,7 @@ export default function WithdrawalHistoryListPage() {
                                         </svg>
                                     </div>
                                 </div>
-                                <div onClick={()=>setIsDateFilterOpen(true)} className="ar-searchbar__selector">
+                                <div onClick={() => setIsDateFilterOpen(true)} className="ar-searchbar__selector">
                                     <div>
                                         <span className="ar-searchbar__selector-default">
                                             {dateTypeFilter ? moment(dateTypeFilter).format('YYYY-MM-DD') : 'Choose a date'}
@@ -135,15 +151,16 @@ export default function WithdrawalHistoryListPage() {
                                         </svg>
                                     </div>
                                 </div>
-                                {(statusTypeFilter !== 'All' || dateTypeFilter !== null) ?
-                                <div onClick={()=>callFunctionClearToAddFilterAndGetData('All',null)} className="ar-searchbar__selector_clear">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
-                                         viewBox="0 0 24 24" fill="var(--main-color)">
-                                        <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
-                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
-                                              strokeWidth="1.5" strokeLinecap="round"/>
-                                    </svg>
-                                </div>:''
+                                {(statusTypeFilter !== 2 || dateTypeFilter !== null) ?
+                                    <div onClick={() => callFunctionClearToAddFilterAndGetData('All', null)}
+                                         className="ar-searchbar__selector_clear">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
+                                             viewBox="0 0 24 24" fill="var(--main-color)">
+                                            <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
+                                                  strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                    </div> : ''
                                 }
                             </div>
                         </div>
@@ -163,12 +180,12 @@ export default function WithdrawalHistoryListPage() {
                                     <LineLoaderComponent/>
                                     <LineLoaderComponent/>
                                 </React.Fragment>
-                                : (withdrawalHistory?.length) ?
+                                : (subscriptionsData?.length) ?
                                     <div className={"sysMessage__container"}>
                                         <Virtuoso
                                             className={"virtual_item_listing"}
-                                            totalCount={withdrawalHistory?.length}
-                                            itemContent={index => renderVirtualElement(withdrawalHistory[index])}
+                                            totalCount={subscriptionsData?.length}
+                                            itemContent={index => renderVirtualElement(subscriptionsData[index])}
                                         />
                                     </div>
                                     :
@@ -186,25 +203,24 @@ export default function WithdrawalHistoryListPage() {
                 </div>
             </IonContent>
 
-
             <IonModal
                 className="add-money-to-game-wallet-modal"
                 isOpen={isTypeFilterOpen}
                 onDidDismiss={() => setIsTypeFilterOpen(false)}
-                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                initialBreakpoint={0.5} breakpoints={[0,0.5,1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
-                        <h2>Status Type</h2>
+                        <h2>Subscription Status</h2>
                     </div>
                     <div className={"list_status_type"}>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('All')}>All
+                        <div className={`list_status_type_item ${statusTypeFilter === 2 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(2, 'All')}>All
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Approved' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('Approved')}>Approved
+                        <div className={`list_status_type_item ${statusTypeFilter === 1 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(1, 'Active')}>Active
                         </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'Pending' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('Pending')}>Pending
+                        <div className={`list_status_type_item ${statusTypeFilter === 0 ? 'active' : ''}`}
+                             onClick={() => callFunctionToApplyTypeFilter(0, 'Inactive')}>Inactive
                         </div>
                     </div>
                 </IonContent>
@@ -231,6 +247,8 @@ export default function WithdrawalHistoryListPage() {
                     </div>
                 </IonContent>
             </IonModal>
+
+
         </IonPage>
     )
 }

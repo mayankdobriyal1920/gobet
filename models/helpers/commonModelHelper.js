@@ -401,21 +401,38 @@ export function actionToExecuteFunctionInLast10Seconds() {
         console.log(`Executing function at UTC : ${now}`);
 
         const query = `SELECT
-                           bgs.id, bgs.end_time
-                       FROM betting_game_session bgs
-                       WHERE
-                           bgs.game_type = ? AND is_active = ?
-                         AND (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
-                       GROUP BY
-                           bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
-                       ORDER BY
-                           bgs.start_time
-                           LIMIT 1`;
+                           bgs.id,
+                           bgs.start_time,
+                           bgs.end_time,
+                           bgs.game_type,
+                           bgs.is_active
+                       FROM
+                           betting_game_session bgs
+                       WHERE 
+                           bgs.start_time <= NOW() AND bgs.end_time >= NOW()
+                         AND game_type = ?
+                        AND is_active = ?
+                       ORDER BY bgs.start_time LIMIT 1`;
 
         pool.query(query, ["win_go", 1], (error, results) => {
             if (results?.length) {
-                actionToRunCheckForAliveUsers(results[0]?.id);
+                //////////// insert game result first ///////////
+                let gameType = results[0]?.game_type;
+                let gameSessionId = results[0]?.id;
+                let gameBetId = moment().add(1,'minute').format('YYYYMMDDHHmm');
+                const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
+                const insertResultData = {
+                    alias: ['?', '?', '?', '?'],
+                    column: ["id", "game_type", "game_id", "betting_game_session_id"],
+                    values: [game_result_id, gameType, gameBetId,gameSessionId],
+                    tableName: 'game_result'
+                };
+                insertCommonApiCall(insertResultData).then(() => {
+                   actionToRunCheckForAliveUsers(gameSessionId,gameType,game_result_id,gameBetId);
+                })
+                //////////// insert game result first ///////////
 
+                //////////// END GAME SESSION AUTOMATICALLY ON END TIME ///////////
                 if (results[0]?.end_time) {
                     let endDateTime = moment(`${moment().format("YYYY-MM-DD")} ${results[0]?.end_time}`, "YYYY-MM-DD HH:mm:ss");
                     let delay = endDateTime.diff(moment()); // Get milliseconds until `end_time`
@@ -434,6 +451,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
                         }, Math.max(delay, 0)); // Prevent negative timeout
                     }
                 }
+                //////////// END GAME SESSION AUTOMATICALLY ON END TIME ///////////
             }
         });
 
@@ -449,8 +467,17 @@ export function actionToExecuteFunctionInLast10Seconds() {
  * Distributes betting amounts among selected users and updates their balances.
  * @param {Array} allLiveUsersData - Array of live users data.
  * @param sessionId
+ * @param gameType
+ * @param gameResultId
+ * @param gameBetId
+ * @param gameType
+ * @param gameResultId
+ * @param gameBetId
+ * @param gameType
+ * @param gameResultId
+ * @param gameBetId
  */
-export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,sessionId) => {
+export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,sessionId,gameType,gameResultId,gameBetId) => {
     actionToCallProcedureToSelectRightGroup(allLiveUsersData)
         .then((allSelectedGroupUserData) => {
             // Schedule the betting distribution after 1 minute
@@ -461,7 +488,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                     let minimumBetAmount = Number(userGroup?.balance_length);
                     let maximumBetAmount = Number(userGroup?.balance_length) * 10;
                     // Ensure result is added properly
-                    userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount));
+                    userPayloadData.push(...calculateUserBetAmount(userGroup?.group_json, minimumBetAmount, maximumBetAmount,gameBetId));
                 }
             });
 
@@ -479,16 +506,16 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                     return;
                 }
 
-                // Insert game result into the database
-                const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
-                const insertResultData = {
-                    alias: ['?', '?', '?', '?', '?' , '?'],
-                    column: ["id", "game_type", "game_id", "total_bet_amount", "bet_distribution_json" , "betting_game_session_id"],
-                    values: [game_result_id, 'win_go', gameBetId, Number(totalBetAmount), JSON.stringify(userPayloadData),sessionId],
-                    tableName: 'game_result'
+                const setData = `total_bet_amount = ? , bet_distribution_json = ?`;
+                const whereCondition = `id = ?`;
+                const values = [Number(totalBetAmount), JSON.stringify(userPayloadData),gameResultId];
+                const dataToSend = {
+                    column: setData,
+                    value: values,
+                    whereCondition: whereCondition,
+                    tableName: 'game_result',
                 };
-
-                insertCommonApiCall(insertResultData)
+                updateCommonApiCall(dataToSend)
                     .then(() => {
                         const valuesArray = [];
                         const updatesArray = [];
@@ -501,7 +528,7 @@ export const actionToDistributeBettingFunctionAmongUsers = (allLiveUsersData,ses
                             const user_transaction_history = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
 
                             betPredictionHistoryIdsArray.push(bet_prediction_history_id);
-                            valuesArray.push([bet_prediction_history_id, userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id, 1, 'win_go', game_result_id]);
+                            valuesArray.push([bet_prediction_history_id, userPredData.user_id, userPredData?.min, userPredData?.betting_active_users_id, userPredData?.option_name, userPredData?.amount, userPredData?.bet_id, 1, gameType, gameResultId]);
                             if (!userPredData?.is_test_user) {
                                 updatesArray.push({
                                     conditionValue: userPredData.user_id,

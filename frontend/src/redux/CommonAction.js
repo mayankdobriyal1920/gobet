@@ -57,7 +57,10 @@ import {
     GAME_SESSION_AND_ALL_SESSION_REQUEST,
     GAME_SESSION_AND_ALL_SESSION_SUCCESS,
     GET_ALL_GAME_PLATFORMS_REQUEST,
-    GET_ALL_GAME_PLATFORMS_SUCCESS
+    GET_ALL_GAME_PLATFORMS_SUCCESS,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS,
+    ALL_USERS_SUBSCRIPTION_DATA_REQUEST, ALL_USERS_SUBSCRIPTION_DATA_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
@@ -259,6 +262,19 @@ export const actionToGetGameLastResultData = (sessionId) => async (dispatch) => 
     try {
         api.post(`actionToGetGameLastResultDataApiCall`, {session_id:sessionId}).then(responseData => {
             dispatch({ type: GET_GAME_LAST_RESULT_SUCCESS, payload: {...responseData.data}});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToGetAdminAllDashboardCountData = (event) => async (dispatch) => {
+    dispatch({ type: ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST});
+    try {
+        api.post(`actionToGetAdminAllDashboardCountDataApiCall`, {}).then(responseData => {
+            if(event)
+              event.detail.complete();
+            dispatch({ type: ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS, payload: {...responseData.data}});
         })
     } catch (error) {
         console.log(error);
@@ -507,6 +523,19 @@ export const actionToGetGameHistoryData = (isLoading = true,payload = {}) => asy
     }
 }
 
+export const actionToGetAllUsersSubscriptionsData = (isLoading = true,payload = {}) => async (dispatch) => {
+    if(isLoading) {
+        dispatch({type: ALL_USERS_SUBSCRIPTION_DATA_REQUEST});
+    }
+    try {
+        api.post(`actionToGetAllUsersSubscriptionsDataApiCall`, {payload}).then(responseData => {
+            dispatch({ type: ALL_USERS_SUBSCRIPTION_DATA_SUCCESS, payload: [...responseData.data]});
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToGetMoneyTransactionData = (isLoading = true,payload = {}) => async (dispatch) => {
     if(isLoading) {
         dispatch({type: USER_MONEY_TRANSACTIONS_REQUEST});
@@ -698,9 +727,9 @@ export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunction
     }
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,platformId,callFunctionToEnterInGame) => async () => {
+export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async () => {
     try {
-        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId,platformId:platformId}).then(() => {
+        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId}).then(() => {
             if(callFunctionToEnterInGame) {
                 callFunctionToEnterInGame(sessionId);
             }
@@ -734,7 +763,16 @@ export const actionToUpdatePreviousGameResult = (result,gameResultId,session_id)
     try {
         api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {result,id:gameResultId}).then(() => {
             dispatch(actionToGetGameLastResultData(session_id));
+            dispatch(actionToGetAdminGameResultListData(false,{session_id:session_id,created_at:moment().format('YYYY-MM-DD')}))
         })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToInactiveCurrentSession = (session_id) => async () => {
+    try {
+        api.post(`actionToInactiveCurrentSessionApiCall`, {id:session_id})
     } catch (error) {
         console.log(error);
     }

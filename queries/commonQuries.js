@@ -159,54 +159,157 @@ export const getDepositHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
-export const getGameHistoryQuery = (userId, body) => {
+export const getGameHistoryQuery = (userId, role, body) => {
     let { status, created_at } = body;
-    let values = [userId];  // Initial values array with userId
-    let condition = `user_id = ?`;  // Initial condition with userId
+    let values = [userId];
+    let condition = `bph.user_id = ?`;
+
+    if (role === 1) {
+        values = [];
+        condition = `true`;
+    }
 
     // Add condition for status if provided
     if (status && status !== 'All') {
-        values.push(status);  // Append the status value
-        condition += ` AND game_type = ?`;  // Add 'status' condition
+        values.push(status);
+        condition += ` AND bph.game_type = ?`;
     }
 
     // Add condition for created_at if provided
     if (created_at) {
-        values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
+        values.push(created_at);
+        condition += ` AND DATE(bph.created_at) = ?`;
     }
 
-    // Final query
-    let query = `SELECT * FROM bet_prediction_history WHERE ${condition} ORDER BY created_at DESC`;
+    // Final query with JSON_OBJECT for user data
+    let query = `
+        SELECT
+            bph.id,
+            bph.amount,
+            bph.user_id,
+            bph.bet_id,
+            bph.created_at,
+            bph.option_name,
+            bph.game_type,
+            bph.min,
+            bph.status,
+            bph.betting_active_users_id,
+            bph.game_result_id,
+            bph.win_status,
+            JSON_OBJECT(
+                    'id', au.id,
+                    'name', au.name,
+                    'uid', au.uid
+            ) AS user_data
+        FROM bet_prediction_history bph
+                 INNER JOIN app_user au ON bph.user_id = au.id
+        WHERE ${condition}
+        ORDER BY bph.created_at DESC
+    `;
 
     return { values, query };
 };
 
-export const getMoneyTransactionsQuery = (userId, body) => {
+export const actionToGetAllUsersSubscriptionsDataQuery = (body) => {
+    let { status, created_at } = body;
+    let values = [];
+    let condition = `true`;
+
+    // Add condition for status (is_active) if provided
+    if (status !== undefined && status !== 2) {
+        values.push(status);
+        condition += ` AND us.is_active = ?`;
+    }
+
+    // Add condition for created_at if provided
+    if (created_at) {
+        values.push(created_at);
+        condition += ` AND DATE(us.created_at) = ?`;
+    }
+
+    // Final query with JSON_OBJECT for user and subscription data
+    let query = `
+        SELECT
+            us.id,
+            us.subscription_id,
+            us.plan_type,
+            us.total_value,
+            us.balance,
+            us.created_by,
+            us.created_at,
+            us.expiry_date,
+            us.is_active,
+            JSON_OBJECT(
+                    'id', s.id,
+                    'name', s.name,
+                    'price', s.price,
+                    'duration_days', s.duration_days,
+                    'value', s.value
+            ) AS subscription_data,
+            JSON_OBJECT(
+                    'id', au.id,
+                    'name', au.name,
+                    'uid', au.uid
+            ) AS user_data
+        FROM user_subscriptions us
+                 INNER JOIN subscriptions s ON us.subscription_id = s.id
+                 INNER JOIN app_user au ON us.created_by = au.id
+        WHERE ${condition}
+        ORDER BY us.created_at DESC
+    `;
+
+    return { values, query };
+};
+
+
+
+export const getMoneyTransactionsQuery = (userId, role, body) => {
     let { type, created_at } = body;
-    let values = [userId];  // Initial values array with userId
-    let condition = `user_id = ?`;  // Initial condition with userId
+    let values = [userId];
+    let condition = `uth.user_id = ?`;
+
+    if (role === 1) {
+        values = [];
+        condition = `true`;
+    }
 
     // Add condition for type if provided
     if (type && type !== 'All') {
         values.push(type);
-        condition += ` AND type = ?`;  // Add 'type' condition
+        condition += ` AND uth.type = ?`;
     }
 
     // Add condition for created_at if provided
     if (created_at) {
-        values.push(created_at);  // Append the created_at value
-        condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
+        values.push(created_at);
+        condition += ` AND DATE(uth.created_at) = ?`;
     }
 
-    // Final query
-    let query = `SELECT * FROM user_transaction_history WHERE ${condition} ORDER BY created_at DESC`;
+    // Final query with JSON_OBJECT for user data
+    let query = `
+        SELECT
+            uth.id,
+            uth.amount,
+            uth.user_id,
+            uth.type,
+            uth.created_at,
+            JSON_OBJECT(
+                    'id', au.id,
+                    'name', au.name,
+                    'uid', au.uid
+            ) AS user_data
+        FROM user_transaction_history uth
+                 INNER JOIN app_user au ON uth.user_id = au.id
+        WHERE ${condition}
+        ORDER BY uth.created_at DESC
+    `;
 
     return { values, query };
 };
 
+
 export const getGameResultListQuery = (userId, body) => {
-    let { status, created_at } = body;
+    let { status, created_at,session_id } = body;
     let values = [];  // Initial values array with userId
     let condition = `1=1`;  // Initial condition with userId
 
@@ -222,6 +325,11 @@ export const getGameResultListQuery = (userId, body) => {
     if (created_at) {
         values.push(created_at);  // Append the created_at value
         condition += ` AND DATE(created_at) = ?`;  // Add 'created_at' condition
+    }
+
+    if (session_id) {
+        values.push(session_id);  // Append the created_at value
+        condition += ` AND betting_game_session_id = ?`;  // Add 'created_at' condition
     }
 
     // Final query
