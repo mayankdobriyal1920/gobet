@@ -138,24 +138,24 @@ export const actionToSaveGameSessionDataApiCall = (userId,body) => {
         id,
         start_time, // Default to current time if null
         end_time,
-        betting_platforms_json,
+        betting_platform_id,
         game_type
     } = body;
     return new Promise(function(resolve) {
         if(!id){
             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
             let aliasArray = ['?','?','?','?','?'];
-            let columnArray = ["start_time","end_time","betting_platforms_json","game_type","created_by"];
-            let valuesArray = [start_time,end_time,betting_platforms_json,game_type,userId];
+            let columnArray = ["start_time","end_time","betting_platform_id","game_type","created_by"];
+            let valuesArray = [start_time,end_time,betting_platform_id,game_type,userId];
             let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_game_session'};
             insertCommonApiCall(insertData).then(()=>{
                 resolve({status:1});
             })
             ////////// UPDATE USER PERCENTAGE IN DB ////////////////
         }else{
-            let setData = `start_time = ?,end_time = ?,betting_platforms_json = ?,game_type = ?`;
+            let setData = `start_time = ?,end_time = ?,betting_platform_id = ?,game_type = ?`;
             const whereCondition = `id = ?`;
-            let dataToSend = {column: setData, value: [start_time,end_time,betting_platforms_json,game_type,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_game_session'};
+            let dataToSend = {column: setData, value: [start_time,end_time,betting_platform_id,game_type,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_game_session'};
             updateCommonApiCall(dataToSend).then(()=> {
                 resolve({status: 1});
             })

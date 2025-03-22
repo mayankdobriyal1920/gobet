@@ -370,9 +370,6 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatform = (game
     try {
         api.post(`actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall`, {game_type:gameType}).then(responseData => {
             let allData = responseData.data;
-            if(allData?.betting_platforms_json){
-                allData.platforms = JSON.parse(allData?.betting_platforms_json);
-            }
             dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...allData}});
         })
     } catch (error) {
@@ -391,13 +388,13 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatform = (gameType) => a
     }
 }
 
-export const actionToSaveGameSessionData = (sessionDataToEdit,multipleGamePlatforms,gameType,sessionStartTime,resetUpdate) => async (dispatch) => {
+export const actionToSaveGameSessionData = (sessionDataToEdit,gamePlatformId,gameType,sessionStartTime,resetUpdate) => async () => {
     try {
         let payload = {
             id: sessionDataToEdit?.id,
             start_time: moment(sessionStartTime || new Date()).format("HH:mm:ss"), // Default to current time if null
             end_time: moment(sessionStartTime || new Date()).add(1, "hour").format("HH:mm:ss"),
-            betting_platforms_json: JSON.stringify(multipleGamePlatforms ?? []), // Ensure it's always an array
+            betting_platform_id: gamePlatformId, // Ensure it's always an array
             game_type:gameType
         };
         api.post(`actionToSaveGameSessionDataApiCall`, payload).then(() => {

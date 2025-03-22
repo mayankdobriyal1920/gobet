@@ -50,18 +50,18 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = 
             bgs.id,
             bgs.start_time,
             bgs.end_time,
-            bgs.betting_platforms_json,
+            bgs.betting_platform_id,
+            bp.name AS betting_platform_name,
             bgs.is_active
         FROM
             betting_game_session bgs
+                INNER JOIN betting_platform bp ON bgs.betting_platform_id = bp.id
         WHERE
-           (bgs.start_time >= CURTIME() OR (bgs.start_time <= CURTIME() AND bgs.end_time >= CURTIME()))
-        GROUP BY
-            bgs.id, bgs.start_time, bgs.end_time, bgs.is_active
+            bgs.start_time <= NOW()
+          AND bgs.end_time >= NOW()
         ORDER BY
             bgs.start_time
             LIMIT 1;
-
 
     `;
 };
@@ -73,12 +73,18 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
             bgs.start_time,
             bgs.end_time,
             bgs.game_type,
-            bgs.betting_platforms_json,
-            bgs.is_active
+            bgs.is_active,
+            bp.name AS betting_platform_name,
+            bgs.betting_platform_id
         FROM
             betting_game_session bgs
+                INNER JOIN betting_platform bp ON bp.id = bgs.betting_platform_id
+        WHERE
+            CONVERT_TZ(bgs.end_time, 'UTC', 'Asia/Kolkata') < NOW()  -- Adjust if needed
         ORDER BY
             bgs.start_time DESC;
+
+
     `;
 };
 

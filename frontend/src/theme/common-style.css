@@ -1652,7 +1652,9 @@ overflow: hidden;
     top: 35%;
     right: 0.5rem;
 }
-
+.sysMessage__container.for_betting_session_list .sysMessage__container-msgWrapper__item.for_session {
+    margin: 10rem 2rem;
+}
 .infiniteScroll {
     min-height: 5rem;
     border-radius: .4rem;
@@ -1766,8 +1768,69 @@ overflow: hidden;
 .settingPanel__container-items__title svg {
     color: var(--main-color);
 }
+.active_session_message{
+    color: var(--main-color);
+    line-height: 1.5rem;
+    font-size: 1.1rem;
+    margin-top: 1.2rem;
+}
 .settingPanel__container-items__item span {
     color: var(--text_color_L1);
+}
+.bet-content__box.session_game_contain {
+    height: 100%;
+}
+
+.sysMessage__container.for_betting_session_list {height: 100%;}
+
+.sysMessage__container.for_betting_session_list .sysMessage__container-msgWrapper__item.for_session {
+    margin: 10rem 2rem;
+}
+.sysMessage__container.session_container_active {
+    padding: 1.5rem;
+}
+.sysMessage__container.session_container_active .sysMessage__container_item {
+    margin-top: 0.8rem;
+}
+.sysMessage__container-msgWrapper__item-footer .action_button.update {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 10px 16px;
+    margin-left: 1rem;
+    color: #fff;
+    background: var(--main-color);
+}
+.sysMessage__container-msgWrapper__item-footer .action_button.start-session {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 10px 16px;
+    color: #fff;
+    margin-left: 1rem;
+    background: green;
+}
+
+
+.sysMessage__container-msgWrapper__item-footer .action_button.delete {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 10px 16px;
+    margin-left: 1rem;
+    color: #fff;
+    background: indianred;
+}
+.sysMessage__container-msgWrapper__item-footer {
+    padding: 1rem;
+    text-align: right;
+}
+.sysMessage__container-msgWrapper__item-footer .action_button {
+    margin-left: auto;
+    text-transform: uppercase;
+}
+.bet-content__box.session_game_contain .infiniteScroll {
+    height: 100%;
 }
 .settingPanel__container-items-right {
     display: -webkit-box;
