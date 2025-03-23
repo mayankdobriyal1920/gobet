@@ -223,7 +223,6 @@ export const actionToGetGamePlatformDataApiCall = () => {
             resolve(resultData);
         })
     })
-
 }
 
 export const actionToDeleteGameSessionDataApiCall = ({id}) => {
@@ -232,6 +231,28 @@ export const actionToDeleteGameSessionDataApiCall = ({id}) => {
         let tableName = "betting_game_session";
         deleteCommonApiCall({condition, tableName, values: [id]}).then(() => {
             resolve({status:true});
+        })
+    })
+}
+
+export const actionToUpdateIsOnlineUseDataApiCall = (userId,{isOnline}) => {
+    return new Promise(function(resolve) {
+        let setData = `is_online = ?`;
+        const whereCondition = `id = ?`;
+        let dataToSend = {column: setData, value: [isOnline,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            resolve({status:1});
+        })
+    })
+}
+
+export const actionToUpdateBettingUserIsOnlineUseDataApiCall = (userId,{isOnline}) => {
+    return new Promise(function(resolve) {
+        let setData = `is_online = ?`;
+        const whereCondition = `user_id = ?`;
+        let dataToSend = {column: setData, value: [isOnline,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
+        updateCommonApiCall(dataToSend).then(()=>{
+            resolve({status:1});
         })
     })
 }
@@ -373,7 +394,7 @@ export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
 
 export const actionToGetGameLastResultDataApiCall = (sessionId) => {
     return new Promise(function(resolve, reject) {
-        const gameId = moment().subtract(1, 'minute').format('YYYYMMDDHHmm');
+        const gameId = moment().subtract(1, 'minute').format('YYYY.MM.DD-HH:mm');
         const query = 'SELECT id,result,game_id,created_at from game_result WHERE betting_game_session_id = ? AND game_id = ? AND result IS NULL';
         let userData = {};
         pool.query(query,[sessionId,gameId], (error, results) => {
@@ -420,12 +441,20 @@ export const actionToGetAdminAllDashboardCountDataApiCall = () => {
                 (SELECT COALESCE(SUM(total_bet_amount), 0) FROM game_result) AS total_betting,
 
                 -- Online Users
-                (SELECT COUNT(*) FROM betting_active_users WHERE status = 1) AS online_users,
+                (SELECT COUNT(*) FROM app_user WHERE is_online = 1) AS online_users,
 
-                                                           -- Current Order
-            (SELECT COUNT(*) FROM betting_active_users WHERE status = 1) AS current_orders_count,
-       (SELECT COALESCE(SUM(app_user.betting_balance), 0)
-            FROM betting_active_users
+           -- Playing Users
+         (SELECT COUNT(*) FROM betting_active_users WHERE is_online = 1) AS playing_users,
+
+         -- Current Order
+         (SELECT COUNT(*) FROM bet_prediction_history WHERE DATE(created_at) = CURDATE()) AS current_orders_count,
+        (SELECT COUNT(*) FROM bet_prediction_history) AS total_orders_count,
+
+            
+          (SELECT COALESCE(SUM(amount), 0) FROM bet_prediction_history WHERE DATE(created_at) = CURDATE()) AS today_orders_amount_sum,
+          (SELECT COALESCE(SUM(amount), 0) FROM bet_prediction_history) AS total_orders_amount_sum,
+                                                                                                
+       (SELECT COALESCE(SUM(app_user.betting_balance), 0) FROM betting_active_users
                 INNER JOIN app_user ON betting_active_users.user_id = app_user.id
             WHERE betting_active_users.status = 1) AS total_betting_balance,
 
@@ -1040,7 +1069,7 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const gameId = moment().subtract(1, 'minute').format('YYYYMMDDHHmm');
+        const gameId = moment().subtract(1, 'minute').format('YYYY.MM.DD-HH:mm');
         const {query,values} = getGameResultListQuery(userId,gameId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {

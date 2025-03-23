@@ -135,7 +135,23 @@ export const allUsersSubscriptionsDataReducer = (state = {}, action) => {
 export const adminDashboardAllCountDataReducer = (state = {}, action) => {
     switch (action.type) {
         case ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST:
-            return { loading: true };
+            return { loading: true ,dashboardCount:{
+                    total_transactions_count: 0,
+                    total_transaction_amount: 0,
+                    game_transactions_count: 0,
+                    game_transaction_amount: 0,
+                    todays_earning: 0,
+                    total_earning: 0,
+                    todays_betting: 0,
+                    total_betting: 0,
+                    online_users: 0,
+                    playing_users: 0,
+                    current_orders_count: 0,
+                    total_orders_count: 0,
+                    total_betting_balance: 0,
+                    total_subscriptions: 0,
+                    total_active_subscriptions: 0
+                }};
         case ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS:
             return { loading: false, dashboardCount: action.payload };
         default:

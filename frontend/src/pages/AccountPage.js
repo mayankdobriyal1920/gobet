@@ -361,45 +361,6 @@ export default function AccountPage() {
                                          </div>
                                      </div> : ''
                                  }
-                                 {(userInfo?.role === 1) ?
-                                     <div onClick={() => goToPage('/admin-admin-users-list')}
-                                          className="settingPanel__container-items__item ar-1px-b">
-                                         <div className="settingPanel__container-items__title">
-                                             <svg className="svg-icon icon-serverTicket svg_min_icon"
-                                                  viewBox="0 0 52 52"
-                                                  fill="none"
-                                                  xmlns="http://www.w3.org/2000/svg">
-                                                 <g id="Group 1420069177">
-                                                     <path id="Union" fillRule="evenodd" clipRule="evenodd"
-                                                           d="M0.501486 25.2499C0.501486 31.7163 2.98132 37.6138 7.0576 42.0809L7.05658 42.0819C3.94138 45.3931 0 45.8223 0 45.8223C5.87741 49.7199 12.9648 51.9961 20.594 51.9961C26.8205 51.9961 32.686 50.4799 37.8274 47.8037C46.2308 43.6469 51.9961 35.1102 51.9961 25.2499C51.9961 11.3048 40.4686 0 26.2487 0C12.029 0 0.501486 11.3048 0.501486 25.2499ZM38.3417 13.6638C45.0029 20.3143 45.0029 31.0966 38.3417 37.747C31.6808 44.3975 20.8812 44.3975 14.22 37.747C9.51028 33.0448 8.13334 26.2774 10.0841 20.3648C10.2825 19.7185 10.5019 19.0869 10.7447 18.4688C10.5338 18.9093 10.3426 19.3569 10.1711 19.8103C11.3425 16.3535 13.3074 13.1056 16.0669 10.3506C19.6652 6.75799 24.1026 4.51343 28.7496 3.61719L28.7484 3.6188L28.7499 3.61854C28.7366 3.63528 27.1093 5.67989 27.2311 8.70353C31.2743 8.92724 35.2529 10.5801 38.3417 13.6638Z"
-                                                           fill="var(--main-color)"></path>
-                                                     <path id="Vector" opacity="0.4" fillRule="evenodd"
-                                                           clipRule="evenodd"
-                                                           d="M38.3417 37.747C45.0029 31.0966 45.0029 20.3143 38.3417 13.6638C35.2529 10.5801 31.2743 8.92724 27.2311 8.70353C27.1091 5.67485 28.742 3.62845 28.75 3.61847L28.7484 3.6188L28.7496 3.61719C24.1026 4.51343 19.6652 6.75799 16.0669 10.3506C13.3074 13.1056 11.3425 16.3535 10.1711 19.8103C10.3426 19.3569 10.5338 18.9093 10.7447 18.4688C10.5019 19.0869 10.2825 19.7185 10.0841 20.3648C8.13334 26.2774 9.51028 33.0448 14.22 37.747C20.8812 44.3975 31.6808 44.3975 38.3417 37.747Z"
-                                                           fill="var(--main-color)"></path>
-                                                     <path id="Vector_2" fillRule="evenodd" clipRule="evenodd"
-                                                           d="M17.625 23.9571V26.0727V27.4819C17.625 28.8886 18.767 30.0288 20.176 30.0288C21.5849 30.0288 22.7268 28.8886 22.7268 27.4819V26.0706V23.9571C22.7268 22.5507 21.5849 21.4102 20.176 21.4102C18.767 21.4102 17.625 22.5507 17.625 23.9571Z"
-                                                           fill="var(--main-color)"></path>
-                                                     <path id="Vector_3" fillRule="evenodd" clipRule="evenodd"
-                                                           d="M30.25 23.9571V26.0727V27.4819C30.25 28.8886 31.3921 30.0288 32.8009 30.0288C34.2098 30.0288 35.3519 28.8886 35.3519 27.4819V26.0706V23.9571C35.3519 22.5507 34.2098 21.4102 32.8009 21.4102C31.3921 21.4102 30.25 22.5507 30.25 23.9571Z"
-                                                           fill="var(--main-color)"></path>
-                                                 </g>
-                                             </svg>
-                                             <span>User List</span>
-                                         </div>
-                                         <div className="settingPanel__container-items-right">
-                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                  className="van-badge__wrapper van-icon van-icon-arrow"
-                                                  fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
-                                                  id="Layer_1"
-                                                  viewBox="0 0 330 330">
-                                                 <path id="XMLID_222_"
-                                                       d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
-                                             </svg>
-                                         </div>
-                                     </div>
-                                     : ''
-                                 }
                              </div>
                          </div> : ''
                         }
@@ -408,7 +369,7 @@ export default function AccountPage() {
 
                         <div className="serviceCenter-wrap">
                             {(userInfo?.role !== 1) ?
-                            <div className="serviceCenter__container">
+                              <div className="serviceCenter__container">
                                 <h1>Service center</h1>
                                 <div className="serviceCenter__container-items">
                                     <div className="serviceCenter__container-items__item"
@@ -502,8 +463,7 @@ export default function AccountPage() {
                                         <span
                                         >About us</span></div>
                                 </div>
-                            </div>
-                                :''
+                            </div> :''
                             }
                             <div className="serviceCenter-wrap-header">
                                 <button onClick={() => setUserLogoutAlertConfirm(true)}>

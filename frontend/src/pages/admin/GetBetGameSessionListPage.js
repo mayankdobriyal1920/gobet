@@ -46,10 +46,6 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
         }
     }
 
-    useEffect(() => {
-        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
-    },[])
-
     const resetDelete = () =>{
         setUpdateLoading(false);
         dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
@@ -166,6 +162,15 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
         )
     }
 
+    const callToReloadSessionNearestData = ()=>{
+        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform('win_go'))
+        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
+    }
+
+    useEffect(() => {
+        callToReloadSessionNearestData();
+    },[])
+
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
@@ -183,13 +188,21 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                     </div>
                                 </div>
                             {(userInfo?.role === 1) ?
-                                <div onClick={()=>callFunctionToSetIsAddEditSessionPopupOpen()} className="navbar__content-right">
+                                <div onClick={() => callFunctionToSetIsAddEditSessionPopupOpen()}
+                                     className="navbar__content-right">
                                     <div className="navbar__content-button">
                                         ADD
                                     </div>
-                                </div>:''
+                                </div>
+                                :
+                                <div onClick={() => callToReloadSessionNearestData()}
+                                     className="navbar__content-right">
+                                    <div className="navbar__content-button">
+                                        REFRESH
+                                    </div>
+                                </div>
                             }
-                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -223,12 +236,13 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                                 className={`action_button update`}>
                                                 EDIT
                                             </span>
-                                            :
-                                            <span
-                                                onClick={() => callFunctionToEnterBetUserRole(nearestGameSessionAndActiveSession?.gameSessionData, nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_id)}
-                                                className={`action_button update`}>
-                                                ENTER
-                                            </span>
+                                            :(nearestGameSessionAndActiveSession?.gameSessionData?.is_active === 1) ?
+                                                <span
+                                                    onClick={() => callFunctionToEnterBetUserRole(nearestGameSessionAndActiveSession?.gameSessionData, nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_id)}
+                                                    className={`action_button update`}>
+                                                    ENTER
+                                                </span>
+                                                :''
                                         }
                                     </div>
                                     <div className="sysMessage__container-msgWrapper__item-content">
@@ -245,6 +259,10 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                             {moment(nearestGameSessionAndActiveSession?.gameSessionData?.end_time, 'HH:mm:ss').format('hh:mm A')}
                                         </div>
                                         <div><strong>Game type:</strong> WIN GO</div>
+                                        {(nearestGameSessionAndActiveSession?.gameSessionData?.is_active !== 1 && userInfo?.role !== 1) ?
+                                            <div><strong>The admin has not started the session yet. Please wait while the session starts, then press the refresh button to check.</strong></div>
+                                            : ''
+                                        }
                                     </div>
                                     {(userInfo?.role === 1) ?
                                         <div className="sysMessage__container-msgWrapper__item-footer">

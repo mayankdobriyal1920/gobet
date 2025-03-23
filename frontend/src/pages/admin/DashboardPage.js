@@ -173,7 +173,7 @@ export default function DashboardPage() {
                                         <IonCard className="dashboard-card">
                                             <IonCardContent className="dashboard-card-content">
                                                 <IonIcon icon={cashSharp} className="dashboard-icon" />
-                                                <div className="title_for_das_heading">Game Transactions</div>
+                                                <div className="title_for_das_heading">Game History</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.game_transaction_amount}</div>
                                                 <div className="title_for_das_text_link">
                                                     Click to open list

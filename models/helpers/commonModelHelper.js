@@ -419,7 +419,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
                 //////////// insert game result first ///////////
                 let gameType = results[0]?.game_type;
                 let gameSessionId = results[0]?.id;
-                let gameBetId = moment().add(1,'minute').format('YYYYMMDDHHmm');
+                let gameBetId = moment().add(1,'minute').format('YYYY.MM.DD-HH:mm');
                 const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 const insertResultData = {
                     alias: ['?', '?', '?', '?'],

@@ -1,60 +1,37 @@
 import React, {createRef, useEffect, useState} from "react";
-import {IonCol, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage} from "@ionic/react";
-import {arrowBack} from "ionicons/icons";
+import {
+    IonCard,
+    IonCardContent,
+    IonCol,
+    IonContent,
+    IonDatetime, IonGrid,
+    IonHeader,
+    IonIcon,
+    IonModal,
+    IonPage,
+    IonRow
+} from "@ionic/react";
+import {arrowBack, cashSharp, todaySharp} from "ionicons/icons";
 import {useHistory} from "react-router";
 import {actionToGetAllUsersSubscriptionsData} from "../redux/CommonAction";
 import {useDispatch, useSelector} from "react-redux";
 import LineLoaderComponent from "../components/LineLoaderComponent";
-import {Virtuoso} from "react-virtuoso";
 import moment from "moment-timezone";
 
 export default function AllUsersSubscriptionPage() {
     const dispatch = useDispatch();
     const history = useHistory();
     const {loading,subscriptionsData} = useSelector((state) => state.allUsersSubscriptionsData);
-    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState(2);
     const [optionFilter,setOptionFilter] = useState('All');
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
+    const [topWidgetData,setTopWidgetData] = useState({active:0,total:0});
     const datetimeRef = createRef();
     const goBack = ()=>{
         history.goBack();
         window.history.back();
-    }
-
-    const renderVirtualElement = (dataItems)=>{
-        return (
-            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
-                <div className="sysMessage__container-msgWrapper__item-title">
-                    <div>
-                        <span className="title">Plan Type - {dataItems?.subscription_data?.name}</span>
-                    </div>
-                </div>
-                <div className="sysMessage__container-msgWrapper__item-time">
-                    <strong>Expiry date</strong>: {moment(dataItems?.expiry_date).format('YYYY-MM-DD')}
-                    <br/>
-                    <strong>UID:</strong> {dataItems?.user_data?.id}
-                    <br/>
-                    <strong>User Name:</strong> {dataItems?.user_data?.name}
-                    <br/>
-                    <strong>Email:</strong> {dataItems?.user_data?.email}
-                    <br/>
-                    <strong>IS ACTIVE:</strong> {dataItems?.is_active ? "ACTIVE" : "INACTIVE"}
-                    <br/>
-                    <strong>ORDER AMOUNT:</strong> ₹{dataItems?.total_value}
-                    <br/>
-                    <strong>Balance:</strong> ₹{dataItems?.balance}
-                    <br/>
-                    <strong>Subscription Price:</strong> ₹{dataItems?.subscription_data?.price}
-                    <br/>
-                    <strong>Subscription Duration:</strong> {dataItems?.subscription_data?.duration_days} Days
-                </div>
-            </div>
-
-
-        )
     }
 
     const callFunctionToApplyTypeFilter = (filter, optionValue) => {
@@ -96,6 +73,18 @@ export default function AllUsersSubscriptionPage() {
         dispatch(actionToGetAllUsersSubscriptionsData())
     }, [])
 
+    useEffect(() => {
+        let widTotal = {active:0,total:0};
+        subscriptionsData?.forEach((dataItems)=>{
+            if(dataItems?.is_active === 1){
+                widTotal.active += 1;
+            }
+            widTotal.total += 1;
+        })
+
+        setTopWidgetData({...widTotal})
+    }, [subscriptionsData])
+
     return (
         <IonPage className={"home_welcome_page_container"}>
             <IonHeader>
@@ -109,7 +98,7 @@ export default function AllUsersSubscriptionPage() {
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>Game History</span>
+                                        <span>Subscriptions</span>
                                     </div>
                                 </div>
                             </div>
@@ -169,6 +158,33 @@ export default function AllUsersSubscriptionPage() {
             </div>
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
+                    <IonGrid className="grid_for_dashboard_data_grid">
+                        <IonRow className="grid_for_dashboard_data_row">
+                            {/* First Column */}
+                            <IonCol className="grid_for_dashboard_data_col">
+                                <IonCard className="dashboard-card">
+                                    <IonCardContent className="dashboard-card-content">
+                                        <IonIcon icon={todaySharp} className="dashboard-icon"/>
+                                        <div className="title_for_das_heading">Active Subscriptions</div>
+                                        <div className="title_for_das_text">Count: {topWidgetData?.active}</div>
+                                    </IonCardContent>
+                                </IonCard>
+                            </IonCol>
+
+                            {/* Second Column */}
+                            <IonCol className="grid_for_dashboard_data_col">
+                                <IonCard className="dashboard-card">
+                                    <IonCardContent className="dashboard-card-content">
+                                        <IonIcon icon={cashSharp} className="dashboard-icon"/>
+                                        <div className="title_for_das_heading">Total Subscriptions</div>
+                                        <div className="title_for_das_text">Count: {topWidgetData?.total}</div>
+                                    </IonCardContent>
+                                </IonCard>
+                            </IonCol>
+                        </IonRow>
+                    </IonGrid>
+                </div>
+                <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {loading ?
@@ -181,12 +197,40 @@ export default function AllUsersSubscriptionPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (subscriptionsData?.length) ?
-                                    <div className={"sysMessage__container"}>
-                                        <Virtuoso
-                                            className={"virtual_item_listing"}
-                                            totalCount={subscriptionsData?.length}
-                                            itemContent={index => renderVirtualElement(subscriptionsData[index])}
-                                        />
+                                    <div className={"sysMessage__container with_list"}>
+                                        {(subscriptionsData?.map((dataItems)=> (
+                                            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                                                <div className="sysMessage__container-msgWrapper__item-title">
+                                                    <div>
+                                                        <span
+                                                            className="title">Plan Type - {dataItems?.subscription_data?.name}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="sysMessage__container-msgWrapper__item-time">
+                                                    <strong>Expiry
+                                                        date</strong>: {moment(dataItems?.expiry_date).format('YYYY-MM-DD')}
+                                                    <br/>
+                                                    <strong>UID:</strong> {dataItems?.user_data?.id}
+                                                    <br/>
+                                                    <strong>User Name:</strong> {dataItems?.user_data?.name}
+                                                    <br/>
+                                                    <strong>Email:</strong> {dataItems?.user_data?.email}
+                                                    <br/>
+                                                    <strong>IS
+                                                        ACTIVE:</strong> {dataItems?.is_active ? "ACTIVE" : "INACTIVE"}
+                                                    <br/>
+                                                    <strong>ORDER AMOUNT:</strong> ₹{dataItems?.total_value}
+                                                    <br/>
+                                                    <strong>Balance:</strong> ₹{dataItems?.balance}
+                                                    <br/>
+                                                    <strong>Subscription
+                                                        Price:</strong> ₹{dataItems?.subscription_data?.price}
+                                                    <br/>
+                                                    <strong>Subscription
+                                                        Duration:</strong> {dataItems?.subscription_data?.duration_days} Days
+                                                </div>
+                                            </div>
+                                        )))}
                                     </div>
                                     :
                                     <div className={"empty__container empty"}>
@@ -207,7 +251,7 @@ export default function AllUsersSubscriptionPage() {
                 className="add-money-to-game-wallet-modal"
                 isOpen={isTypeFilterOpen}
                 onDidDismiss={() => setIsTypeFilterOpen(false)}
-                initialBreakpoint={0.5} breakpoints={[0,0.5,1]}>
+                initialBreakpoint={0.5} breakpoints={[0, 0.5, 1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
                         <h2>Subscription Status</h2>

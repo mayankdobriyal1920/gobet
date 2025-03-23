@@ -10,19 +10,24 @@ import {
     useIonAlert,
     useIonToast
 } from "@ionic/react";
-import {useHistory, useParams} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
     actionToCallFunctionToUpdateGameResult,
-    actionToCancelNextBetOrderActivateUser, actionToGetAdminGameResultListData,
+    actionToCancelNextBetOrderActivateUser,
+    actionToGetAdminGameResultListData,
     actionToGetBetActiveUserData,
     actionToGetBetGameSessionData,
-    actionToGetGameLastResultData, actionToGetUserActiveSubscriptionData,
+    actionToGetGameLastResultData,
+    actionToGetUserActiveSubscriptionData,
     actionToGetUserBetPredictionData,
     actionToGetUserBetPredictionHistory,
-    actionToGetUserWalletAndGameBalance, actionToInactiveCurrentSession,
+    actionToGetUserWalletAndGameBalance,
+    actionToInactiveCurrentSession,
     actionToMakeCurrentUserInactive,
-    actionToOrderNextBetActivateUser, actionToUpdatePreviousGameResult
+    actionToOrderNextBetActivateUser,
+    actionToUpdateBettingUserIsOnlineUseData,
+    actionToUpdatePreviousGameResult
 } from "../redux/CommonAction";
 import noDataImage from "../theme/img/no_data_img.png";
 import moment from "moment-timezone";
@@ -153,7 +158,6 @@ export default function WinAndGoBettingMainPage() {
         return()=>{
             window.removeEventListener('popstate',handlePopState)
         }
-
     },[])
 
     useEffect(()=>{
@@ -200,6 +204,13 @@ export default function WinAndGoBettingMainPage() {
         setUpdateLoading(true);
         dispatch(actionToCallFunctionToUpdateGameResult(updateGameResult?.id,result,callFunctionToReloadGameResultList));
     }
+
+    useEffect(() => {
+        dispatch(actionToUpdateBettingUserIsOnlineUseData(1));
+        return ()=>{
+            dispatch(actionToUpdateBettingUserIsOnlineUseData(0))
+        }
+    }, []);
 
 
     return (

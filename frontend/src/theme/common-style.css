@@ -2018,6 +2018,9 @@ overflow: hidden;
 .virtual_item_listing.no_filter{
     height: 90vh!important;
 }
+.virtual_item_listing_for_wid{
+    height: 57vh!important;
+}
 ion-toast {
     font-size: 1.1rem !important;
 }
@@ -2029,7 +2032,9 @@ ion-toast {
     padding: .3rem .5rem;
     background: #177400;
 }
-
+.sysMessage__container.with_list .sysMessage__container-msgWrapper__item {
+    padding: 1rem;
+}
 ion-alert .alert-wrapper .alert-title {
     font-size: 1.3rem!important;
 }

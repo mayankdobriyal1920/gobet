@@ -444,6 +444,22 @@ export const actionToGetGamePlatformData = () => async (dispatch) => {
     }
 }
 
+export const actionToUpdateIsOnlineUseData = (isOnline) => async () => {
+    try {
+        api.post(`actionToUpdateIsOnlineUseDataApiCall`, {isOnline})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const actionToUpdateBettingUserIsOnlineUseData = (isOnline) => async () => {
+    try {
+        api.post(`actionToUpdateBettingUserIsOnlineUseDataApiCall`, {isOnline})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const actionToGetPasscodeRequestBySubAdmin = () => async (dispatch) => {
     dispatch({type: PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST});
     try {
