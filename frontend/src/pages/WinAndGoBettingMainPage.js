@@ -33,6 +33,7 @@ export default function WinAndGoBettingMainPage() {
     const {loading,sessionData} = useSelector((state) => state.betGameSessionData);
     const gameLastResult = useSelector((state) => state.gameLastResult);
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
+    const [loadingStatus,setLoadingStatus] = useState(false);
     const dispatch = useDispatch();
     const {session_id} = useParams();
     const [presentAlert] = useIonAlert();
@@ -77,7 +78,10 @@ export default function WinAndGoBettingMainPage() {
             '[]' // Inclusive of both start and end times
         )) {
             if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10) {
-                dispatch(actionToOrderNextBetActivateUser(betId));
+                if(loadingStatus) {
+                    setLoadingStatus(true);
+                    dispatch(actionToOrderNextBetActivateUser(betId,setLoadingStatus));
+                }
             } else {
                 setLowBalanceAlert(true);
             }
@@ -100,7 +104,10 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const cancelNextBetOrderActivateUser = (betId)=>{
-        dispatch(actionToCancelNextBetOrderActivateUser(betId));
+        if(!loadingStatus) {
+            setLoadingStatus(true);
+            dispatch(actionToCancelNextBetOrderActivateUser(betId, setLoadingStatus));
+        }
     }
 
     const callFunctionToInactiveCurrentSession = ()=>{
@@ -122,7 +129,10 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const updatePreviousGameResult = (result,gameResultId)=>{
-        dispatch(actionToUpdatePreviousGameResult(result,gameResultId,session_id));
+        if(!loadingStatus) {
+            setLoadingStatus(true);
+            dispatch(actionToUpdatePreviousGameResult(result, gameResultId, session_id, setLoadingStatus));
+        }
     }
 
     useEffect(()=>{
@@ -139,7 +149,7 @@ export default function WinAndGoBettingMainPage() {
     useEffect(()=>{
         if(timer === 60){
             if(userInfo?.role === 1) {
-                dispatch(actionToGetGameLastResultData(session_id));
+                dispatch(actionToGetGameLastResultData(session_id,false));
               }else{
                 dispatch(actionToGetUserBetPredictionHistory(false));
                 dispatch(actionToGetBetActiveUserData(false,false));
@@ -152,29 +162,6 @@ export default function WinAndGoBettingMainPage() {
             },1000 * 40)
         }
     },[timer,activeUserData])
-
-    useEffect(()=>{
-        dispatch(actionToGetUserBetPredictionData(activeUserData?.id))
-    },[activeUserData])
-
-    const renderVirtualGameHistoryElement = (dataItems)=>{
-        return (
-            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
-                <div className="sysMessage__container-msgWrapper__item-title">
-                    <div>
-                        <span className={"title"}>{dataItems?.game_id}</span>
-                    </div>
-                </div>
-                <div className="sysMessage__container-msgWrapper__item-time">
-                    <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
-                </div>
-                <div className="sysMessage__container-msgWrapper__item-content">
-                    Created at date time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
-                </div>
-            </div>
-        )
-    }
-
 
     return (
         <IonPage className={"home_welcome_page_container"}>

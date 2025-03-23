@@ -234,12 +234,14 @@ export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async 
     }
 }
 
-export const actionToGetBetActiveUserData = (isLoading = true,isFirstTime = true) => async (dispatch) => {
+export const actionToGetBetActiveUserData = (isLoading = true,isFirstTime = true,setLoadingStatus) => async (dispatch) => {
     if(isLoading)
       dispatch({ type: BET_ACTIVE_USER_REQUEST});
     try {
         api.post(`actionToGetBetActiveUserDataApiCall`, {}).then(responseData => {
             dispatch({ type: BET_ACTIVE_USER_SUCCESS, payload: {...responseData.data}});
+            if(setLoadingStatus)
+                setLoadingStatus(false);
             if(isFirstTime && responseData.data?.id) {
                 dispatch(actionToGetUserBetPredictionData(responseData.data?.id))
             }
@@ -261,11 +263,14 @@ export const actionToGetBetGameSessionData = (sessionId,isLoading = true) => asy
     }
 }
 
-export const actionToGetGameLastResultData = (sessionId) => async (dispatch) => {
-    dispatch({ type: GET_GAME_LAST_RESULT_REQUEST});
+export const actionToGetGameLastResultData = (sessionId,isLoading = true,setLoadingStatus) => async (dispatch) => {
+    if(isLoading)
+      dispatch({ type: GET_GAME_LAST_RESULT_REQUEST});
     try {
         api.post(`actionToGetGameLastResultDataApiCall`, {session_id:sessionId}).then(responseData => {
             dispatch({ type: GET_GAME_LAST_RESULT_SUCCESS, payload: {...responseData.data}});
+            if(setLoadingStatus)
+                setLoadingStatus(false)
         })
     } catch (error) {
         console.log(error);
@@ -744,30 +749,30 @@ export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFu
     }
 }
 
-export const actionToOrderNextBetActivateUser = (betId) => async (dispatch) => {
+export const actionToOrderNextBetActivateUser = (betId,setLoadingStatus) => async (dispatch) => {
     try {
         api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(() => {
-            dispatch(actionToGetBetActiveUserData(false,false));
+            dispatch(actionToGetBetActiveUserData(false,false,setLoadingStatus));
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-export const actionToCancelNextBetOrderActivateUser = (betId) => async (dispatch) => {
+export const actionToCancelNextBetOrderActivateUser = (betId,setLoadingStatus) => async (dispatch) => {
     try {
         api.post(`actionToCancelNextBetOrderActivateUserApiCall`, {bet_id:betId}).then(() => {
-            dispatch(actionToGetBetActiveUserData(false,false));
+            dispatch(actionToGetBetActiveUserData(false,false,setLoadingStatus));
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-export const actionToUpdatePreviousGameResult = (result,gameResultId,session_id) => async (dispatch) => {
+export const actionToUpdatePreviousGameResult = (result,gameResultId,session_id,setLoadingStatus) => async (dispatch) => {
     try {
         api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {result,id:gameResultId}).then(() => {
-            dispatch(actionToGetGameLastResultData(session_id));
+            dispatch(actionToGetGameLastResultData(session_id,false,setLoadingStatus));
             dispatch(actionToGetAdminGameResultListData(false,{session_id:session_id,created_at:moment().format('YYYY-MM-DD')}))
         })
     } catch (error) {
