@@ -150,13 +150,13 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                     <div><strong>Game type:</strong> WIN GO</div>
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-footer">
-                    <span onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(dataItems)}
-                          className={`action_button update`}>
-                        EDIT
-                    </span>
                     <span onClick={() => callFunctionToDeleteSessionData(dataItems)}
                           className={`action_button delete`}>
                         DELETE
+                    </span>
+                    <span onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(dataItems)}
+                          className={`action_button update`}>
+                        EDIT
                     </span>
                 </div>
             </div>
@@ -243,7 +243,7 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                         <span
                                             onClick={() => callFunctionToEnterBet(nearestGameSessionAndActiveSession?.gameSessionData, nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_id)}
                                             className={`action_button start-session`}>
-                                            START SESSION
+                                            START
                                         </span>
                                     </div>
                                 </div>

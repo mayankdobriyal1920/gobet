@@ -197,34 +197,6 @@ export default function AccountPage() {
                         {(userInfo?.role === 1 || userInfo?.role === 2) ?
                          <div className="settingPanel__container">
                              <div className="settingPanel__container-items">
-                                 {(userInfo?.role === 1) ?
-                                 <div onClick={() => goToPage('/admin-game-result')}
-                                      className="settingPanel__container-items__item ar-1px-b">
-                                     <div className="settingPanel__container-items__title">
-                                         <svg className="svg-icon icon-betHistory svg_min_icon" viewBox="0 0 80 80"
-                                              fill="none"
-                                              xmlns="http://www.w3.org/2000/svg">
-                                             <path
-                                                 d="M54.2259 73.1178H18.4859C12.7419 73.1178 8.08594 68.4617 8.08594 62.7177V16.9937C8.08594 11.2497 12.7419 6.59375 18.4859 6.59375H54.2259C59.9699 6.59375 64.6259 11.2497 64.6259 16.9937V62.7177C64.6259 68.4617 59.9699 73.1178 54.2259 73.1178Z"
-                                                 fill="#5CA6FF"></path>
-                                             <path
-                                                 d="M49.1664 25.4703H23.7664C21.9984 25.4703 20.5664 24.0383 20.5664 22.2703C20.5664 20.5023 21.9984 19.0703 23.7664 19.0703H49.1664C50.9344 19.0703 52.3664 20.5023 52.3664 22.2703C52.3664 24.0383 50.9344 25.4703 49.1664 25.4703ZM49.1664 38.1583H23.7664C21.9984 38.1583 20.5664 36.7263 20.5664 34.9583C20.5664 33.1903 21.9984 31.7583 23.7664 31.7583H49.1664C50.9344 31.7583 52.3664 33.1903 52.3664 34.9583C52.3664 36.7263 50.9344 38.1583 49.1664 38.1583ZM35.9304 50.8463H23.7664C21.9984 50.8463 20.5664 49.4143 20.5664 47.6463C20.5664 45.8783 21.9984 44.4463 23.7664 44.4463H35.9304C37.6984 44.4463 39.1304 45.8783 39.1304 47.6463C39.1304 49.4143 37.6944 50.8463 35.9304 50.8463Z"
-                                                 fill="var(--bg_color_L2)"></path>
-                                         </svg>
-                                         <span>Game Result</span>
-                                     </div>
-                                     <div className="settingPanel__container-items-right">
-                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                              className="van-badge__wrapper van-icon van-icon-arrow"
-                                              fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
-                                              id="Layer_1"
-                                              viewBox="0 0 330 330">
-                                             <path id="XMLID_222_"
-                                                   d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
-                                         </svg>
-                                     </div>
-                                 </div>:''
-                                 }
                                  <div onClick={() => goToPage('/admin-withdrawal-pending-request')}
                                       className="settingPanel__container-items__item ar-1px-b">
                                      <div className="settingPanel__container-items__title">

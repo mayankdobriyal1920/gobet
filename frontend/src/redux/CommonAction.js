@@ -709,6 +709,7 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
     });
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id) => async (dispatch) => {
+    dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
     try {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});

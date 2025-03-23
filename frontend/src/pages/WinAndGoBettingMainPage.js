@@ -1,8 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {IonAlert, IonContent, IonHeader, IonIcon, IonLoading, IonPage, useIonAlert, useIonToast} from "@ionic/react";
+import {
+    IonAlert,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonLoading,
+    IonModal,
+    IonPage,
+    useIonAlert,
+    useIonToast
+} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
+    actionToCallFunctionToUpdateGameResult,
     actionToCancelNextBetOrderActivateUser, actionToGetAdminGameResultListData,
     actionToGetBetActiveUserData,
     actionToGetBetGameSessionData,
@@ -37,6 +48,8 @@ export default function WinAndGoBettingMainPage() {
     const dispatch = useDispatch();
     const [presentAlert] = useIonAlert();
     const [present] = useIonToast();
+    const [updateGameResult,setUpdateGameResult] = useState(null);
+    const [updateLoading,setUpdateLoading] = useState(false);
 
     useKeepAwake();
     const goBack = ()=>{
@@ -127,8 +140,8 @@ export default function WinAndGoBettingMainPage() {
 
     const updatePreviousGameResult = (result,gameResultId)=>{
         if(!loadingStatus) {
-            setLoadingStatus(true);
-            dispatch(actionToUpdatePreviousGameResult(result, gameResultId, sessionData?.id, setLoadingStatus));
+            setUpdateLoading(true);
+            dispatch(actionToUpdatePreviousGameResult(result, gameResultId, sessionData?.id, setUpdateLoading));
         }
     }
 
@@ -147,6 +160,7 @@ export default function WinAndGoBettingMainPage() {
         if(timer === 60){
             if(userInfo?.role === 1) {
                 dispatch(actionToGetGameLastResultData(sessionData?.id,false));
+                dispatch(actionToGetAdminGameResultListData(false,{session_id:sessionData?.id,created_at:moment().format('YYYY-MM-DD')}))
               }else{
                 dispatch(actionToGetUserBetPredictionHistory(false,sessionData?.id));
                 dispatch(actionToGetBetActiveUserData(false,false));
@@ -169,6 +183,24 @@ export default function WinAndGoBettingMainPage() {
         }
         dispatch(actionToGetBetActiveUserData(true, true));
     }, []);
+
+    const callFunctionToUpdateGameResultPopup = (gameResult)=>{
+        if(!gameResult?.result){
+            setUpdateGameResult(gameResult);
+        }
+    }
+
+    const callFunctionToReloadGameResultList = ()=>{
+        dispatch(actionToGetAdminGameResultListData(false,{session_id:sessionData?.id,created_at:moment().format('YYYY-MM-DD')}))
+        setUpdateGameResult(null);
+        setUpdateLoading(false);
+    }
+
+    const callFunctionToUpdateGameResult = (result)=>{
+        setUpdateLoading(true);
+        dispatch(actionToCallFunctionToUpdateGameResult(updateGameResult?.id,result,callFunctionToReloadGameResultList));
+    }
+
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -407,14 +439,19 @@ export default function WinAndGoBettingMainPage() {
 
                                                     {(userGameHistory?.gameResult?.map((dataItems)=> (
                                                         <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
-                                                            <div className="sysMessage__container-msgWrapper__item-title">
+                                                            <div
+                                                                className="sysMessage__container-msgWrapper__item-title">
                                                                 <div>
-                                                                    <span className={"title"}>Period: {dataItems?.game_id}</span>
+                                                                    <span
+                                                                        className={"title"}>Period: {dataItems?.game_id}</span>
                                                                 </div>
+                                                                <span
+                                                                    onClick={() => callFunctionToUpdateGameResultPopup(dataItems)}
+                                                                    className={`action_button ${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span>
                                                             </div>
                                                             <div
                                                                 className="sysMessage__container-msgWrapper__item-time">
-                                                                <strong>GAME ID
+                                                            <strong>GAME ID
                                                                     :</strong> {dataItems?.game_id}
                                                                 <br/>
                                                                 <strong>GAME TYPE
@@ -468,7 +505,27 @@ export default function WinAndGoBettingMainPage() {
                 ]}
                 onDidDismiss={() => setLowBalanceAlert(false)}
             />
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={!!updateGameResult?.id}
+                onDidDismiss={() => setUpdateGameResult(null)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Game Result</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <div className={`list_status_type_item`}
+                             onClick={() => callFunctionToUpdateGameResult('SMALL')}>SMALL
+                        </div>
+                        <div className={`list_status_type_item`}
+                             onClick={() => callFunctionToUpdateGameResult('BIG')}>BIG
+                        </div>
+                    </div>
+                </IonContent>
+            </IonModal>
             <IonLoading isOpen={loadingStatus} message={"Please wait..."}/>
+            <IonLoading isOpen={updateLoading} message={"Updating..."}/>
         </IonPage>
     )
 }

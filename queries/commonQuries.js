@@ -308,7 +308,7 @@ export const getMoneyTransactionsQuery = (userId, role, body) => {
 };
 
 
-export const getGameResultListQuery = (userId, body) => {
+export const getGameResultListQuery = (userId,gameId, body) => {
     let { status, created_at,session_id } = body;
     let values = [];  // Initial values array with userId
     let condition = `1=1`;  // Initial condition with userId
@@ -330,6 +330,11 @@ export const getGameResultListQuery = (userId, body) => {
     if (session_id) {
         values.push(session_id);  // Append the created_at value
         condition += ` AND betting_game_session_id = ?`;  // Add 'created_at' condition
+    }
+
+    if (gameId) {
+        values.push(gameId);  // Append the created_at value
+        condition += ` AND game_id < ?`;  // Add 'created_at' condition
     }
 
     // Final query

@@ -1040,7 +1040,8 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const {query,values} = getGameResultListQuery(userId,payload);
+        const gameId = moment().subtract(1, 'minute').format('YYYYMMDDHHmm');
+        const {query,values} = getGameResultListQuery(userId,gameId,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
