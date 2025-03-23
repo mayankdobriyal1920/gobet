@@ -340,11 +340,11 @@ export const generatedPasscodeListByAdminReducer = (state = {}, action) => {
 export const userBetPredictionStatusReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_BET_PREDICTION_STATUS_LOADING_REQUEST:
-            return {status: 0,prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()};
+            return {prediction:{},timer:60 - new Date().getSeconds(),dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS:
-            return {status: 1,prediction:action.payload,timer:60 - new Date().getSeconds(),dateTime:new Date()};
+            return {prediction:action.payload,timer:60 - new Date().getSeconds(),dateTime:new Date()};
         case USER_BET_PREDICTION_STATUS_TIMER:
-            return {status: state.status,prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
+            return {prediction:state.prediction,dateTime:state.dateTime,timer:action.payload};
         default:
             return state;
     }

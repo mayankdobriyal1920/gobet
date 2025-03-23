@@ -297,7 +297,7 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
 
 export const actionToGetBetActiveUserDataApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
-        const query = 'SELECT id from betting_active_users WHERE user_id = ?';
+        const query = 'SELECT id,status from betting_active_users WHERE user_id = ?';
         let userData = {};
         pool.query(query,[userId], (error, results) => {
             if (error) {

@@ -80,7 +80,7 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
             betting_game_session bgs
                 INNER JOIN betting_platform bp ON bp.id = bgs.betting_platform_id
         WHERE
-            CONVERT_TZ(bgs.end_time, 'UTC', 'Asia/Kolkata') < NOW()  -- Adjust if needed
+            bgs.start_time > NOW()
         ORDER BY
             bgs.start_time DESC;
 

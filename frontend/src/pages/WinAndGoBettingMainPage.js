@@ -20,7 +20,6 @@ import {_formatTimeMMSS} from "../redux/CommonHelper";
 import useAppNavigationHandler from "../hooks/useAppNavigationHandler";
 import useKeepAwake from "../hooks/useKeepAwake";
 import {arrowBack} from "ionicons/icons";
-import {Virtuoso} from "react-virtuoso";
 
 export default function WinAndGoBettingMainPage() {
     const history = useHistory();
@@ -64,7 +63,7 @@ export default function WinAndGoBettingMainPage() {
             dispatch(actionToGetAdminGameResultListData(false,{session_id:session_id,created_at:moment().format('YYYY-MM-DD')}))
         }else{
             dispatch(actionToGetUserBetPredictionHistory());
-            dispatch(actionToGetBetActiveUserData());
+            dispatch(actionToGetBetActiveUserData(true,true));
         }
         dispatch(actionToGetBetGameSessionData(session_id));
      }, [session_id]);
@@ -143,7 +142,7 @@ export default function WinAndGoBettingMainPage() {
                 dispatch(actionToGetGameLastResultData(session_id));
               }else{
                 dispatch(actionToGetUserBetPredictionHistory(false));
-                dispatch(actionToGetBetActiveUserData());
+                dispatch(actionToGetBetActiveUserData(false,false));
                 dispatch(actionToGetUserBetPredictionData(activeUserData?.id));
                 dispatch(actionToGetUserWalletAndGameBalance());
                 dispatch(actionToGetUserActiveSubscriptionData());
@@ -244,7 +243,7 @@ export default function WinAndGoBettingMainPage() {
                                         <div className={"order_ber_button_section"}>
                                             {(userInfo?.role !== 1) ?
                                                 <div className={"order_button_and_text"}>
-                                                    {(prediction?.status !== 1) ?
+                                                    {(activeUserData?.status !== 1) ?
                                                         <React.Fragment>
                                                             <button
                                                                 onClick={() => orderNextBetActivateUser(activeUserData?.id)}

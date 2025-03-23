@@ -234,11 +234,15 @@ export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async 
     }
 }
 
-export const actionToGetBetActiveUserData = () => async (dispatch) => {
-    dispatch({ type: BET_ACTIVE_USER_REQUEST});
+export const actionToGetBetActiveUserData = (isLoading = true,isFirstTime = true) => async (dispatch) => {
+    if(isLoading)
+      dispatch({ type: BET_ACTIVE_USER_REQUEST});
     try {
         api.post(`actionToGetBetActiveUserDataApiCall`, {}).then(responseData => {
             dispatch({ type: BET_ACTIVE_USER_SUCCESS, payload: {...responseData.data}});
+            if(isFirstTime && responseData.data?.id) {
+                dispatch(actionToGetUserBetPredictionData(responseData.data?.id))
+            }
         })
     } catch (error) {
         console.log(error);
@@ -703,9 +707,10 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
     });
 }
 export const actionToGetUserBetPredictionData = (betting_active_users_id,isLoading = true) => async (dispatch) => {
-    //if(isLoading){
-       dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
-    dispatch(actionToStartTimeIntervalOfUserTime());
+    if(isLoading) {
+        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+        dispatch(actionToStartTimeIntervalOfUserTime());
+    }
     try {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
@@ -742,7 +747,7 @@ export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFu
 export const actionToOrderNextBetActivateUser = (betId) => async (dispatch) => {
     try {
         api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(() => {
-            dispatch(actionToGetUserBetPredictionData(betId,false));
+            dispatch(actionToGetBetActiveUserData(false,false));
         })
     } catch (error) {
         console.log(error);
@@ -752,7 +757,7 @@ export const actionToOrderNextBetActivateUser = (betId) => async (dispatch) => {
 export const actionToCancelNextBetOrderActivateUser = (betId) => async (dispatch) => {
     try {
         api.post(`actionToCancelNextBetOrderActivateUserApiCall`, {bet_id:betId}).then(() => {
-            dispatch(actionToGetUserBetPredictionData(betId));
+            dispatch(actionToGetBetActiveUserData(false,false));
         })
     } catch (error) {
         console.log(error);
