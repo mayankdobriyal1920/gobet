@@ -205,7 +205,7 @@ export default function LoginPage(){
                                        placeholder={"Enter Phone Number"} type={"text"} required={true}/>
                             </IonCol>
                         </IonRow>
-                            {otpError && <IonRow>
+                            {phoneError && <IonRow>
                                 <IonCol size={12}>
                                     {phoneError && <p className="error fontsize2">{phoneErrorMessage}</p>}
                                 </IonCol>

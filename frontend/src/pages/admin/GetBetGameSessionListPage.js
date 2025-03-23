@@ -20,11 +20,12 @@ import {
 import LineLoaderComponent from "../../components/LineLoaderComponent";
 import {App as CapacitorApp} from "@capacitor/app";
 
-export default function GetBetGameSessionListPage({handleCloseModal,callFunctionToActiveSectionAndStartGame}) {
+export default function GetBetGameSessionListPage({handleCloseModal,callFunctionToActiveSectionAndStartGame,callFunctionToEnterBetUserRole}) {
     const history = useHistory();
     const {loading,gameSessionData} = useSelector((state) => state.gameSessionAndAllSession);
     const nearestGameSessionAndActiveSession = useSelector((state) => state.nearestGameSessionAndActiveSession);
     const {platformData} = useSelector((state) => state.gamePlatformData);
+    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [isAddEditSessionPopupOpen,setIsAddEditSessionPopupOpen] = useState(false);
     const [sessionDataToEdit,setSessionDataToEdit] = useState(null);
     const [sessionGamePlatform, setSessionGamePlatform] = useState(
@@ -108,7 +109,7 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
             dispatch(actionToSaveGameSessionData(sessionDataToEdit,sessionGamePlatform?.id,'win_go',sessionStartTime,resetUpdate))
         }
     }
-
+//gameSessionData?.betting_platform_id
     const callFunctionToEnterBet =(sessionData)=>{
         if (sessionData.is_active) {
             callFunctionToActiveSectionAndStartGame(sessionData?.id);
@@ -149,16 +150,18 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                     </div>
                     <div><strong>Game type:</strong> WIN GO</div>
                 </div>
-                <div className="sysMessage__container-msgWrapper__item-footer">
-                    <span onClick={() => callFunctionToDeleteSessionData(dataItems)}
-                          className={`action_button delete`}>
-                        DELETE
-                    </span>
-                    <span onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(dataItems)}
-                          className={`action_button update`}>
-                        EDIT
-                    </span>
-                </div>
+                {(userInfo?.role === 1) ?
+                    <div className="sysMessage__container-msgWrapper__item-footer">
+                        <span onClick={() => callFunctionToDeleteSessionData(dataItems)}
+                              className={`action_button delete`}>
+                            DELETE
+                        </span>
+                        <span onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(dataItems)}
+                              className={`action_button update`}>
+                            EDIT
+                        </span>
+                    </div>:''
+                }
             </div>
         )
     }
@@ -179,11 +182,13 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                         <span>Game Sessions</span>
                                     </div>
                                 </div>
+                            {(userInfo?.role === 1) ?
                                 <div onClick={()=>callFunctionToSetIsAddEditSessionPopupOpen()} className="navbar__content-right">
                                     <div className="navbar__content-button">
                                         ADD
                                     </div>
-                                </div>
+                                </div>:''
+                            }
                             </div>
                         </div>
                     </div>
@@ -210,14 +215,21 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                 <div className="sysMessage__container-msgWrapper__item">
                                     <div className="sysMessage__container-msgWrapper__item-title">
                                         <div>
-                                            <span
-                                                className={"title"}>Platform: {nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_name}</span>
+                                            <span className={"title"}>Platform: {nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_name}</span>
                                         </div>
-                                        <span
-                                            onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(nearestGameSessionAndActiveSession?.gameSessionData)}
-                                            className={`action_button update`}>
-                                            EDIT
-                                        </span>
+                                        {(userInfo?.role === 1) ?
+                                            <span
+                                                onClick={() => callFunctionToSetIsAddEditSessionPopupOpen(nearestGameSessionAndActiveSession?.gameSessionData)}
+                                                className={`action_button update`}>
+                                                EDIT
+                                            </span>
+                                            :
+                                            <span
+                                                onClick={() => callFunctionToEnterBetUserRole(nearestGameSessionAndActiveSession?.gameSessionData, nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_id)}
+                                                className={`action_button update`}>
+                                                ENTER
+                                            </span>
+                                        }
                                     </div>
                                     <div className="sysMessage__container-msgWrapper__item-content">
                                         <div>
@@ -234,18 +246,20 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                         </div>
                                         <div><strong>Game type:</strong> WIN GO</div>
                                     </div>
-                                    <div className="sysMessage__container-msgWrapper__item-footer">
-                                        <span
-                                            onClick={() => callFunctionToDeleteSessionData(nearestGameSessionAndActiveSession?.gameSessionData)}
-                                            className={`action_button delete`}>
-                                            DELETE
-                                        </span>
-                                        <span
-                                            onClick={() => callFunctionToEnterBet(nearestGameSessionAndActiveSession?.gameSessionData, nearestGameSessionAndActiveSession?.gameSessionData?.betting_platform_id)}
-                                            className={`action_button start-session`}>
-                                            START
-                                        </span>
-                                    </div>
+                                    {(userInfo?.role === 1) ?
+                                        <div className="sysMessage__container-msgWrapper__item-footer">
+                                            <span
+                                                onClick={() => callFunctionToDeleteSessionData(nearestGameSessionAndActiveSession?.gameSessionData)}
+                                                className={`action_button delete`}>
+                                                DELETE
+                                            </span>
+                                            <span
+                                                onClick={() => callFunctionToEnterBet(nearestGameSessionAndActiveSession?.gameSessionData)}
+                                                className={`action_button start-session`}>
+                                                START
+                                            </span>
+                                        </div>:''
+                                    }
                                 </div>
                             </div>
                                 :
