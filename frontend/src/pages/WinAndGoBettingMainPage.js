@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {IonAlert, IonContent, IonHeader, IonIcon, IonPage, useIonAlert} from "@ionic/react";
+import {IonAlert, IonContent, IonHeader, IonIcon, IonLoading, IonPage, useIonAlert, useIonToast} from "@ionic/react";
 import {useHistory, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -35,8 +35,8 @@ export default function WinAndGoBettingMainPage() {
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
     const [loadingStatus,setLoadingStatus] = useState(false);
     const dispatch = useDispatch();
-    const {session_id} = useParams();
     const [presentAlert] = useIonAlert();
+    const [present] = useIonToast();
 
     useKeepAwake();
     const goBack = ()=>{
@@ -50,24 +50,13 @@ export default function WinAndGoBettingMainPage() {
 
     const callFunctionToHandleAppExit = ()=>{
         if(userInfo?.role === 1) {
-            dispatch(actionToInactiveCurrentSession(session_id));
+            dispatch(actionToInactiveCurrentSession(sessionData?.id));
         }else{
             if(status !== 2 && status !== 1){
                 dispatch(actionToMakeCurrentUserInactive(activeUserData?.id));
             }
         }
     }
-
-    useEffect(() => {
-        if(userInfo?.role === 1) {
-            dispatch(actionToGetGameLastResultData(session_id));
-            dispatch(actionToGetAdminGameResultListData(false,{session_id:session_id,created_at:moment().format('YYYY-MM-DD')}))
-        }else{
-            dispatch(actionToGetUserBetPredictionHistory());
-            dispatch(actionToGetBetActiveUserData(true,true));
-        }
-        dispatch(actionToGetBetGameSessionData(session_id));
-     }, [session_id]);
 
     const orderNextBetActivateUser = (betId)=>{
 
@@ -78,7 +67,7 @@ export default function WinAndGoBettingMainPage() {
             '[]' // Inclusive of both start and end times
         )) {
             if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10) {
-                if(loadingStatus) {
+                if(!loadingStatus) {
                     setLoadingStatus(true);
                     dispatch(actionToOrderNextBetActivateUser(betId,setLoadingStatus));
                 }
@@ -111,27 +100,35 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const callFunctionToInactiveCurrentSession = ()=>{
-        presentAlert({
-            header: "Alert",
-            cssClass: 'custom_site_alert_toast',
-            subHeader: "Are you sure?",
-            message: "You want to make current session inactive.",
-            buttons: [
-                {
-                    text: "OK",
-                    handler: () => {
-                        dispatch(actionToInactiveCurrentSession(session_id));
-                        goBack();
+        if(timer >= 10) {
+            presentAlert({
+                header: "Alert",
+                cssClass: 'custom_site_alert_toast',
+                subHeader: "Are you sure?",
+                message: "You want to make current session inactive.",
+                buttons: [
+                    {
+                        text: "OK",
+                        handler: () => {
+                            dispatch(actionToInactiveCurrentSession(sessionData?.id));
+                            goBack();
+                        },
                     },
-                },
-            ],
-        });
+                ],
+            });
+        }else{
+            present({
+                message: 'All bets are placed please inactive session after current bet!',
+                duration: 2000,
+                position: 'bottom'
+            });
+        }
     }
 
     const updatePreviousGameResult = (result,gameResultId)=>{
         if(!loadingStatus) {
             setLoadingStatus(true);
-            dispatch(actionToUpdatePreviousGameResult(result, gameResultId, session_id, setLoadingStatus));
+            dispatch(actionToUpdatePreviousGameResult(result, gameResultId, sessionData?.id, setLoadingStatus));
         }
     }
 
@@ -149,19 +146,29 @@ export default function WinAndGoBettingMainPage() {
     useEffect(()=>{
         if(timer === 60){
             if(userInfo?.role === 1) {
-                dispatch(actionToGetGameLastResultData(session_id,false));
+                dispatch(actionToGetGameLastResultData(sessionData?.id,false));
               }else{
-                dispatch(actionToGetUserBetPredictionHistory(false));
+                dispatch(actionToGetUserBetPredictionHistory(false,sessionData?.id));
                 dispatch(actionToGetBetActiveUserData(false,false));
-                dispatch(actionToGetUserBetPredictionData(activeUserData?.id));
+                dispatch(actionToGetUserBetPredictionData(activeUserData?.id,false));
                 dispatch(actionToGetUserWalletAndGameBalance());
                 dispatch(actionToGetUserActiveSubscriptionData());
             }
             setTimeout(()=>{
-                dispatch(actionToGetBetGameSessionData(session_id,false));
+                dispatch(actionToGetBetGameSessionData(sessionData?.id,false));
             },1000 * 40)
         }
-    },[timer,activeUserData])
+    },[timer])
+
+    useEffect(() => {
+        if(userInfo?.role === 1) {
+            dispatch(actionToGetGameLastResultData(sessionData?.id));
+            dispatch(actionToGetAdminGameResultListData(false,{session_id:sessionData?.id,created_at:moment().format('YYYY-MM-DD')}))
+        }else {
+            dispatch(actionToGetUserBetPredictionHistory(true,sessionData?.id));
+        }
+        dispatch(actionToGetBetActiveUserData(true, true));
+    }, []);
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -298,7 +305,7 @@ export default function WinAndGoBettingMainPage() {
                                                 {(prediction?.bet_id) ?
                                                     <div className={"GameList__C"}>
                                                         <div className={"GameList__C-item active"}>
-                                                            <div>Win Go<br/>{prediction?.min} Min</div>
+                                                            <div>Win Go<br/>1 Min</div>
                                                         </div>
                                                         <div className={"GameList__C-item not_active"}>
                                                             <div className={"bet_pre_txt_1"}>{prediction?.option_name}</div>
@@ -461,6 +468,7 @@ export default function WinAndGoBettingMainPage() {
                 ]}
                 onDidDismiss={() => setLowBalanceAlert(false)}
             />
+            <IonLoading isOpen={loadingStatus} message={"Please wait..."}/>
         </IonPage>
     )
 }

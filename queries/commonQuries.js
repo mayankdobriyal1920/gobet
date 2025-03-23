@@ -82,7 +82,7 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
         WHERE
             bgs.start_time > NOW()
         ORDER BY
-            bgs.start_time DESC;
+            bgs.start_time;
 
 
     `;

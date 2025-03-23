@@ -134,36 +134,80 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformApiCall = () => {
 
 }
 
-export const actionToSaveGameSessionDataApiCall = (userId,body) => {
-    const {
-        id,
-        start_time, // Default to current time if null
-        end_time,
-        betting_platform_id,
-        game_type
-    } = body;
-    return new Promise(function(resolve) {
-        if(!id){
-            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-            let aliasArray = ['?','?','?','?','?'];
-            let columnArray = ["start_time","end_time","betting_platform_id","game_type","created_by"];
-            let valuesArray = [start_time,end_time,betting_platform_id,game_type,userId];
-            let insertData = {alias: aliasArray, column: columnArray, values: valuesArray, tableName: 'betting_game_session'};
-            insertCommonApiCall(insertData).then(()=>{
-                resolve({status:1});
-            })
-            ////////// UPDATE USER PERCENTAGE IN DB ////////////////
-        }else{
-            let setData = `start_time = ?,end_time = ?,betting_platform_id = ?,game_type = ?`;
-            const whereCondition = `id = ?`;
-            let dataToSend = {column: setData, value: [start_time,end_time,betting_platform_id,game_type,id], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_game_session'};
-            updateCommonApiCall(dataToSend).then(()=> {
-                resolve({status: 1});
-            })
-        }
-    })
+export const actionToSaveGameSessionDataApiCall = (userId, body) => {
+    const { id, start_time, end_time, betting_platform_id, game_type } = body;
 
-}
+    return new Promise((resolve) => {
+        const values = [
+            start_time, start_time,  // Case 1: Overlapping start time
+            end_time, end_time,      // Case 2: Overlapping end time
+            start_time, end_time,    // Case 3: New session inside old session
+            start_time, end_time     // Case 4: Old session inside new session
+        ];
+
+        let condition = "";
+        if (id) {
+            condition = " AND id != ?";
+            values.push(id);
+        }
+
+        const query = `
+            SELECT id FROM betting_game_session
+            WHERE game_type = ?
+              AND (
+                (start_time <= ? AND end_time >= ?) OR  -- Case 1
+                (start_time <= ? AND end_time >= ?) OR  -- Case 2
+                (start_time >= ? AND end_time <= ?) OR  -- Case 3
+                (? <= start_time AND ? >= end_time)     -- Case 4
+                ) ${condition}`;
+
+        console.log("Executing Query:", query);
+        console.log("With Values:", [game_type, ...values]);
+
+        pool.query(query, [game_type, ...values], (error, results) => {
+            if (error) {
+                console.error("Database Query Error:", error);
+                resolve({ status: 0, message: "Database error" });
+                return;
+            }
+
+            console.log("Query Results:", results);
+            console.log("Results Length:", results?.length);
+
+            if (!results?.length) {
+                if (!id) {
+                    let insertData = {
+                        alias: ["?", "?", "?", "?", "?"],
+                        column: ["start_time", "end_time", "betting_platform_id", "game_type", "created_by"],
+                        values: [start_time, end_time, betting_platform_id, game_type, userId],
+                        tableName: "betting_game_session",
+                    };
+
+                    insertCommonApiCall(insertData).then(() => {
+                        resolve({ status: 1 });
+                    });
+                } else {
+                    let dataToSend = {
+                        column: `start_time = ?, end_time = ?, betting_platform_id = ?, game_type = ?`,
+                        value: [start_time, end_time, betting_platform_id, game_type, id],
+                        whereCondition: `id = ?`,
+                        returnColumnName: "id",
+                        tableName: "betting_game_session",
+                    };
+
+                    updateCommonApiCall(dataToSend).then(() => {
+                        resolve({ status: 1 });
+                    });
+                }
+            } else {
+                resolve({ status: 0, message: "A session already exists in this time range" });
+            }
+        });
+    });
+};
+
+
+
 
 export const actionToGetGamePlatformDataApiCall = () => {
     return new Promise(function(resolve, reject) {
@@ -297,7 +341,7 @@ export const actionToGetUserWalletAndGameBalanceApiCall = (userId) => {
 
 export const actionToGetBetActiveUserDataApiCall = (userId) => {
     return new Promise(function(resolve, reject) {
-        const query = 'SELECT id,status from betting_active_users WHERE user_id = ?';
+        const query = 'SELECT id,status,betting_game_session_id from betting_active_users WHERE user_id = ?';
         let userData = {};
         pool.query(query,[userId], (error, results) => {
             if (error) {
@@ -747,17 +791,19 @@ export const actionToMakeCurrentUserInactiveApiCall = (betting_active_users_id) 
         })
     })
 }
-export const actionToGetUserBetPredictionHistoryApiCall = (userId) => {
+export const actionToGetUserBetPredictionHistoryApiCall = (userId,sessionId) => {
     return new Promise(function(resolve, reject) {
         let predData = [];
         const query = `SELECT *
                            FROM bet_prediction_history
-                           WHERE user_id = ?
-                           AND status = ?
-                           AND game_type = ?
+                           INNER JOIN game_result ON bet_prediction_history.game_result_id = game_result.id
+                           WHERE bet_prediction_history.user_id = ?
+                           AND bet_prediction_history.status = ?
+                           AND bet_prediction_history.game_type = ?
+                           AND game_result.betting_game_session_id = ?
                            ORDER BY bet_prediction_history.bet_id desc
                            LIMIT 20`;
-        pool.query(query,[userId,0,'win_go'], (error, results) => {
+        pool.query(query,[userId,0,'win_go',sessionId], (error, results) => {
             if (error) {
                 reject(error)
             }

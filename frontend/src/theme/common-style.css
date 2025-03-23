@@ -904,7 +904,7 @@ ion-header {
 
 .getbet__container .item .gameImg {
     width: auto;
-    height: 11.5rem;
+    height: auto;
     border-radius: .26667rem;
     background: var(--theme-gradiant-color);
     margin-top: .4rem;

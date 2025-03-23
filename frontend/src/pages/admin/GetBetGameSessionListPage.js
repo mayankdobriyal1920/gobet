@@ -34,7 +34,6 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
 
     const [updateLoading,setUpdateLoading] = useState(false);
     const [sessionStartTime,setSessionStartTime] = useState(moment().format());
-    const [gameType,setGameType] = useState('win_go');
     const dispatch = useDispatch();
     const [presentAlert] = useIonAlert();
     const goBack = ()=>{
@@ -50,15 +49,27 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
         dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
     },[])
 
-    const resetUpdate = () =>{
+    const resetDelete = () =>{
+        setUpdateLoading(false);
+        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
+        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform())
+    }
+    const resetUpdate = (data = {}) =>{
         setSessionDataToEdit(null);
         setSessionGamePlatform(platformData.find((plat) => plat.id === 1))
         setUpdateLoading(false);
         setSessionStartTime(moment().format())
-        setGameType('win_go')
         setIsAddEditSessionPopupOpen(false);
-        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
-        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform())
+        if(data.status === 1) {
+            dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform())
+            dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform())
+        }else{
+            present({
+                message: data?.message,
+                duration: 2000,
+                position: 'bottom'
+            });
+        }
     }
    
     const callFunctionToDeleteSessionData = (data = null) =>{
@@ -71,7 +82,7 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                     {text: 'Cancel', role: 'cancel'},
                     {text: 'Delete', role: 'confirm', handler: () => {
                             setUpdateLoading(true);
-                            dispatch(actionToDeleteGameSessionData(data?.id,resetUpdate))
+                            dispatch(actionToDeleteGameSessionData(data?.id,resetDelete))
                     }},
                 ],
             });
@@ -84,19 +95,17 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
             setSessionDataToEdit(data);
             setSessionStartTime(moment(`${moment().format('YYYY-MM-DD')} ${data?.start_time}`,'YYYY-MM-DD HH:mm:ss').format());
             setSessionGamePlatform(platformData.find((plat) => plat.id === data?.betting_platform_id));
-            setGameType(data?.game_type);
         }else{
             setSessionDataToEdit(null);
             setSessionGamePlatform(platformData.find((plat) => plat.id === 1))
             setSessionStartTime(moment().format())
-            setGameType('win_go')
         }
     }
 
     const callFunctionToSaveSessionData = () =>{
-        if(sessionGamePlatform?.id && sessionStartTime && gameType){
+        if(sessionGamePlatform?.id && sessionStartTime){
             setUpdateLoading(true);
-            dispatch(actionToSaveGameSessionData(sessionDataToEdit,sessionGamePlatform?.id,gameType,sessionStartTime,resetUpdate))
+            dispatch(actionToSaveGameSessionData(sessionDataToEdit,sessionGamePlatform?.id,'win_go',sessionStartTime,resetUpdate))
         }
     }
 
@@ -187,7 +196,16 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                             <div className="getbet-title getbet-line">
                                 <div className="getbet-title-left"><span>Current Session</span></div>
                             </div>
-                            {(nearestGameSessionAndActiveSession?.gameSessionData?.id) ?
+                            {(nearestGameSessionAndActiveSession?.loading) ?
+                                <React.Fragment>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
+                                    <LineLoaderComponent/>
+                                </React.Fragment>
+                            :(nearestGameSessionAndActiveSession?.gameSessionData?.id) ?
                                 <div className={"sysMessage__container_item"}>
                                 <div className="sysMessage__container-msgWrapper__item">
                                     <div className="sysMessage__container-msgWrapper__item-title">
@@ -283,7 +301,7 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                 className="add-money-to-game-wallet-modal"
                 isOpen={isAddEditSessionPopupOpen}
                 onDidDismiss={() => setIsAddEditSessionPopupOpen(false)}
-                initialBreakpoint={0.7} breakpoints={[0.7, 1, 1]}>
+                initialBreakpoint={0.7} breakpoints={[0.6, 1, 1]}>
                 <IonContent className="ion-padding">
                     <div className="add_money_game_wallet_heading">
                         <h2>Add Edit Session</h2>
@@ -308,34 +326,6 @@ export default function GetBetGameSessionListPage({handleCloseModal,callFunction
                                             {platform.name}
                                         </IonSelectOption>
                                     ))}
-                                </IonSelect>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol size="12">
-                                <IonSelect
-                                    label="Select Game Type"
-                                    value={gameType}
-                                    onIonChange={(e) => {
-                                        const selectedValues = e.detail.value; // This will be an array
-                                        setGameType(selectedValues);
-                                    }}
-                                >
-                                    <IonSelectOption
-                                        value={'win_go'}
-                                    >
-                                        Win Go
-                                    </IonSelectOption>
-                                    <IonSelectOption
-                                        value={'aviator'}
-                                    >
-                                        Aviator
-                                    </IonSelectOption>
-                                    <IonSelectOption
-                                        value={'limbo'}
-                                    >
-                                        Limbo
-                                    </IonSelectOption>
                                 </IonSelect>
                             </IonCol>
                         </IonRow>

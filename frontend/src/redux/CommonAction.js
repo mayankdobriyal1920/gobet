@@ -85,20 +85,6 @@ export const actionToGetUserSessionData = () => async (dispatch) => {
     }
 }
 
-export const actionToLoginUserAndSendOtp = (phone) => async (dispatch) => {
-    // try {
-    //     api.post(`actionToLoginUserAndSendOtpApiCall`, {phone}).then(data => {
-    //         if(data?.response?.status){
-    //
-    //         }else{
-    //
-    //         }
-    //     })
-    // } catch (error) {
-    //
-    // }
-}
-
 export const actionToSendOtp = (phone,callFunctionToSendOtpTimeInterval) => async (dispatch) => {
     dispatch({ type: USER_GET_OTP_REQUEST});
     try {
@@ -235,8 +221,11 @@ export const actionToGetUserWalletAndGameBalance = (setBalanceLoading) => async 
 }
 
 export const actionToGetBetActiveUserData = (isLoading = true,isFirstTime = true,setLoadingStatus) => async (dispatch) => {
-    if(isLoading)
-      dispatch({ type: BET_ACTIVE_USER_REQUEST});
+    if(isLoading) {
+        dispatch({type: BET_ACTIVE_USER_REQUEST});
+        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
+        dispatch(actionToStartTimeIntervalOfUserTime());
+    }
     try {
         api.post(`actionToGetBetActiveUserDataApiCall`, {}).then(responseData => {
             dispatch({ type: BET_ACTIVE_USER_SUCCESS, payload: {...responseData.data}});
@@ -251,12 +240,15 @@ export const actionToGetBetActiveUserData = (isLoading = true,isFirstTime = true
     }
 }
 
-export const actionToGetBetGameSessionData = (sessionId,isLoading = true) => async (dispatch) => {
+export const actionToGetBetGameSessionData = (sessionId,isLoading = true,callFunctionToEnterInGame) => async (dispatch) => {
     if(isLoading)
       dispatch({ type: BET_GAME_SESSION_REQUEST});
     try {
         api.post(`actionToGetBetGameSessionDataApiCall`, {session_id:sessionId}).then(responseData => {
             dispatch({ type: BET_GAME_SESSION_SUCCESS, payload: {...responseData.data}});
+            if(callFunctionToEnterInGame) {
+                callFunctionToEnterInGame();
+            }
         })
     } catch (error) {
         console.log(error);
@@ -378,11 +370,11 @@ export const actionTransferMoneyToMainWallet = (setWalletTransferLoader) => asyn
     }
 }
 
-export const actionToGetUserBetPredictionHistory = (isLoading = true) => async (dispatch) => {
+export const actionToGetUserBetPredictionHistory = (isLoading = true,sessionId) => async (dispatch) => {
     if(isLoading)
        dispatch({type: USER_BET_PREDICTION_HISTORY_REQUEST});
     try {
-        api.post(`actionToGetUserBetPredictionHistoryApiCall`, {}).then(responseData => {
+        api.post(`actionToGetUserBetPredictionHistoryApiCall`, {sessionId}).then(responseData => {
             dispatch({ type: USER_BET_PREDICTION_HISTORY_SUCCESS, payload: [...responseData.data]});
         })
     } catch (error) {
@@ -422,9 +414,9 @@ export const actionToSaveGameSessionData = (sessionDataToEdit,gamePlatformId,gam
             betting_platform_id: gamePlatformId, // Ensure it's always an array
             game_type:gameType
         };
-        api.post(`actionToSaveGameSessionDataApiCall`, payload).then(() => {
+        api.post(`actionToSaveGameSessionDataApiCall`, payload).then(({data}) => {
             if(resetUpdate)
-                resetUpdate()
+                resetUpdate(data)
         })
     } catch (error) {
         console.log(error);
@@ -681,6 +673,8 @@ export const actionToMakeCurrentUserInactive = (betting_active_users_id) => asyn
     api.post(`actionToMakeCurrentUserInactiveApiCall`, {betting_active_users_id});
 }
 export const actionToConnectSocketServer = () => async (dispatch,getState) => {
+    const userInfo = getState()?.userAuthDetail?.userInfo;
+    const activeUserData = getState()?.betActiveUserData?.activeUserData;
     const socket = createSocketConnection();
     socket.on('connect', () => {
         console.log('Connected to socket server:', socket.id);
@@ -689,21 +683,24 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
     socket.on('message', (data) => {
         let websocketData = JSON.parse(data);
         switch (websocketData?.type) {
-            case 'USER_BETTING_DATA_RECEIVED':
-                if (websocketData?.selectedGroup?.length) {
-                    const userIdsArray = websocketData.selectedGroup.map(user => user.id);
-                    if (userIdsArray.includes(getState().userAuthDetail?.userInfo?.id)) {
-                        let currentUserBetData = websocketData.selectedGroup.find((user) =>
-                            user?.id === getState().userAuthDetail?.userInfo?.id
-                        );
-                        if (currentUserBetData?.betting_active_users_id) {
-                            dispatch(actionToGetUserBetPredictionData(currentUserBetData?.betting_active_users_id));
-                        }
-                        dispatch(actionToGetUserWalletAndGameBalance())
-                        dispatch(actionToGetUserActiveSubscriptionData())
-                    }
-                }
+            case 'USER_BETTING_DATA_RECEIVED': {
+                console.log(userInfo?.id,activeUserData?.betting_game_session_id);
+                // if(userInfo?.id && activeUserData?.betting_game_session_id) {
+                //     if (userInfo?.role === 1) {
+                //         dispatch(actionToGetGameLastResultData(activeUserData?.betting_game_session_id, false));
+                //     } else {
+                //         dispatch(actionToGetUserBetPredictionHistory(false));
+                //         dispatch(actionToGetBetActiveUserData(false, false));
+                //         dispatch(actionToGetUserBetPredictionData(activeUserData?.id,false));
+                //         dispatch(actionToGetUserWalletAndGameBalance());
+                //         dispatch(actionToGetUserActiveSubscriptionData());
+                //     }
+                //     setTimeout(() => {
+                //         dispatch(actionToGetBetGameSessionData(activeUserData?.betting_game_session_id, false));
+                //     }, 1000 * 40)
+                // }
                 break;
+            }
         }
     });
 
@@ -711,11 +708,7 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
         console.log('Disconnected from socket server');
     });
 }
-export const actionToGetUserBetPredictionData = (betting_active_users_id,isLoading = true) => async (dispatch) => {
-    if(isLoading) {
-        dispatch({type: USER_BET_PREDICTION_STATUS_LOADING_REQUEST});
-        dispatch(actionToStartTimeIntervalOfUserTime());
-    }
+export const actionToGetUserBetPredictionData = (betting_active_users_id) => async (dispatch) => {
     try {
         api.post(`actionToGetUserBetPredictionDataApiCall`, {betting_active_users_id}).then(responseData => {
             dispatch({type: USER_BET_PREDICTION_STATUS, payload: {...responseData?.data.prediction}});
@@ -725,24 +718,20 @@ export const actionToGetUserBetPredictionData = (betting_active_users_id,isLoadi
     }
 }
 
-export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunctionToEnterInGame) => async () => {
+export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunctionToEnterInGame) => async (dispatch) => {
     try {
         api.post(`actionToUpdateUserAliveForGameApiCall`, {sessionId:sessionId,platformId:platformId}).then(() => {
-            if(callFunctionToEnterInGame) {
-                callFunctionToEnterInGame(sessionId);
-            }
+            dispatch(actionToGetBetGameSessionData(sessionId,true,callFunctionToEnterInGame));
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async () => {
+export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async (dispatch) => {
     try {
         api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId}).then(() => {
-            if(callFunctionToEnterInGame) {
-                callFunctionToEnterInGame(sessionId);
-            }
+            dispatch(actionToGetBetGameSessionData(sessionId,true,callFunctionToEnterInGame));
         })
     } catch (error) {
         console.log(error);

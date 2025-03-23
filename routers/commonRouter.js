@@ -648,7 +648,7 @@ commonRouter.post(
     '/actionToGetUserBetPredictionHistoryApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToGetUserBetPredictionHistoryApiCall(req?.session?.userSessionData?.id).then(responseData => {
+            actionToGetUserBetPredictionHistoryApiCall(req?.session?.userSessionData?.id,req.body.sessionId).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

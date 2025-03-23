@@ -58,7 +58,98 @@ export default function DashboardPage() {
                 <div className={"profile_account_main_page_header_container"}>
                     <div className={"profile_account_main_page_header_container_background_dashboard"}>
                         {(loading) ?
-                            <LineLoaderComponent/>
+                            <IonGrid className="grid_for_dashboard_data_grid">
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <IonCardContent className="dashboard-card-content">
+                                            <LineLoaderComponent/>
+                                            <LineLoaderComponent/>
+                                        </IonCardContent>
+                                    </IonCol>
+                                </IonRow>
+                            </IonGrid>
                             :
                             <IonGrid className="grid_for_dashboard_data_grid">
                                 <IonRow className="grid_for_dashboard_data_row">
