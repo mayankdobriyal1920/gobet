@@ -89,7 +89,7 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
 };
 
 export const signupQuery = () => {
-    return `INSERT INTO app_user(id, name,uid, phone_number, profile_url, sub_admin, wallet_balance, role) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
+    return `INSERT INTO app_user(id, name, phone_number, profile_url, sub_admin, wallet_balance, role) VALUES(?, ?, ?, ?, ?, ?, ?)`;
 };
 
 export const updatePassCodeQuery = () => {

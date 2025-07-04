@@ -1,17 +1,6 @@
 import React, {createRef, useEffect, useState} from "react";
-import {
-    IonCard, IonCardContent,
-    IonCol,
-    IonContent,
-    IonDatetime,
-    IonGrid,
-    IonHeader,
-    IonIcon,
-    IonModal,
-    IonPage,
-    IonRow
-} from "@ionic/react";
-import {arrowBack, cashSharp, todaySharp} from "ionicons/icons";
+import {IonCol, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage, IonRow} from "@ionic/react";
+import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
 import {actionToGetGameHistoryData} from "../redux/CommonAction";
 import {useDispatch, useSelector} from "react-redux";
@@ -23,31 +12,48 @@ export default function GameTransactionPage() {
     const dispatch = useDispatch();
     const history = useHistory();
     const {loading,gameHistory} = useSelector((state) => state.userGameHistory);
-    const {userInfo} = useSelector((state) => state.userAuthDetail);
     const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
     const [statusTypeFilter,setStatusTypeFilter] = useState('All');
     const [optionFilter,setOptionFilter] = useState('All');
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
     const datetimeRef = createRef();
-    const [topWidgetData,setTopWidgetData] = useState({today:0,total:0,todayAmount:0,totalAmount:0});
     const goBack = ()=>{
         history.goBack();
         window.history.back();
     }
 
-    useEffect(()=>{
-        let sTotal = {today:0,total:0,todayAmount:0,totalAmount:0}
-        gameHistory?.forEach((dataItems)=>{
-            if(moment(dataItems).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
-                sTotal.today += 1;
-                sTotal.todayAmount += dataItems.amount;
-            }
-            sTotal.totalAmount += dataItems.amount;
-            sTotal.total += 1;
-        })
-        setTopWidgetData({...sTotal})
-    },[gameHistory])
+    const renderVirtualElement = (dataItems)=>{
+        return (
+            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>PERIOD - {moment(dataItems?.created_at).format('YYYY-MM-DD hh:mm a')}</span>
+                    </div>
+                    <span className={`action_button ${dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }`}>{dataItems?.win_status === 1 ? 'WIN' : 'LOOSE' }</span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>ID</strong> : {dataItems?.bet_id}
+                    <br/>
+                    <strong>GAME TYPE :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
+                    <br/>
+                    <strong>ORDER</strong> : {dataItems?.option_name}
+                    <br/>
+                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL'}
+                </div>
+                {dataItems?.win_status === 1 ?
+                    <div className="sysMessage__container-msgWrapper__item-content">
+                        ₹{0.02 * dataItems?.amount} Amount Credited
+                    </div>
+                    :
+                    <div className="sysMessage__container-msgWrapper__item-content">
+                        ₹{(dataItems?.amount * 2) - (0.02 * dataItems?.amount)} Amount Credited
+                    </div>
+                }
+            </div>
+
+        )
+    }
 
     const callFunctionToApplyTypeFilter = (filter, optionValue) => {
         if (statusTypeFilter !== filter) {
@@ -77,6 +83,34 @@ export default function GameTransactionPage() {
         dispatch(actionToGetGameHistoryData(true, {status: typeFilter, created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
+    useEffect(() => {
+        setTimeout(()=>{
+            const datetimeElement = datetimeRef.current;
+            const shadowRoot = datetimeElement?.shadowRoot;
+
+            if (shadowRoot) {
+                // Access the buttons inside the calendar
+                const buttons = shadowRoot.querySelectorAll('.calendar-next-prev ion-button');
+                buttons?.forEach((button) => {
+                    button.style.fontSize = '.7rem';  // Reduce font size
+                    button.style.height = '50px';    // Reduce height
+                    button.style.width = '50px';     // Reduce width
+                    button.style.padding = '0';      // Remove padding
+                });
+
+                // Optionally reduce icon size
+                const icons = shadowRoot.querySelectorAll('.calendar-next-prev ion-icon');
+                icons?.forEach((icon) => {
+                    icon.style.fontSize = '.7rem';  // Reduce icon size
+                });
+
+
+                const weekDaysButtons = shadowRoot.querySelector('.calendar-days-of-week');
+                if(weekDaysButtons)
+                    weekDaysButtons.style.fontSize = '.5rem';  // Reduce icon size
+            }
+        },100)
+    }, [datetimeRef.current,isDateFilterOpen]);
 
     useEffect(() => {
         //console.log('on page load');
@@ -158,56 +192,6 @@ export default function GameTransactionPage() {
             </div>
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
-                    <IonGrid className="grid_for_dashboard_data_grid">
-                        <IonRow className="grid_for_dashboard_data_row">
-                            {/* First Column */}
-                            <IonCol className="grid_for_dashboard_data_col">
-                                <IonCard className="dashboard-card">
-                                    <IonCardContent className="dashboard-card-content">
-                                        <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                        <div className="title_for_das_heading">{`Today's`} Orders Count</div>
-                                        <div className="title_for_das_text">Count: {topWidgetData?.today}</div>
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-
-                            {/* Second Column */}
-                            <IonCol className="grid_for_dashboard_data_col">
-                                <IonCard className="dashboard-card">
-                                    <IonCardContent className="dashboard-card-content">
-                                        <IonIcon icon={cashSharp} className="dashboard-icon"/>
-                                        <div className="title_for_das_heading">Total Orders Count</div>
-                                        <div className="title_for_das_text">Count: {topWidgetData?.total}</div>
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow className="grid_for_dashboard_data_row">
-                            {/* First Column */}
-                            <IonCol className="grid_for_dashboard_data_col">
-                                <IonCard className="dashboard-card">
-                                    <IonCardContent className="dashboard-card-content">
-                                        <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                        <div className="title_for_das_heading">{`Today's`} Orders Amount</div>
-                                        <div className="title_for_das_text">Total: ₹{topWidgetData?.todayAmount}</div>
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-
-                            {/* Second Column */}
-                            <IonCol className="grid_for_dashboard_data_col">
-                                <IonCard className="dashboard-card">
-                                    <IonCardContent className="dashboard-card-content">
-                                        <IonIcon icon={cashSharp} className="dashboard-icon"/>
-                                        <div className="title_for_das_heading">Total Orders Amount</div>
-                                        <div className="title_for_das_text">Total: ₹{topWidgetData?.totalAmount}</div>
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-                        </IonRow>
-                    </IonGrid>
-                </div>
-                <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {loading ?
@@ -220,51 +204,12 @@ export default function GameTransactionPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (gameHistory?.length) ?
-                                    <div className={"sysMessage__container with_list"}>
-                                        {gameHistory.map((dataItems)=> (
-                                            <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
-                                                <div className="sysMessage__container-msgWrapper__item-title">
-                                                    <div>
-                                                        <span
-                                                            className={"title"}>PERIOD - {moment(dataItems?.created_at).format('YYYY-MM-DD hh:mm a')}</span>
-                                                    </div>
-                                                    {userInfo?.role !== 1 ?
-                                                        <span
-                                                            className={`action_button ${dataItems?.win_status === 1 ? 'WIN' : dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING'}`}>{dataItems?.win_status === 1 ? 'WIN' : dataItems?.win_status === 0 ? 'LOOSE' : 'PENDING'}</span>
-                                                        : ''}
-                                                </div>
-                                                <div className="sysMessage__container-msgWrapper__item-time">
-                                                    <strong>ID</strong> : {dataItems?.bet_id}
-                                                    <br/>
-                                                    <strong>UID :</strong> {dataItems?.user_data?.uid}
-                                                    <br/>
-                                                    <strong>GAME TYPE
-                                                        :</strong> {dataItems?.game_type?.replace('_', ' ').toUpperCase()}
-                                                    <br/>
-                                                    <strong>ORDER AMOUNT</strong> : ₹{dataItems?.amount}
-                                                    <br/>
-                                                    <strong>ORDER</strong> : {dataItems?.option_name}
-                                                    <br/>
-                                                    <strong>RESULT</strong> : {dataItems?.win_status === 1 ? dataItems?.option_name : (dataItems?.win_status === 0) ? (dataItems?.option_name === 'SMALL' ? 'BIG' : 'SMALL') : 'PENDING'}
-                                                </div>
-                                                {dataItems?.win_status === 1 ?
-                                                    <div className="sysMessage__container-msgWrapper__item-content">
-                                                        <strong>₹{0.02 * dataItems?.amount}</strong> Amount Credited to
-                                                        your game wallet
-                                                    </div>
-                                                    : (dataItems?.win_status === 1) ?
-                                                        <div className="sysMessage__container-msgWrapper__item-content">
-                                                            <strong>₹{(dataItems?.amount * 2) - (0.02 * dataItems?.amount)}</strong> Amount
-                                                            Credited to
-                                                            your game wallet
-                                                        </div>
-                                                        :
-                                                        <div className="sysMessage__container-msgWrapper__item-content">
-                                                            Result is pending to update by admin
-                                                        </div>
-                                                }
-                                            </div>
-                                        ))}
+                                    <div className={"sysMessage__container"}>
+                                        <Virtuoso
+                                            className={"virtual_item_listing"}
+                                            totalCount={gameHistory?.length}
+                                            itemContent={index => renderVirtualElement(gameHistory[index])}
+                                        />
                                     </div>
                                     :
                                     <div className={"empty__container empty"}>

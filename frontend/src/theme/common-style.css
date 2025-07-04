@@ -2039,6 +2039,16 @@ ion-alert .alert-wrapper .alert-title {
     font-size: 1.3rem!important;
 }
 
+button.add_new_session_button_styl {
+    border-radius: 1rem;
+    padding: 0.8rem;
+    text-align: center;
+    width: 90%;
+    color: #ffffff;
+    background: var(--main-color);
+    font-size: 1.1rem;
+    margin: 1.1rem;
+}
 .alert-radio-label.sc-ion-alert-md {}
 
 ion-alert .alert-wrapper .alert-radio-label {

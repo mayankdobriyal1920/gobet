@@ -63,15 +63,15 @@ export const actionToSendOtpApiCall = (body) => {
 }
 
 export const actionSignupApiCall = (body) => {
-    const {phone,name,uid,role, userId} = body;
+    const {phone,name,role, userId} = body;
     return new Promise(function(resolve, reject) {
         const query = signupQuery();
-        const numericPart = Math.floor(Math.random() * 1000000);  // Numeric part: Generates a random number (e.g., 435324)
+        const numericPart = Math.floor(Math.random() * 1000000);
         const length = 8;
-        const stringPart1 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 1 (e.g., rtthyfgh)
-        const stringPart2 = crypto.randomBytes(length).toString('hex').slice(0, length);               // Alphanumeric part 2 (e.g., ljkhersf)
+        const stringPart1 = crypto.randomBytes(length).toString('hex').slice(0, length);
+        const stringPart2 = crypto.randomBytes(length).toString('hex').slice(0, length);
         const userIdVal = `${numericPart}-${stringPart1}-${stringPart2}`;
-        const dataArray = [userIdVal,name,uid,phone,'avatar-3',userId,0,role];
+        const dataArray = [userIdVal,name,phone,'avatar-3',userId,0,role];
         pool.query(query,dataArray, (error) => {
             if (error) {
                 reject(error)
@@ -236,10 +236,11 @@ export const actionToDeleteGameSessionDataApiCall = ({id}) => {
 }
 
 export const actionToUpdateIsOnlineUseDataApiCall = (userId,{isOnline}) => {
+    console.log(userId,{isOnline})
     return new Promise(function(resolve) {
         let setData = `is_online = ?`;
-        const whereCondition = `id = ?`;
-        let dataToSend = {column: setData, value: [isOnline,userId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
+        const whereCondition = `id = ? AND role != ?`;
+        let dataToSend = {column: setData, value: [isOnline,userId,1], whereCondition: whereCondition, returnColumnName:'id',tableName: 'app_user'};
         updateCommonApiCall(dataToSend).then(()=>{
             resolve({status:1});
         })
@@ -462,7 +463,20 @@ export const actionToGetAdminAllDashboardCountDataApiCall = () => {
                 (SELECT COUNT(*) FROM user_subscriptions) AS total_subscriptions,
 
                 -- Total Active Subscriptions
-                (SELECT COUNT(*) FROM user_subscriptions WHERE is_active = 1) AS total_active_subscriptions;
+                (SELECT COUNT(*) FROM user_subscriptions WHERE is_active = 1) AS total_active_subscriptions,
+
+
+            (SELECT COALESCE(SUM(subscriptions.price), 0)
+             FROM user_subscriptions
+                      INNER JOIN subscriptions ON user_subscriptions.subscription_id = subscriptions.id
+             WHERE user_subscriptions.is_active = 1
+             ) AS total_active_subscriptions_cost,
+            
+            (SELECT COALESCE(SUM(subscriptions.price), 0)
+             FROM user_subscriptions
+                      INNER JOIN subscriptions ON user_subscriptions.subscription_id = subscriptions.id
+            
+             ) AS total_subscriptions_cost
         `;
 
         let userData = {
@@ -471,10 +485,12 @@ export const actionToGetAdminAllDashboardCountDataApiCall = () => {
             game_transactions_count: 0,
             game_transaction_amount: 0,
             todays_earning: 0,
+            today_orders_amount_sum: 0,
             total_earning: 0,
             todays_betting: 0,
             total_betting: 0,
             online_users: 0,
+            total_orders_amount_sum: 0,
             current_orders_count: 0,
             total_betting_balance: 0,
             total_subscriptions: 0,
@@ -1330,22 +1346,22 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
 };
 
 export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
         const queryUserBalance = `SELECT betting_balance FROM app_user WHERE id = ?`;
 
         pool.query(queryUserBalance, [userId], (error, results) => {
             if (error) {
-                return reject(error);
+                return resolve(error);
             }
 
             if (results?.length) {
                 let userBettingBalance = results[0]?.betting_balance;
 
-                const querySubscription = `SELECT expiry_date, balance FROM user_subscriptions WHERE created_by = ?`;
+                const querySubscription = `SELECT expiry_date, balance FROM user_subscriptions WHERE created_by = ? AND is_active = ?`;
 
-                pool.query(querySubscription, [userId], (error, subResults) => {
+                pool.query(querySubscription, [userId,1], (error, subResults) => {
                     if (error) {
-                        return reject(error);
+                        return resolve(error);
                     }
 
                     if (subResults?.length) {
@@ -1355,13 +1371,13 @@ export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
 
                         // Check conditions
                         if (subExpiryDate < currentDate) {
-                            return reject({ success: 0, message: "Subscription expired." });
+                            return resolve({ success: 0, message: "Subscription expired." });
                         }
                         if (subBalance < 10) {
-                            return reject({ success: 0, message: "Insufficient subscription balance." });
+                            return resolve({ success: 0, message: "Insufficient subscription balance." });
                         }
                         if (userBettingBalance < 10) {
-                            return reject({ success: 0, message: "Insufficient betting balance." });
+                            return resolve({ success: 0, message: "Insufficient betting balance." });
                         }
 
                         // Update status if all conditions are met
@@ -1379,13 +1395,13 @@ export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
                             .then(() => {
                                 resolve({ success: 1 });
                             })
-                            .catch((err) => reject(err));
+                            .catch((err) => resolve(err));
                     } else {
-                        reject({ success: 0, message: "No subscription found." });
+                        resolve({ success: 0, message: "No subscription found." });
                     }
                 });
             } else {
-                reject({ success: 0, message: "User not found." });
+                resolve({ success: 0, message: "User not found." });
             }
         });
     });

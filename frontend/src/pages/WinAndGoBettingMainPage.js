@@ -75,19 +75,36 @@ export default function WinAndGoBettingMainPage() {
             }
         }
     }
+    const callFunctionToHandleStatus = (statusData)=>{
+        if(statusData?.success === 0){
+            presentAlert({
+                header: "Alert",
+                cssClass: 'custom_site_alert_toast',
+                message: statusData?.message,
+                buttons: [
+                    {
+                        text: "OK",
+                        handler: () => {
+                            goBack();
+                        },
+                    },
+                ],
+            });
+        }
+    }
 
     const orderNextBetActivateUser = (betId)=>{
-
         if(sessionData?.id && sessionData?.is_active && moment().isBetween(
             moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
             moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
             null,
             '[]' // Inclusive of both start and end times
         )) {
-            if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10) {
+
+            if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10 && moment(subscriptionData?.expiry_date) >= moment()) {
                 if(!loadingStatus) {
                     setLoadingStatus(true);
-                    dispatch(actionToOrderNextBetActivateUser(betId,setLoadingStatus));
+                    dispatch(actionToOrderNextBetActivateUser(betId,setLoadingStatus,callFunctionToHandleStatus));
                 }
             } else {
                 setLowBalanceAlert(true);
@@ -118,7 +135,7 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const callFunctionToInactiveCurrentSession = ()=>{
-        if(timer >= 10) {
+        if(timer >= 20) {
             presentAlert({
                 header: "Alert",
                 cssClass: 'custom_site_alert_toast',
@@ -165,7 +182,7 @@ export default function WinAndGoBettingMainPage() {
             if(userInfo?.role === 1) {
                 dispatch(actionToGetGameLastResultData(sessionData?.id,false));
                 dispatch(actionToGetAdminGameResultListData(false,{session_id:sessionData?.id,created_at:moment().format('YYYY-MM-DD')}))
-              }else{
+            }else{
                 dispatch(actionToGetUserBetPredictionHistory(false,sessionData?.id));
                 dispatch(actionToGetBetActiveUserData(false,false));
                 dispatch(actionToGetUserBetPredictionData(activeUserData?.id,false));
@@ -462,7 +479,7 @@ export default function WinAndGoBettingMainPage() {
                                                             </div>
                                                             <div
                                                                 className="sysMessage__container-msgWrapper__item-time">
-                                                            <strong>GAME ID
+                                                                <strong>GAME ID
                                                                     :</strong> {dataItems?.game_id}
                                                                 <br/>
                                                                 <strong>GAME TYPE
@@ -473,7 +490,7 @@ export default function WinAndGoBettingMainPage() {
                                                             </div>
                                                             <div
                                                                 className="sysMessage__container-msgWrapper__item-content">
-                                                            Created at date
+                                                                Created at date
                                                                 time {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
                                                             </div>
                                                         </div>
@@ -526,11 +543,18 @@ export default function WinAndGoBettingMainPage() {
                         <h2>Game Result</h2>
                     </div>
                     <div className={"list_status_type"}>
-                        <div className={`list_status_type_item`}
-                             onClick={() => callFunctionToUpdateGameResult('SMALL')}>SMALL
-                        </div>
-                        <div className={`list_status_type_item`}
-                             onClick={() => callFunctionToUpdateGameResult('BIG')}>BIG
+                        <div className={"update_user_game_prev_result_button"}>
+                            <button
+                                onClick={() => callFunctionToUpdateGameResult('SMALL')}
+                                type={"button"} className={"order-bet-game-button"}>
+                                SMALL
+                            </button>
+                            <button
+                                onClick={() => callFunctionToUpdateGameResult('BIG')}
+                                type={"button"}
+                                className={"exit-from-game-button big"}>
+                                BIG
+                            </button>
                         </div>
                     </div>
                 </IonContent>

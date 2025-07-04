@@ -53,7 +53,9 @@ import {
     actionToDeleteGameSessionDataApiCall,
     actionToInactiveCurrentSessionApiCall,
     actionToGetAdminAllDashboardCountDataApiCall,
-    actionToGetAllUsersSubscriptionsDataApiCall, actionToUpdateIsOnlineUseDataApiCall
+    actionToGetAllUsersSubscriptionsDataApiCall,
+    actionToUpdateIsOnlineUseDataApiCall,
+    actionToUpdateBettingUserIsOnlineUseDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -121,6 +123,12 @@ commonRouter.post(
                 }).catch(error => {
                 res.status(500).send(error);
             })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
         }
     })
 );
@@ -135,6 +143,12 @@ commonRouter.post(
                 }).catch(error => {
                 res.status(500).send(error);
             })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
         }
     })
 );
@@ -161,6 +175,12 @@ commonRouter.post(
                 }).catch(error => {
                 res.status(500).send(error);
             })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
         }
     })
 );
@@ -175,6 +195,12 @@ commonRouter.post(
                 }).catch(error => {
                 res.status(500).send(error);
             })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
         }
     })
 );

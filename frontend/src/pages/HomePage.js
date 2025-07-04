@@ -7,7 +7,7 @@ import {
     IonContent, IonGrid,
     IonHeader, IonIcon,
     IonLoading,
-    IonPage,
+    IonPage, IonRefresher, IonRefresherContent,
     IonRow
 } from "@ionic/react";
 import {useDispatch, useSelector} from "react-redux";
@@ -18,23 +18,19 @@ import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router";
 import {
     actionToActivateSubscriptionPlan,
-    actionToCallFunctionToActiveSectionAndStartGame, actionToGetAdminAllDashboardCountData,
-    actionToUpdateUserAliveForGame
+    actionToGetAdminAllDashboardCountData,
 } from "../redux/CommonAction";
 import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
-import BettingGameEntryGamePlatformListComponent
-    from "../components/commonPopup/BettingGameEntryGamePlatformListComponent";
 import SubscriptionModal from "../components/SubscriptionModal";
-import {arrowForwardOutline, beakerSharp, cashSharp, todaySharp} from "ionicons/icons";
+import {arrowForwardOutline, beakerSharp, todaySharp} from "ionicons/icons";
 
 export default function HomePage() {
     const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
     const {subscriptionData} = useSelector((state) => state.userSubscriptionData);
     const userInfo = useSelector((state) => state.userAuthDetail.userInfo);
     const history = useHistory();
-    const [userEnterInGameConfirm,setUserEnterInGameConfirm] = useState(false);
     const [lowBalanceAlert,setLowBalanceAlert] = useState(false);
-    const [userEnterLoading,setUserEnterLoading] = useState(false);
+    const [userEnterLoading] = useState(false);
     const dispatch = useDispatch();
     const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
     const [activationPlanLoader, setActivationPlanLoader] = useState(false);
@@ -49,22 +45,9 @@ export default function HomePage() {
     const goToPage = (page)=>{
         history.push(page);
     }
-    const callFunctionToEnterInGame = ()=>{
-        goToPage(`/win-go-betting`);
-        setUserEnterLoading(false);
-        setUserEnterInGameConfirm(false);
-    }
-    const callFunctionToSetUserEnterInGameConfirm = ()=>{
-        setUserEnterInGameConfirm(true);
-    }
-    const callFunctionToDeductBalanceAndEnterInGame = (sessionId,platformId)=>{
-        setUserEnterLoading(true);
-        dispatch(actionToUpdateUserAliveForGame(sessionId,platformId,callFunctionToEnterInGame));
-    }
 
-    const callFunctionToActiveSectionAndStartGame = (sessionId)=>{
-        setUserEnterLoading(true);
-        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,callFunctionToEnterInGame));
+    const callFunctionToSetUserEnterInGameConfirm = (gameType)=>{
+        goToPage(`/betting-app-with-platform-data/${gameType}`);
     }
 
     const handlePlanSelect = (plan) => {
@@ -76,6 +59,10 @@ export default function HomePage() {
             setLowBalanceAlert(true);
         }
     };
+
+    function handleRefresh(event) {
+        dispatch(actionToGetAdminAllDashboardCountData(event))
+    }
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -107,6 +94,11 @@ export default function HomePage() {
                 </div>
             </IonHeader>
             <IonContent>
+                {(userInfo?.role === 1) ?
+                <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>:''
+                }
                 {(userInfo?.role !== 1) ?
                     <div className="Wallet__C">
                         <div className="Wallet__C-balance">
@@ -149,7 +141,6 @@ export default function HomePage() {
                             <img className="gameImg"
                                  src={limboGame}/>
                         </div>
-                        <BettingGameEntryGamePlatformListComponent callFunctionToActiveSectionAndStartGame={callFunctionToActiveSectionAndStartGame} callFunctionToDeductBalanceAndEnterInGame={callFunctionToDeductBalanceAndEnterInGame} setUserEnterInGameConfirm={setUserEnterInGameConfirm} userEnterInGameConfirm={userEnterInGameConfirm}/>
                     </div>
                 </div>
 
@@ -189,7 +180,7 @@ export default function HomePage() {
                                                 <IonIcon icon={beakerSharp} className="dashboard-icon"/>
                                                 <div className="title_for_das_heading">Playing Users</div>
                                                 <div
-                                                    className="title_for_das_text">₹{dashboardCount?.playing_users}</div>
+                                                    className="title_for_das_text">{dashboardCount?.playing_users}</div>
                                                 <div className="title_for_das_text_link">
                                                     Click to open list
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
@@ -215,8 +206,9 @@ export default function HomePage() {
                                             <IonCardContent className="dashboard-card-content">
                                                 <IonIcon icon={todaySharp} className="dashboard-icon"/>
                                                 <div className="title_for_das_heading">Active Subscriptions</div>
-                                                <div
-                                                    className="title_for_das_text">{dashboardCount?.total_active_subscriptions}</div>
+                                                <div className="title_for_das_text"></div>
+                                                <div className="title_for_das_text">
+                                                    Count: {dashboardCount?.total_active_subscriptions} Cost: ₹{dashboardCount?.total_active_subscriptions_cost}</div>
                                                 <div className="title_for_das_text_link">
                                                     Click to open list
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
@@ -232,52 +224,9 @@ export default function HomePage() {
                                             <IonCardContent className="dashboard-card-content">
                                                 <IonIcon icon={beakerSharp} className="dashboard-icon"/>
                                                 <div className="title_for_das_heading">Total Subscriptions</div>
-                                                <div
-                                                    className="title_for_das_text">{dashboardCount?.total_subscriptions}</div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open list
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                <div className="title_for_das_text">
+                                                    Count: {dashboardCount?.total_subscriptions} Cost: ₹{dashboardCount?.total_subscriptions_cost}
                                                 </div>
-                                            </IonCardContent>
-                                        </IonCard>
-                                    </IonCol>
-                                </IonRow>
-                            </IonGrid>
-                        </div>
-                        <div className="getbet-title getbet-line">
-                            <div className="getbet-title-left">
-                                <span>Orders</span>
-                            </div>
-                        </div>
-                        <div className="">
-                            <IonGrid className="grid_for_dashboard_data_grid">
-                                <IonRow className="grid_for_dashboard_data_row">
-                                    {/* First Column */}
-                                    <IonCol onClick={() => goToPage('/game-history')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">{`Today's`} Orders</div>
-                                                <div
-                                                    className="title_for_das_text">{dashboardCount?.current_orders_count}</div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open list
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
-                                            </IonCardContent>
-                                        </IonCard>
-                                    </IonCol>
-
-                                    {/* Second Column */}
-                                    <IonCol onClick={() => goToPage('/game-history')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={beakerSharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Total Orders</div>
-                                                <div
-                                                    className="title_for_das_text">{dashboardCount?.total_orders_count}</div>
                                                 <div className="title_for_das_text_link">
                                                     Click to open list
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>

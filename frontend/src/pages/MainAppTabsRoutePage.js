@@ -8,7 +8,7 @@ import {
     IonIcon,
     IonTabs,
 } from '@ionic/react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect } from 'react-router';
 import {home, wallet, person, gridOutline} from 'ionicons/icons';
 import AccountPage from "./AccountPage";
 import WalletPage from "./WalletPage";
@@ -76,9 +76,7 @@ export default function MainAppTabsRoutePage() {
                     {/* Main Router Outlet */}
                     <IonRouterOutlet>
                         <Route path="/dashboard/wallet" component={WalletPage} exact={true} />
-                        {(userInfo?.role === 1) ?
-                           <Route path="/dashboard/dashboard" component={DashboardPage} exact={true} /> :''
-                        }
+                        <Route path="/dashboard/dashboard" component={DashboardPage} exact={true} />
                         <Route path="/dashboard/account" component={AccountPage} exact={true} />
                         <Route path="/dashboard/home" component={HomePage} exact={true} />
                         <Route exact path="/dashboard">

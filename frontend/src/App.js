@@ -39,7 +39,6 @@ import ComingSoonPage from "./pages/ComingSoonPage";
 import GameTransactionPage from "./pages/GameTransactionPage";
 import MoneyTransactionPage from "./pages/MoneyTransactionPage";
 import {Capacitor} from "@capacitor/core";
-import {App as CapacitorApp} from "@capacitor/app";
 import {NavigationBar} from "@mauricewegner/capacitor-navigation-bar";
 import {StatusBar, Style} from "@capacitor/status-bar";
 import WithdrawalHistoryListPage from "./pages/WithdrawalHistoryListPage";
@@ -53,6 +52,8 @@ import AllUserListNormalAndSubAdminPage from "./pages/admin/AllUserListNormalAnd
 import AppBackButtonHandler from "./components/AppBackButtonHandler";
 import GetBetGameSessionListPage from "./pages/admin/GetBetGameSessionListPage";
 import AllUsersSubscriptionPage from "./pages/AllUsersSubscriptionPage";
+import BettingGameEntryGamePlatformListComponent
+    from "./components/commonPopup/BettingGameEntryGamePlatformListComponent";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -102,6 +103,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-sub-admin-users-list" component={AllUsersUnderSubAdminPage}/>
                 <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
                 <Route exact={true} path="/admin-game-session-list" component={GetBetGameSessionListPage}/>
+                <Route exact={true} path="/betting-app-with-platform-data/:gameType" component={BettingGameEntryGamePlatformListComponent}/>
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

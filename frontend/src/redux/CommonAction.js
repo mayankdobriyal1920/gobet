@@ -755,10 +755,13 @@ export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFu
     }
 }
 
-export const actionToOrderNextBetActivateUser = (betId,setLoadingStatus) => async (dispatch) => {
+export const actionToOrderNextBetActivateUser = (betId,setLoadingStatus,callFunctionToHandleStatus) => async (dispatch) => {
     try {
-        api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(() => {
+        api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(({data}) => {
             dispatch(actionToGetBetActiveUserData(false,false,setLoadingStatus));
+            if(callFunctionToHandleStatus){
+                callFunctionToHandleStatus(data);
+            }
         })
     } catch (error) {
         console.log(error);
