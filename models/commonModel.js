@@ -236,7 +236,6 @@ export const actionToDeleteGameSessionDataApiCall = ({id}) => {
 }
 
 export const actionToUpdateIsOnlineUseDataApiCall = (userId,{isOnline}) => {
-    console.log(userId,{isOnline})
     return new Promise(function(resolve) {
         let setData = `is_online = ?`;
         const whereCondition = `id = ? AND role != ?`;
@@ -394,21 +393,30 @@ export const actionToGetBetGameSessionDataApiCall = (sessionId) => {
 }
 
 export const actionToGetGameLastResultDataApiCall = (sessionId) => {
-    return new Promise(function(resolve, reject) {
-        const gameId = moment().subtract(1, 'minute').format('YYYY.MM.DD-HH:mm');
-        const query = 'SELECT id,result,game_id,created_at from game_result WHERE betting_game_session_id = ? AND game_id = ? AND result IS NULL';
+    return new Promise(function (resolve, reject) {
+        const dateFrom = moment().subtract(1, 'minute').format('YYYY-MM-DD HH:mm:ss');
+        const dateTo = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        const query = `
+            SELECT id, result, game_id, created_at 
+            FROM game_result 
+            WHERE betting_game_session_id = ? 
+              AND created_at BETWEEN ? AND ?
+              AND result IS NULL
+        `;
+
         let userData = {};
-        pool.query(query,[sessionId,gameId], (error, results) => {
+        pool.query(query, [sessionId, dateFrom, dateTo], (error, results) => {
             if (error) {
-                reject(error)
+                return reject(error);
             }
-            if(results?.length){
+            if (results?.length) {
                 userData = results[0];
             }
             resolve(userData);
-        })
-    })
-}
+        });
+    });
+};
 
 export const actionToGetAdminAllDashboardCountDataApiCall = () => {
     return new Promise((resolve, reject) => {
@@ -1085,8 +1093,8 @@ export const actionToGetAdminGameResultListDataApiCall = (userId,body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const gameId = moment().subtract(1, 'minute').format('YYYY.MM.DD-HH:mm');
-        const {query,values} = getGameResultListQuery(userId,gameId,payload);
+        const created_at_min = moment().subtract(1, 'minute').format();
+        const {query,values} = getGameResultListQuery(userId,created_at_min,payload);
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
@@ -1419,13 +1427,13 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
     })
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId) => {
+export const actionToCallFunctionToActiveSectionAndStartGameApiCall = (userId,sessionId,customNumberId) => {
     return new Promise(function(resolve) {
-        let setData = `started_by = ? , is_active = ?`;
+        let setData = `started_by = ? , is_active = ? , serial_number = ?`;
         const whereCondition = `id = ?`;
         let dataToSend = {
             column: setData,
-            value: [userId, 1, sessionId],
+            value: [userId, 1, Number(customNumberId),sessionId],
             whereCondition: whereCondition,
             returnColumnName: 'id',
             tableName: 'betting_game_session'

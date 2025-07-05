@@ -44,9 +44,9 @@ export default function GetBetGameSessionListPage({gameType}) {
         dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform(gameType))
     }
 
-    const callFunctionToActiveSectionAndStartGame = (sessionId)=>{
+    const callFunctionToActiveSectionAndStartGame = (sessionId,customNumberId)=>{
         setUserEnterLoading(true);
-        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,callFunctionToEnterInGame));
+        dispatch(actionToCallFunctionToActiveSectionAndStartGame(sessionId,customNumberId,callFunctionToEnterInGame));
     }
 
     const goToPage = (page)=>{
@@ -127,14 +127,51 @@ export default function GetBetGameSessionListPage({gameType}) {
     }
 
     const callFunctionToEnterBet =(sessionData)=>{
+        const continueWithInputId = () => {
+            presentAlert({
+                header: 'Enter ID',
+                message: 'Please enter a session serial number to continue:',
+                inputs: [
+                    {
+                        name: 'customId',
+                        type: 'number',
+                        placeholder: 'Enter serial number here',
+                        attributes: {
+                            autofocus: true
+                        }
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Cancel',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Continue',
+                        handler: (data) => {
+                            if (data.customId) {
+                                callFunctionToActiveSectionAndStartGame(sessionData?.id,data.customId);
+                            } else {
+                                presentAlert({
+                                    header: 'Error',
+                                    message: 'ID cannot be empty.',
+                                    buttons: ['OK']
+                                });
+                            }
+                        }
+                    }
+                ]
+            });
+        };
+
         if (sessionData.is_active) {
-            callFunctionToActiveSectionAndStartGame(sessionData?.id);
+            continueWithInputId();
         }else{
             const now = moment();
             const startTime = moment(sessionData?.start_time, 'HH:mm:ss');
             const endTime = moment(sessionData?.end_time, 'HH:mm:ss');
             if (now.isBetween(startTime, endTime, null, '[]')) {
-                callFunctionToActiveSectionAndStartGame(sessionData?.id);
+                continueWithInputId();
             } else if (now.isBefore(startTime)) {
                 present({
                     message: 'It\'s too early to start the session!',

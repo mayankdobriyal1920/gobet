@@ -405,6 +405,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
                            bgs.start_time,
                            bgs.end_time,
                            bgs.game_type,
+                           bgs.serial_number,
                            bgs.is_active
                        FROM
                            betting_game_session bgs
@@ -419,7 +420,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
                 //////////// insert game result first ///////////
                 let gameType = results[0]?.game_type;
                 let gameSessionId = results[0]?.id;
-                let gameBetId = moment().add(1,'minute').format('YYYY.MM.DD-HH:mm');
+                let gameBetId = results[0]?.serial_number + 1;
                 const game_result_id = `${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}-${_getRandomUniqueIdBackendServer()}`;
                 const insertResultData = {
                     alias: ['?', '?', '?', '?'],
@@ -428,6 +429,15 @@ export function actionToExecuteFunctionInLast10Seconds() {
                     tableName: 'game_result'
                 };
                 insertCommonApiCall(insertResultData).then(() => {
+                    const dataToSendActive = {
+                        column: `serial_number = ?`,
+                        value: [Number(gameBetId),results[0]?.id],
+                        whereCondition: `id = ?`,
+                        tableName: 'betting_game_session'
+                    };
+                    updateCommonApiCall(dataToSendActive)
+                        .then(() => console.log("Session number updated."))
+                        .catch((error) => console.error("Error updating status:", error));
                    actionToRunCheckForAliveUsers(gameSessionId,gameType,game_result_id,gameBetId);
                 })
                 //////////// insert game result first ///////////

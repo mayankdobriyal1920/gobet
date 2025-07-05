@@ -308,8 +308,8 @@ export const getMoneyTransactionsQuery = (userId, role, body) => {
 };
 
 
-export const getGameResultListQuery = (userId,gameId, body) => {
-    let { status, created_at,session_id } = body;
+export const getGameResultListQuery = (userId,created_at_min, body) => {
+    let { status, created_at,session_id} = body;
     let values = [];  // Initial values array with userId
     let condition = `1=1`;  // Initial condition with userId
 
@@ -332,9 +332,9 @@ export const getGameResultListQuery = (userId,gameId, body) => {
         condition += ` AND betting_game_session_id = ?`;  // Add 'created_at' condition
     }
 
-    if (gameId) {
-        values.push(gameId);  // Append the created_at value
-        condition += ` AND game_id < ?`;  // Add 'created_at' condition
+    if (created_at_min) {
+        values.push(created_at_min);  // Append the created_at value
+        condition += ` AND created_at < ?`;  // Add 'created_at' condition
     }
 
     // Final query

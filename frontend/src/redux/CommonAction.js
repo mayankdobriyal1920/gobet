@@ -745,9 +745,9 @@ export const actionToUpdateUserAliveForGame = (sessionId,platformId,callFunction
     }
 }
 
-export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,callFunctionToEnterInGame) => async (dispatch) => {
+export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,customNumberId,callFunctionToEnterInGame) => async (dispatch) => {
     try {
-        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId}).then(() => {
+        api.post(`actionToCallFunctionToActiveSectionAndStartGameApiCall`, {sessionId:sessionId,customNumberId:customNumberId}).then(() => {
             dispatch(actionToGetBetGameSessionData(sessionId,true,callFunctionToEnterInGame));
         })
     } catch (error) {

@@ -910,7 +910,7 @@ commonRouter.post(
     '/actionToCallFunctionToActiveSectionAndStartGameApiCall',
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
-            actionToCallFunctionToActiveSectionAndStartGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId).then(responseData => {
+            actionToCallFunctionToActiveSectionAndStartGameApiCall(req?.session?.userSessionData?.id,req.body.sessionId,req.body.customNumberId).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{
