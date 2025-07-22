@@ -451,6 +451,8 @@ export const actionToGetAdminAllDashboardCountDataApiCall = () => {
 
                 -- Online Users
                 (SELECT COUNT(*) FROM app_user WHERE is_online = 1) AS online_users,
+                                                   
+                (SELECT COUNT(*) FROM app_user  WHERE is_test_user != 1) AS total_users,
 
            -- Playing Users
          (SELECT COUNT(*) FROM betting_active_users WHERE is_online = 1) AS playing_users,
@@ -1194,13 +1196,15 @@ export const actionToGetAllUsersNormalAndSubAdminListApiCall = (userId, body) =>
         }
 
         if (uidSearchText) {
-            condition += ` AND app_user.uid LIKE ?`;
+            condition += ` AND (app_user.uid LIKE ? OR app_user.sno = ? OR app_user.name = ?)`;
             values.push(`%${uidSearchText}%`);
+            values.push(`%${uidSearchText}%`);
+            values.push(uidSearchText);
         }
 
-        const query = `SELECT app_user.id,app_user.uid,app_user.name,app_user.phone_number,app_user.created_at,app_user.wallet_balance,app_user.game_balance,app_user.role,sub_admin_user.name as sub_admin_name from app_user 
+        const query = `SELECT app_user.id,app_user.sno,app_user.uid,app_user.name,app_user.phone_number,app_user.created_at,app_user.wallet_balance,app_user.game_balance,app_user.role,sub_admin_user.name as sub_admin_name from app_user 
                                LEFT JOIN app_user as sub_admin_user ON sub_admin_user.id = app_user.id                                                             
-                               WHERE app_user.id != ? ${condition} ORDER BY app_user.id desc`;
+                               WHERE app_user.is_test_user != 1 AND app_user.id != ? ${condition} ORDER BY app_user.sno asc`;
         pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)

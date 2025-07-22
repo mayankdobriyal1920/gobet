@@ -95,31 +95,31 @@ function divideAmount(amount, members, minBetAmount, maximumBetAmount) {
 function finalizeBetDistribution(groups, smallAmounts, bigAmounts, minBetAmount, gameBetId) {
     let totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
     let totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
-    let diff = totalSmall - totalBig;
+    //let diff = totalSmall - totalBig;
 
     // Adjust bets to make totalSmall === totalBig
-    if (diff !== 0) {
-        let adjustmentArray = diff > 0 ? smallAmounts : bigAmounts;
-        let adjustIndex = 0;
-
-        while (Math.abs(diff) >= 10) {
-            let i = adjustIndex % adjustmentArray.length;
-            let maxAdjustable = Math.min(10, Math.abs(diff), adjustmentArray[i] - minBetAmount);
-
-            if (maxAdjustable > 0) {
-                adjustmentArray[i] -= maxAdjustable;
-                diff += diff > 0 ? -maxAdjustable : maxAdjustable;
-            }
-
-            if (++adjustIndex > adjustmentArray.length * 2) break;
-        }
-
-        totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
-        totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
-    }
-
-    // Ensure totalSmall === totalBig by discarding extra values if necessary
-    if (totalSmall !== totalBig) totalSmall = totalBig = Math.min(totalSmall, totalBig);
+    // if (diff !== 0) {
+    //     let adjustmentArray = diff > 0 ? smallAmounts : bigAmounts;
+    //     let adjustIndex = 0;
+    //
+    //     while (Math.abs(diff) >= 10) {
+    //         let i = adjustIndex % adjustmentArray.length;
+    //         let maxAdjustable = Math.min(10, Math.abs(diff), adjustmentArray[i] - minBetAmount);
+    //
+    //         if (maxAdjustable > 0) {
+    //             adjustmentArray[i] -= maxAdjustable;
+    //             diff += diff > 0 ? -maxAdjustable : maxAdjustable;
+    //         }
+    //
+    //         if (++adjustIndex > adjustmentArray.length * 2) break;
+    //     }
+    //
+    //     totalSmall = smallAmounts.reduce((sum, a) => sum + a, 0);
+    //     totalBig = bigAmounts.reduce((sum, a) => sum + a, 0);
+    // }
+    //
+    // // Ensure totalSmall === totalBig by discarding extra values if necessary
+    // if (totalSmall !== totalBig) totalSmall = totalBig = Math.min(totalSmall, totalBig);
 
     return [
         ...groups.small.map((member, i) => createBetObject(member, smallAmounts[i], 'SMALL', totalSmall, totalBig,gameBetId)),
@@ -144,3 +144,167 @@ function createBetObject(member, amount, option, totalSmall, totalBig,gameBetId)
         total_big_amount: totalBig,
     };
 }
+//
+//
+//
+// // // Example usage
+// const members =  [
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs14",
+//         id: "45486yhgf-gfhgfudf-ykhjg14",
+//         name: "Test user 14",
+//         uid: "8123126794",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs18",
+//         id: "45486yhgf-gfhgfudf-ykhjg18",
+//         name: "Test user 18",
+//         uid: "8123126798",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs46",
+//         id: "45486yhgf-gfhgfudf-ykhjg46",
+//         name: "Test user 46",
+//         uid: "8123126826",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs43",
+//         id: "45486yhgf-gfhgfudf-ykhjg43",
+//         name: "Test user 43",
+//         uid: "8123126823",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs22",
+//         id: "45486yhgf-gfhgfudf-ykhjg22",
+//         name: "Test user 22",
+//         uid: "8123126802",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs27",
+//         id: "45486yhgf-gfhgfudf-ykhjg27",
+//         name: "Test user 27",
+//         uid: "8123126807",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs11",
+//         id: "45486yhgf-gfhgfudf-ykhjg11",
+//         name: "Test user 11",
+//         uid: "8123126791",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs36",
+//         id: "45486yhgf-gfhgfudf-ykhjg36",
+//         name: "Test user 36",
+//         uid: "8123126816",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs16",
+//         id: "45486yhgf-gfhgfudf-ykhjg16",
+//         name: "Test user 16",
+//         uid: "8123126796",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs20",
+//         id: "45486yhgf-gfhgfudf-ykhjg20",
+//         name: "Test user 20",
+//         uid: "8123126800",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs50",
+//         id: "45486yhgf-gfhgfudf-ykhjg50",
+//         name: "Test user 50",
+//         uid: "8123126830",
+//         is_test_user: 1,
+//         balance: 1947,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     },
+//     {
+//         betting_active_users_id: "wqe12-dfrwt-34fs41",
+//         id: "45486yhgf-gfhgfudf-ykhjg41",
+//         name: "Test user 41",
+//         uid: "8123126821",
+//         is_test_user: 1,
+//         balance: 197,
+//         subscription_id: null,
+//         plan_type: null,
+//         total_value: null,
+//         subscription_balance: null,
+//         subscription_expiry_date: null,
+//     }
+// ];
+//
+// console.log(calculateUserBetAmount(members, 100, 1000));

@@ -84,6 +84,11 @@ export default function AllUserListNormalAndSubAdminPage() {
                         <span className={"title"}>UID - {dataItems?.uid}</span>
                     </div>
                 </div>
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>ID - {dataItems?.sno}</span>
+                    </div>
+                </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>Full Name</strong> : {dataItems?.name}
                     <br/>
@@ -110,13 +115,13 @@ export default function AllUserListNormalAndSubAdminPage() {
                     <div className="navbar">
                         <div className="navbar-fixed">
                             <div className="navbar__content">
-                                <div onClick={goBack} className="navbar__content-left">
+                            <div onClick={goBack} className="navbar__content-left">
                                     <IonIcon icon={arrowBack}
                                              style={{color: "#ffffff", width: "24px", height: "24px"}}/>
                                 </div>
                                 <div className="navbar__content-center">
                                     <div className="navbar__content-title">
-                                        <span>My User List</span>
+                                        <span>User List</span>
                                     </div>
                                 </div>
                             </div>
@@ -160,7 +165,7 @@ export default function AllUserListNormalAndSubAdminPage() {
                                             </svg>
                                         <input className={"search_text_input_for_filter"}
                                                onChange={(e) => callFunctionToSearchUid(e.target.value)}
-                                               placeholder={"Search uid..."}
+                                               placeholder={"Search user..."}
                                                value={uidSearchText}
                                         />
                                     </div>

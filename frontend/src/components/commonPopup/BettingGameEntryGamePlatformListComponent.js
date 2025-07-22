@@ -89,7 +89,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                                     <div
                                                         className="title_for_das_text">{dashboardCount?.online_users}</div>
                                                     <div className="title_for_das_text_link">
-                                                        Click to open list
+                                                        Click to open
                                                         <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                     </div>
                                                 </IonCardContent>
@@ -106,7 +106,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                                     <div
                                                         className="title_for_das_text">{dashboardCount?.playing_users}</div>
                                                     <div className="title_for_das_text_link">
-                                                        Click to open list
+                                                        Click to open
                                                         <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                     </div>
                                                 </IonCardContent>
@@ -135,7 +135,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                                         Count: {dashboardCount?.current_orders_count} Cost: {dashboardCount?.today_orders_amount_sum}
                                                     </div>
                                                     <div className="title_for_das_text_link">
-                                                        Click to open list
+                                                        Click to open
                                                         <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                     </div>
                                                 </IonCardContent>
@@ -155,7 +155,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                                         ₹{dashboardCount?.total_orders_amount_sum}
                                                     </div>
                                                     <div className="title_for_das_text_link">
-                                                        Click to open list
+                                                        Click to open
                                                         <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                     </div>
                                                 </IonCardContent>

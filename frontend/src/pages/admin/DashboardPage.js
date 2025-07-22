@@ -154,14 +154,14 @@ export default function DashboardPage() {
                             <IonGrid className="grid_for_dashboard_data_grid">
                                 <IonRow className="grid_for_dashboard_data_row">
                                     {/* First Column */}
-                                    <IonCol onClick={()=>goToPage('/money-transaction')} className="grid_for_dashboard_data_col">
+                                    <IonCol className="grid_for_dashboard_data_col">
                                         <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
+                                            <IonCardContent onClick={() => goToPage('/admin-admin-users-list')} className="dashboard-card-content">
                                                 <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Total Transactions</div>
-                                                <div className="title_for_das_text">₹{dashboardCount?.total_transaction_amount}</div>
+                                                <div className="title_for_das_heading">Total Users</div>
+                                                <div className="title_for_das_text">{dashboardCount?.total_users}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Game History</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.game_transaction_amount}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">{`Today's`} Earning</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.todays_earning}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Total Earning</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.total_earning}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -223,7 +223,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">{`Today's`} Betting</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.todays_betting}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -238,7 +238,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Total Betting</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.total_betting}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -254,7 +254,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Active Subscriptions</div>
                                                 <div className="title_for_das_text">{dashboardCount?.total_active_subscriptions}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Total Subscriptions</div>
                                                 <div className="title_for_das_text">{dashboardCount?.total_subscriptions}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -278,14 +278,14 @@ export default function DashboardPage() {
                                 </IonRow>
                                 <IonRow className="grid_for_dashboard_data_row">
                                     {/* First Column */}
-                                    <IonCol className="grid_for_dashboard_data_col">
+                                    <IonCol onClick={()=>goToPage('/money-transaction')} className="grid_for_dashboard_data_col">
                                         <IonCard className="dashboard-card">
                                             <IonCardContent className="dashboard-card-content">
                                                 <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Online Users</div>
-                                                <div className="title_for_das_text">{dashboardCount?.online_users}</div>
+                                                <div className="title_for_das_heading">Total Transactions</div>
+                                                <div className="title_for_das_text">₹{dashboardCount?.total_transaction_amount}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>
@@ -300,7 +300,7 @@ export default function DashboardPage() {
                                                 <div className="title_for_das_heading">Current Order</div>
                                                 <div className="title_for_das_text">₹{dashboardCount?.total_betting_balance}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon" />
                                                 </div>
                                             </IonCardContent>

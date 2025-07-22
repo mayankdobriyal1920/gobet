@@ -165,7 +165,7 @@ export default function HomePage() {
                                                 <div className="title_for_das_heading">Online Users</div>
                                                 <div className="title_for_das_text">{dashboardCount?.online_users}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                 </div>
                                             </IonCardContent>
@@ -182,7 +182,7 @@ export default function HomePage() {
                                                 <div
                                                     className="title_for_das_text">{dashboardCount?.playing_users}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                 </div>
                                             </IonCardContent>
@@ -210,7 +210,7 @@ export default function HomePage() {
                                                 <div className="title_for_das_text">
                                                     Count: {dashboardCount?.total_active_subscriptions} Cost: ₹{dashboardCount?.total_active_subscriptions_cost}</div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                 </div>
                                             </IonCardContent>
@@ -228,7 +228,7 @@ export default function HomePage() {
                                                     Count: {dashboardCount?.total_subscriptions} Cost: ₹{dashboardCount?.total_subscriptions_cost}
                                                 </div>
                                                 <div className="title_for_das_text_link">
-                                                    Click to open list
+                                                    Click to open
                                                     <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
                                                 </div>
                                             </IonCardContent>

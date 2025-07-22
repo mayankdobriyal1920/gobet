@@ -147,6 +147,7 @@ export const adminDashboardAllCountDataReducer = (state = {}, action) => {
                     todays_betting: 0,
                     total_betting: 0,
                     online_users: 0,
+                    total_users: 0,
                     total_orders_amount_sum: 0,
                     today_orders_amount_sum: 0,
                     playing_users: 0,

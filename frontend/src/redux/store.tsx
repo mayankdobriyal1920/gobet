@@ -66,6 +66,7 @@ const initialState = {
             total_betting: 0,
             online_users: 0,
             playing_users: 0,
+            total_users: 0,
             current_orders_count: 0,
             total_orders_count: 0,
             total_betting_balance: 0,
