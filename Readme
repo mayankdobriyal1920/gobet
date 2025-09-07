@@ -2,10 +2,10 @@ RUN `npm i` to install node module
 RUN `npm start` to start server
 RUN `nohup npm start` to build server parmanently
 
-68.178.169.224
+178.16.138.111
 root
 Pa$$W0rd - x-ignO993mjUQGmww.0Q
-/var/www/vhosts/121tuition.in/httpdocs/tuition
+/var/www/html/getbet
 
 name = MariaDB
 baseurl = http://yum.mariadb.org/10.5/centos7-amd64
@@ -13,8 +13,6 @@ gpgkey = https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck = 1
 
 
-tuition
-MndN26!%ks1q
 
 location /api-call-tutor {
 	proxy_pass http://localhost:4001;
