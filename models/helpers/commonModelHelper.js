@@ -97,11 +97,11 @@ export const insertCommonApiCall = (body) => {
         `;
 
         // Execute the query
-        pool.query(query, values, (error) => {
+        pool.query(query, values, (error, results) => {
             if (error) {
                 reject(error);
             } else {
-                resolve({success:1});
+                resolve({success:1 ,insertId: results?.insertId || null });
             }
         });
     });

@@ -55,7 +55,10 @@ import {
     actionToGetAdminAllDashboardCountDataApiCall,
     actionToGetAllUsersSubscriptionsDataApiCall,
     actionToUpdateIsOnlineUseDataApiCall,
-    actionToUpdateBettingUserIsOnlineUseDataApiCall
+    actionToUpdateBettingUserIsOnlineUseDataApiCall,
+    actionToGetAdminOderAndValueCountDataApiCall,
+    actionToGetNearestGameSessionBasedOnGameTypeApiCall,
+    actionToInsertGameSessionDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -128,6 +131,56 @@ commonRouter.post(
             res.status(200).send({
                 success: false,
                 message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+commonRouter.post(
+    '/actionToInsertGameSessionDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToInsertGameSessionDataApiCall(req?.session?.userSessionData?.id, req.body)
+                .then(data => {
+                    res.status(200).send(data);
+                }).catch(error => {
+                res.status(500).send(error);
+            })
+        } else {
+            // If no session found, return unauthorized response
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetNearestGameSessionBasedOnGameTypeApiCall',
+    expressAsyncHandler(async(req, res)=>{
+        actionToGetNearestGameSessionBasedOnGameTypeApiCall(req.body)
+            .then((data)=>{
+                res.status(200).send(data);
+            }).catch(error => {
+            res.status(500).send(error)
+        })
+    })
+)
+
+commonRouter.post(
+    '/actionToGetAdminOderAndValueCountDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id && req?.session?.userSessionData?.role === 1) {
+            actionToGetAdminOderAndValueCountDataApiCall().then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                active_users_count: 1,
+                prediction_history_count: 6,
+                total_active_users_balance: 0,
+                total_prediction_history_balance: 0,
+                combined_total_value: 0
             });
         }
     })

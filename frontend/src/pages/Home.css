@@ -59,3 +59,107 @@
     text-align: justify;
     padding: 1rem;
 }
+
+
+.order-title {
+    font-weight: bold;
+}
+
+.stats-card {
+    border-radius: 15px;
+    text-align: center;
+}
+
+.stats-label {
+    background-color: orange;
+    border-radius: 8px;
+    padding: 6px;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.stats-value {
+    margin: 8px 0;
+}
+
+.arrow-icon {
+    font-size: 40px;
+    color: #1e90ff;
+}
+
+
+.period-row {
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.period-col,
+.time-col {
+    text-align: center;
+}
+
+.label {
+    font-weight: bold;
+    color: #555;
+}
+
+.value {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.edit-btn {
+    --background: #d9534f;
+    --color: #fff;
+    height: 24px;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.activate-btn {
+    font-weight: bold;
+}
+
+.green-arrow {
+    border-radius: 8px;
+}
+
+.info-text {
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    padding: 0 15px;
+}
+
+.history-title {
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.history-card {
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.history-card-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.history-click {
+    font-size: 14px;
+    color: #a0522d;
+    margin-bottom: 5px;
+}
+.period-input {
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 6px;
+    --padding-start: 8px; /* ionic-specific padding variable */
+}

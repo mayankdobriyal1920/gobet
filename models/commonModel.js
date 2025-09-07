@@ -2,7 +2,7 @@ import pool from "./connection.js";
 import crypto from 'crypto';
 import {
     actionToGetAllUsersSubscriptionsDataQuery,
-    actionToGetGameSessionOrAllSessionAndGamePlatformQuery,
+    actionToGetGameSessionOrAllSessionAndGamePlatformQuery, actionToGetNearestGameSessionBasedOnGameTypeQuery,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
     checkMobNumberAlreadyExistQuery,
     getAdminPassCodeListQuery, getAliveUsersQuery,
@@ -117,6 +117,21 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall 
     })
 }
 
+export const actionToGetNearestGameSessionBasedOnGameTypeApiCall = (body) => {
+    const {game_type} = body;
+    return new Promise(function(resolve, reject){
+        let resultData = {};
+        const query = actionToGetNearestGameSessionBasedOnGameTypeQuery();
+        pool.query(query, [], (error, results) =>{
+            if(error) reject(error);
+            if(results.length){
+                resultData = results[0];
+            }
+            resolve(resultData);
+        })
+    })
+}
+
 export const actionToGetGameSessionOrAllSessionAndGamePlatformApiCall = () => {
     return new Promise(function(resolve, reject) {
         let resultData = [];
@@ -133,6 +148,52 @@ export const actionToGetGameSessionOrAllSessionAndGamePlatformApiCall = () => {
     })
 
 }
+export const actionToInsertGameSessionDataApiCall = async (userId, body) => {
+    const { currentSessionId, newSessionSerialNumber, sessionNumber, start_time, is_active, game_type, betting_platform_id } = body;
+
+    // deactivate old
+    let dataToSend = {
+        column: `is_active = ?`,
+        value: [0, currentSessionId],
+        whereCondition: `id = ?`,
+        returnColumnName: "id",
+        tableName: "betting_game_session",
+    };
+
+    await updateCommonApiCall(dataToSend);
+
+    // insert new
+    let insertData = {
+        alias: ["?", "?", "?", "?", "?", "?", "?","?"],
+        column: [
+            "start_time",
+            "betting_platform_id",
+            "game_type",
+            "created_by",
+            "serial_number",
+            "session_number",
+            "is_active",
+            "started_by"
+        ],
+        values: [
+            start_time,
+            betting_platform_id,
+            game_type,
+            userId,
+            newSessionSerialNumber,
+            sessionNumber,
+            is_active,
+            userId
+        ],
+        tableName: "betting_game_session",
+    };
+
+    const insertResult = await insertCommonApiCall(insertData);
+    // Adjust based on your DB helper response
+    const newId = insertResult?.insertId || null;
+
+    return { status: 1, newSessionId: newId };
+};
 
 export const actionToSaveGameSessionDataApiCall = (userId, body) => {
     const { id, start_time, end_time, betting_platform_id, game_type } = body;
@@ -417,6 +478,52 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
         });
     });
 };
+
+export const actionToGetAdminOderAndValueCountDataApiCall = () => {
+    return new Promise((resolve, reject) =>{
+        let query = `
+            SELECT
+                    (SELECT COUNT(*) FROM betting_active_users WHERE status = 1) AS active_users_count,
+                    (SELECT COUNT(*) FROM bet_prediction_history) AS prediction_history_count,
+                    COALESCE((
+                                 SELECT SUM(u.wallet_balance)
+                                 FROM betting_active_users bau
+                                          JOIN app_user u ON u.id = bau.user_id
+                                 WHERE bau.status = 1
+                             ), 0) AS total_active_users_balance,
+                    COALESCE((
+                                 SELECT SUM(amount)
+                                 FROM bet_prediction_history
+                             ), 0) AS total_prediction_history_balance,
+                    (
+                        COALESCE((
+                                     SELECT SUM(u.wallet_balance)
+                                     FROM betting_active_users bau
+                                              JOIN app_user u ON u.id = bau.user_id
+                                     WHERE bau.status = 1
+                                 ), 0)
+                            +
+                        COALESCE((
+                                     SELECT SUM(amount)
+                                     FROM bet_prediction_history
+                                 ), 0)
+                        ) AS combined_total_value;
+
+
+        `
+        pool.query(query, [], (error, results) => {
+            if (error) {
+                console.error("Database Query Error:", error);
+                return reject(error);
+            }
+            let userData = {}
+            if (results && results.length > 0) {
+                userData = results[0];
+            }
+            resolve(userData);
+        });
+    })
+}
 
 export const actionToGetAdminAllDashboardCountDataApiCall = () => {
     return new Promise((resolve, reject) => {

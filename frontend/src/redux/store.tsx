@@ -2,7 +2,7 @@ import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
     adminDashboardAllCountDataReducer,
-    adminGameResultListReducer,
+    adminGameResultListReducer, adminOrderValuesCountDetailReducer,
     allUsersNormalAndSunAdminListReducer, allUsersSubscriptionsDataReducer,
     allUsersUnsetSubAdminListReducer,
     appSubscriptionPlanDataReducer,
@@ -10,7 +10,7 @@ import {
     betGameSessionDataReducer,
     changeUserAvatarModal,
     gameLastResultReducer, gamePlatformDataReducer, gameSessionAndAllSessionReducer,
-    generatedPasscodeListByAdminReducer,
+    generatedPasscodeListByAdminReducer, latestGameSessionDataReducer,
     nearestGameSessionAndActiveSessionReducer,
     passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
@@ -81,6 +81,13 @@ const initialState = {
     userSubscriptionData: {loading:true,subscriptionData:{}},
     appSubscriptionPlanData: {loading:true,subscriptionPlan:[]},
     allUsersSubscriptionsData: {loading:true,subscriptionsData:[]},
+    adminOrderValuesCountDetail: {loading:true, dashboardOrderValueCount:{total_orders : 0,
+                        completed_orders: 0,
+                        pending_orders : 0,
+                        total_values: 0,
+                        completed_values: 0,
+                        pending_values: 0}},
+    latestGameSessionData: {loading:true, gameSessionData: {}}
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -112,6 +119,8 @@ export const rootReducer = combineReducers({
     userMoneyTransactions: userMoneyTransactionsReducer,
     nearestGameSessionAndActiveSession: nearestGameSessionAndActiveSessionReducer,
     gameSessionAndAllSession: gameSessionAndAllSessionReducer,
+    adminOrderValuesCountDetail:adminOrderValuesCountDetailReducer,
+    latestGameSessionData:latestGameSessionDataReducer
 });
 
 declare global {

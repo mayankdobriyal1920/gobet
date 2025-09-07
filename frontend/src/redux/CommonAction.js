@@ -60,7 +60,10 @@ import {
     GET_ALL_GAME_PLATFORMS_SUCCESS,
     ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
     ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS,
-    ALL_USERS_SUBSCRIPTION_DATA_REQUEST, ALL_USERS_SUBSCRIPTION_DATA_SUCCESS
+    ALL_USERS_SUBSCRIPTION_DATA_REQUEST,
+    ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS, LATEST_GAME_SESSION_RECORD_REQUEST, LATEST_GAME_SESSION_RECORD_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
@@ -282,6 +285,59 @@ export const actionToGetAdminAllDashboardCountData = (event) => async (dispatch)
     }
 }
 
+export const actionToGetAdminOderAndValueCountData = (event) => async (dispatch) =>{
+    dispatch({type: ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST})
+    try {
+        api.post(`actionToGetAdminOderAndValueCountDataApiCall`, {}).then(responseData => {
+            if(event)
+                event.detail.complete();
+            let response = responseData.data;
+
+            let final_response = {
+                total_orders : Number(response.active_users_count) + Number(response.prediction_history_count),
+                completed_orders: Number(response.prediction_history_count),
+                pending_orders : Number(response.active_users_count),
+                total_values: Number(response.combined_total_value),
+                completed_values: Number(response.total_prediction_history_balance),
+                pending_values: Number(response.total_active_users_balance)
+            }
+
+            dispatch({ type: ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS, payload: final_response});
+        })
+    }catch(e){
+        console.log(e)
+    }
+}
+
+export const actionToCreateNewSession = (payload) => async(dispatch) =>{
+    try{
+        api.post(`actionToInsertGameSessionDataApiCall`, payload).then(({data}) => {
+            let new_session = {
+                id: data.newSessionId,
+                start_time: payload.start_time,
+                betting_platform_id: payload.betting_platform_id,
+                is_active: payload.is_active,
+                serial_number: payload.newSessionSerialNumber,
+                session_number: payload.sessionNumber,
+                game_type: payload.game_type
+            }
+            dispatch({ type: LATEST_GAME_SESSION_RECORD_SUCCESS, payload: {...new_session}});
+        })
+    }catch(e){
+        console.log(e)
+    }
+}
+
+export const actionToGetNearestGameSessionBasedOnGameType = (gameType) => async(dispatch) =>{
+    dispatch({type: LATEST_GAME_SESSION_RECORD_REQUEST})
+    try{
+        api.post(`actionToGetNearestGameSessionBasedOnGameTypeApiCall`, {game_type:gameType}).then(responseData => {
+            dispatch({ type: LATEST_GAME_SESSION_RECORD_SUCCESS, payload: {...responseData.data}});
+        })
+    }catch (e) {
+        console.log(e)
+    }
+}
 export const actionToGetUserActiveSubscriptionData= (setActivationPlanLoader) => async (dispatch) => {
     dispatch({ type: USER_SUBSCRIPTION_DATA_REQUEST});
     try {

@@ -66,6 +66,31 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery = 
     `;
 };
 
+export const actionToGetNearestGameSessionBasedOnGameTypeQuery = () => {
+    return `
+        SELECT
+            bgs.id,
+            bgs.start_time,
+            bgs.end_time,
+            bgs.betting_platform_id,
+            bp.name AS betting_platform_name,
+            bgs.is_active,
+            bgs.serial_number,
+            bgs.session_number,
+            bgs.game_type
+        FROM
+            betting_game_session bgs
+                INNER JOIN
+            betting_platform bp
+            ON bgs.betting_platform_id = bp.id
+        WHERE
+            bgs.session_number = (
+                SELECT MAX(session_number)
+                FROM betting_game_session
+            );
+    `
+}
+
 export const actionToGetGameSessionOrAllSessionAndGamePlatformQuery = () => {
     return `
         SELECT

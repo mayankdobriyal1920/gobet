@@ -18,11 +18,11 @@ import limboGame from "../theme/img/limboGame.png";
 import {useHistory} from "react-router";
 import {
     actionToActivateSubscriptionPlan,
-    actionToGetAdminAllDashboardCountData,
+    actionToGetAdminAllDashboardCountData, actionToGetAdminOderAndValueCountData,
 } from "../redux/CommonAction";
 import AddMoneyToGameWalletModal from "../components/commonPopup/AddMoneyToGameWalletModal";
 import SubscriptionModal from "../components/SubscriptionModal";
-import {arrowForwardOutline, beakerSharp, todaySharp} from "ionicons/icons";
+import {arrowForwardCircleOutline, arrowForwardOutline, beakerSharp, todaySharp} from "ionicons/icons";
 
 export default function HomePage() {
     const {walletBalance,bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
@@ -37,9 +37,11 @@ export default function HomePage() {
     const [loadingAddAmountSuccess, setLoadingAddAmountSuccess] = useState(false);
     const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
     const {dashboardCount} = useSelector((state) => state.adminDashboardAllCountData);
+    const {dashboardOrderValueCount} = useSelector(state => state.adminOrderValuesCountDetail)
 
     useEffect(() => {
-        dispatch(actionToGetAdminAllDashboardCountData())
+        dispatch(actionToGetAdminAllDashboardCountData());
+        dispatch(actionToGetAdminOderAndValueCountData());
     }, []);
 
     const goToPage = (page)=>{
@@ -150,93 +152,97 @@ export default function HomePage() {
                     <div className="settingPanel__container home_admin">
                         <div className="getbet-title getbet-line">
                             <div className="getbet-title-left">
-                                <span>Active Users</span>
+                                <span>ORDER:</span>
                             </div>
                         </div>
                         <div className="">
-                            <IonGrid className="grid_for_dashboard_data_grid">
-                                <IonRow className="grid_for_dashboard_data_row">
-                                    {/* First Column */}
-                                    <IonCol onClick={() => goToPage('/admin-admin-users-list')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Online Users</div>
-                                                <div className="title_for_das_text">{dashboardCount?.online_users}</div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
+                            <IonGrid>
+                                <IonRow className="ion-justify-content-center ion-align-items-center">
+                                    {/* Order Card */}
+                                    <IonCol size="12" size-md="4">
+                                        <IonCard className="stats-card">
+                                            <IonCardContent>
+                                                <div className="stats-label">Total Order</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.total_orders}</h2>
+
+                                                <div className="stats-label">Completed</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.completed_orders}</h2>
+
+                                                <div className="stats-label">Pending</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.pending_orders}</h2>
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
 
-                                    {/* Second Column */}
-                                    <IonCol onClick={() => goToPage('/admin-admin-users-list')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={beakerSharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Playing Users</div>
-                                                <div
-                                                    className="title_for_das_text">{dashboardCount?.playing_users}</div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
-                                            </IonCardContent>
-                                        </IonCard>
-                                    </IonCol>
-                                </IonRow>
-                            </IonGrid>
-                        </div>
-                        <div className="getbet-title getbet-line">
-                            <div className="getbet-title-left">
-                                <span>Subscriptions</span>
-                            </div>
-                        </div>
-                        <div className="">
-                            <IonGrid className="grid_for_dashboard_data_grid">
-                                <IonRow className="grid_for_dashboard_data_row">
-                                    {/* First Column */}
-                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={todaySharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Active Subscriptions</div>
-                                                <div className="title_for_das_text"></div>
-                                                <div className="title_for_das_text">
-                                                    Count: {dashboardCount?.total_active_subscriptions} Cost: ₹{dashboardCount?.total_active_subscriptions_cost}</div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
-                                            </IonCardContent>
-                                        </IonCard>
-                                    </IonCol>
+                                    {/* Volume Card */}
+                                    <IonCol size="12" size-md="4">
+                                        <IonCard className="stats-card">
+                                            <IonCardContent>
+                                                <div className="stats-label">Total Volume</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.total_values}</h2>
 
-                                    {/* Second Column */}
-                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
-                                            className="grid_for_dashboard_data_col">
-                                        <IonCard className="dashboard-card">
-                                            <IonCardContent className="dashboard-card-content">
-                                                <IonIcon icon={beakerSharp} className="dashboard-icon"/>
-                                                <div className="title_for_das_heading">Total Subscriptions</div>
-                                                <div className="title_for_das_text">
-                                                    Count: {dashboardCount?.total_subscriptions} Cost: ₹{dashboardCount?.total_subscriptions_cost}
-                                                </div>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
+                                                <div className="stats-label">Completed</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.completed_values}</h2>
+
+                                                <div className="stats-label">Pending</div>
+                                                <h2 className="stats-value">{dashboardOrderValueCount.pending_values}</h2>
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
                                 </IonRow>
+
+                                {/* Arrow */}
+                                <IonRow className="ion-justify-content-center ion-margin-top">
+                                    <IonIcon icon={arrowForwardCircleOutline} className="arrow-icon" />
+                                </IonRow>
                             </IonGrid>
                         </div>
+                        {/*<div className="getbet-title getbet-line">*/}
+                        {/*    <div className="getbet-title-left">*/}
+                        {/*        <span>Subscriptions</span>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
+                        {/*<div className="">*/}
+                        {/*    <IonGrid className="grid_for_dashboard_data_grid">*/}
+                        {/*        <IonRow className="grid_for_dashboard_data_row">*/}
+                        {/*            /!* First Column *!/*/}
+                        {/*            <IonCol onClick={() => goToPage('/all-user-subscriptions')}*/}
+                        {/*                    className="grid_for_dashboard_data_col">*/}
+                        {/*                <IonCard className="dashboard-card">*/}
+                        {/*                    <IonCardContent className="dashboard-card-content">*/}
+                        {/*                        <IonIcon icon={todaySharp} className="dashboard-icon"/>*/}
+                        {/*                        <div className="title_for_das_heading">Active Subscriptions</div>*/}
+                        {/*                        <div className="title_for_das_text"></div>*/}
+                        {/*                        <div className="title_for_das_text">*/}
+                        {/*                            Count: {dashboardCount?.total_active_subscriptions} Cost: ₹{dashboardCount?.total_active_subscriptions_cost}</div>*/}
+                        {/*                        <div className="title_for_das_text_link">*/}
+                        {/*                            Click to open*/}
+                        {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                        {/*                        </div>*/}
+                        {/*                    </IonCardContent>*/}
+                        {/*                </IonCard>*/}
+                        {/*            </IonCol>*/}
+
+                        {/*            /!* Second Column *!/*/}
+                        {/*            <IonCol onClick={() => goToPage('/all-user-subscriptions')}*/}
+                        {/*                    className="grid_for_dashboard_data_col">*/}
+                        {/*                <IonCard className="dashboard-card">*/}
+                        {/*                    <IonCardContent className="dashboard-card-content">*/}
+                        {/*                        <IonIcon icon={beakerSharp} className="dashboard-icon"/>*/}
+                        {/*                        <div className="title_for_das_heading">Total Subscriptions</div>*/}
+                        {/*                        <div className="title_for_das_text">*/}
+                        {/*                            Count: {dashboardCount?.total_subscriptions} Cost: ₹{dashboardCount?.total_subscriptions_cost}*/}
+                        {/*                        </div>*/}
+                        {/*                        <div className="title_for_das_text_link">*/}
+                        {/*                            Click to open*/}
+                        {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                        {/*                        </div>*/}
+                        {/*                    </IonCardContent>*/}
+                        {/*                </IonCard>*/}
+                        {/*            </IonCol>*/}
+                        {/*        </IonRow>*/}
+                        {/*    </IonGrid>*/}
+                        {/*</div>*/}
                     </div>
                     : ''
                 }

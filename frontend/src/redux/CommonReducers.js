@@ -60,7 +60,12 @@ import {
     GET_ALL_GAME_PLATFORMS_REQUEST,
     GET_ALL_GAME_PLATFORMS_SUCCESS,
     ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
-    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS, ALL_USERS_SUBSCRIPTION_DATA_REQUEST, ALL_USERS_SUBSCRIPTION_DATA_SUCCESS
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS,
+    ALL_USERS_SUBSCRIPTION_DATA_REQUEST,
+    ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS,
+    LATEST_GAME_SESSION_RECORD_REQUEST, LATEST_GAME_SESSION_RECORD_SUCCESS
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -163,6 +168,33 @@ export const adminDashboardAllCountDataReducer = (state = {}, action) => {
             return state;
     }
 };
+
+export const adminOrderValuesCountDetailReducer = (state={}, action) =>{
+    switch(action.type){
+        case ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST:
+            return {loading:true, dashboardOrderValueCount:{total_orders : 0,
+                    completed_orders: 0,
+                    pending_orders : 0,
+                    total_values: 0,
+                    completed_values: 0,
+                    pending_values: 0}}
+        case ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS:
+            return {loading:false, dashboardOrderValueCount: action.payload};
+        default:
+            return state;
+    }
+}
+
+export const latestGameSessionDataReducer = (state ={}, action) =>{
+    switch(action.type){
+        case LATEST_GAME_SESSION_RECORD_REQUEST:
+            return {loading: true, gameSessionData:{}};
+        case LATEST_GAME_SESSION_RECORD_SUCCESS:
+            return {loading:false, gameSessionData: action.payload};
+        default:
+            return state;
+    }
+}
 
 export const userSubscriptionDataReducer = (state = {}, action) => {
     switch (action.type) {
