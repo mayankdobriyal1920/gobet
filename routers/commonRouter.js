@@ -58,7 +58,7 @@ import {
     actionToUpdateBettingUserIsOnlineUseDataApiCall,
     actionToGetAdminOderAndValueCountDataApiCall,
     actionToGetNearestGameSessionBasedOnGameTypeApiCall,
-    actionToInsertGameSessionDataApiCall
+    actionToInsertGameSessionDataApiCall, actionToGetGamePredictionHistoryDataApiCall, actionToGetAllUserListDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -799,6 +799,32 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToGetGameHistoryDataApiCall(req?.session?.userSessionData?.id,req?.session?.userSessionData?.role,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetGamePredictionHistoryDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetGamePredictionHistoryDataApiCall(req?.session?.userSessionData?.id,req?.session?.userSessionData?.role,req.body).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send([]);
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetAllUserListDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetAllUserListDataApiCall(req?.session?.userSessionData?.id,req?.session?.userSessionData?.role,req.body).then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

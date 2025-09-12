@@ -63,7 +63,15 @@ import {
     ALL_USERS_SUBSCRIPTION_DATA_REQUEST,
     ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
     ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
-    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS, LATEST_GAME_SESSION_RECORD_REQUEST, LATEST_GAME_SESSION_RECORD_SUCCESS
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS,
+    LATEST_GAME_SESSION_RECORD_REQUEST,
+    LATEST_GAME_SESSION_RECORD_SUCCESS,
+    GAME_PREDICTION_HISTORY_DATA_REQUEST,
+    GAME_PREDICTION_HISTORY_DATA_SUCCESS,
+    LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, ALL_USER_LIST_OBJECT
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
@@ -308,8 +316,33 @@ export const actionToGetAdminOderAndValueCountData = (event) => async (dispatch)
         console.log(e)
     }
 }
+export const actionToGetPredictionHistoryData = (data, type) => async(dispatch) =>{
+    if(type === "session_data") {
+        dispatch({type: LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA, payload: data});
+    }
+    if(type === "prediction_data") {
+        dispatch({type: LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA, payload: data})
+    }
+    if(type === "prediction_result"){
+        dispatch({type: LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT, payload:data})
+    }
+    if(type === "prediction_data_user_list"){
+        await dispatch(actionToGetAllUserListData())
+        dispatch({type: LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, payload:data})
+    }
+}
 
-export const actionToCreateNewSession = (payload) => async(dispatch) =>{
+export const actionToGetAllUserListData = () => async(dispatch) =>{
+    try{
+        api.post(`actionToGetAllUserListDataApiCall`,{}).then((response)=>{
+            dispatch({type: ALL_USER_LIST_OBJECT, payload:response.data})
+        })
+    }catch(e){
+        console.log(e)
+    }
+}
+
+export const actionToCreateNewSession = (payload, callFunctionToEnterInGame) => async(dispatch) =>{
     try{
         api.post(`actionToInsertGameSessionDataApiCall`, payload).then(({data}) => {
             let new_session = {
@@ -322,6 +355,7 @@ export const actionToCreateNewSession = (payload) => async(dispatch) =>{
                 game_type: payload.game_type
             }
             dispatch({ type: LATEST_GAME_SESSION_RECORD_SUCCESS, payload: {...new_session}});
+            dispatch(actionToGetBetGameSessionData(data.newSessionId,true,callFunctionToEnterInGame));
         })
     }catch(e){
         console.log(e)
@@ -580,6 +614,16 @@ export const actionToGetDepositRequestHistoryData = (isLoading = true,payload = 
         })
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const actionToGetGamePredictionHistoryData = (isLoading = true, payload={}) => async(dispatch) =>{
+    if(isLoading) dispatch({type:GAME_PREDICTION_HISTORY_DATA_REQUEST});
+    try{
+        const {data} = await api.post(`actionToGetGamePredictionHistoryDataApiCall`, {payload});
+        dispatch({type:GAME_PREDICTION_HISTORY_DATA_SUCCESS, payload:data});
+    }catch (e) {
+        console.log(e)
     }
 }
 

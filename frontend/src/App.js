@@ -54,6 +54,12 @@ import GetBetGameSessionListPage from "./pages/admin/GetBetGameSessionListPage";
 import AllUsersSubscriptionPage from "./pages/AllUsersSubscriptionPage";
 import BettingGameEntryGamePlatformListComponent
     from "./components/commonPopup/BettingGameEntryGamePlatformListComponent";
+import GamePredictionHistoryDetailPage from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryDetailPage";
+import GamePredictionHistorySessionList from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistorySessionList";
+import GamePredictionHistoryPeriodList from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryPeriodList";
+import GamePredictionHistoryPredictionResult from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryPredictionResult"
+import GamePredictionHistoryPredictionUserList
+    from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryPredictionUserList";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -104,6 +110,13 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
                 <Route exact={true} path="/admin-game-session-list" component={GetBetGameSessionListPage}/>
                 <Route exact={true} path="/betting-app-with-platform-data/:gameType" component={BettingGameEntryGamePlatformListComponent}/>
+                {/*/// PREDICTION HISTORY PAGE ///*/}
+                <Route exact={true} path="/admin-game-prediction-history-list" component={GamePredictionHistoryDetailPage}/>
+                <Route exact={true} path="/prediction-session-list" component={GamePredictionHistorySessionList}/>
+                <Route exact={true} path="/prediction-period-list" component={GamePredictionHistoryPeriodList}/>
+                <Route exact={true} path="/prediction-result" component={GamePredictionHistoryPredictionResult}/>
+                <Route exact={true} path="/prediction-history-user-list" component={GamePredictionHistoryPredictionUserList} />
+                {/*/// PREDICTION HISTORY PAGE ///*/}
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>

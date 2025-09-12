@@ -94,12 +94,14 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const orderNextBetActivateUser = (betId)=>{
-        if(sessionData?.id && sessionData?.is_active && moment().isBetween(
-            moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
-            moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
-            null,
-            '[]' // Inclusive of both start and end times
-        )) {
+        if(sessionData?.id && sessionData?.is_active
+        //     && moment().isBetween(
+        //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
+        //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
+        //     null,
+        //     '[]' // Inclusive of both start and end times
+        // )
+        ) {
 
             if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10 && moment(subscriptionData?.expiry_date) >= moment()) {
                 if(!loadingStatus) {
@@ -262,12 +264,14 @@ export default function WinAndGoBettingMainPage() {
                         <LineLoaderComponent/>
                         <LineLoaderComponent/>
                     </React.Fragment>
-                    : (sessionData?.id && sessionData?.is_active && moment().isBetween(
-                        moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
-                        moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
-                        null,
-                        '[]' // Inclusive of both start and end times
-                    )) ?
+                    : (sessionData?.id && sessionData?.is_active
+                    //     && moment().isBetween(
+                    //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
+                    //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
+                    //     null,
+                    //     '[]' // Inclusive of both start and end times
+                    // )
+                    ) ?
                         <React.Fragment>
                             {(userInfo?.role !== 1) ?
                                 <div className="Wallet__C inner_page">

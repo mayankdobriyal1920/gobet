@@ -7,7 +7,7 @@ import {
     checkMobNumberAlreadyExistQuery,
     getAdminPassCodeListQuery, getAliveUsersQuery,
     getDepositHistoryQuery,
-    getGameHistoryQuery,
+    getGameHistoryQuery, GetGamePredictionHistoryDataQuery,
     getGameResultListQuery,
     getMoneyTransactionsQuery,
     getPendingDepositRequestListQuery,
@@ -1164,6 +1164,7 @@ export const actionToGetGameHistoryDataApiCall = (userId,role,body) => {
     })
 }
 
+
 export const actionToGetAllUsersSubscriptionsDataApiCall = (body) => {
     let {payload} = body;
     return new Promise(function(resolve, reject) {
@@ -1680,4 +1681,38 @@ export function actionToRunCheckForAliveUsers(sessionId,gameType,gameResultId,ga
     } catch (error) {
         console.error('Error:', error);
     }
+}
+
+export const actionToGetGamePredictionHistoryDataApiCall = (userId,role,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const {query} = GetGamePredictionHistoryDataQuery(userId,role,payload);
+        pool.query(query, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            if(results?.length){
+                responseData = results;
+            }
+            resolve(responseData);
+        })
+    })
+}
+
+export const actionToGetAllUserListDataApiCall = (userId,role,body) => {
+    let {payload} = body;
+    return new Promise(function(resolve, reject) {
+        let responseData = [];
+        const query = `SELECT * FROM app_user`;
+        pool.query(query, (error, results) => {
+            if (error) throw error;
+
+            const usersById = results.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+            }, {});
+            resolve(usersById);
+        })
+    })
 }

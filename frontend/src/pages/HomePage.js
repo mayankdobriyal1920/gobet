@@ -150,18 +150,67 @@ export default function HomePage() {
                 {/*///////////// ADMIN OPTIONS ///////////////////*/}
                 {(userInfo?.role === 1) ?
                     <div className="settingPanel__container home_admin">
+                        {/*<div className="getbet-title getbet-line">*/}
+                        {/*    <div className="getbet-title-left">*/}
+                        {/*        <span>ORDER</span>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
+                        {/*<div className="">*/}
+                        {/*    <IonGrid>*/}
+                        {/*        <IonRow className="ion-justify-content-center ion-align-items-center">*/}
+                        {/*            /!* Order Card *!/*/}
+                        {/*            <IonCol size="12" size-md="4">*/}
+                        {/*                <IonCard className="stats-card">*/}
+                        {/*                    <IonCardContent>*/}
+                        {/*                        <div className="stats-label">Total Order</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.total_orders}</h2>*/}
+
+                        {/*                        <div className="stats-label">Completed</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.completed_orders}</h2>*/}
+
+                        {/*                        <div className="stats-label">Pending</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.pending_orders}</h2>*/}
+                        {/*                    </IonCardContent>*/}
+                        {/*                </IonCard>*/}
+                        {/*            </IonCol>*/}
+
+                        {/*            /!* Volume Card *!/*/}
+                        {/*            <IonCol size="12" size-md="4">*/}
+                        {/*                <IonCard className="stats-card">*/}
+                        {/*                    <IonCardContent>*/}
+                        {/*                        <div className="stats-label">Total Volume</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.total_values}</h2>*/}
+
+                        {/*                        <div className="stats-label">Completed</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.completed_values}</h2>*/}
+
+                        {/*                        <div className="stats-label">Pending</div>*/}
+                        {/*                        <h2 className="stats-value">{dashboardOrderValueCount.pending_values}</h2>*/}
+                        {/*                    </IonCardContent>*/}
+                        {/*                </IonCard>*/}
+                        {/*            </IonCol>*/}
+                        {/*        </IonRow>*/}
+
+                        {/*        /!* Arrow *!/*/}
+                        {/*        <IonRow className="ion-justify-content-center ion-margin-top">*/}
+                        {/*            <IonIcon icon={arrowForwardCircleOutline} className="arrow-icon" />*/}
+                        {/*        </IonRow>*/}
+                        {/*    </IonGrid>*/}
+                        {/*</div>*/}
+
                         <div className="getbet-title getbet-line">
                             <div className="getbet-title-left">
-                                <span>ORDER:</span>
+                                <span>ORDER</span>
                             </div>
                         </div>
                         <div className="">
-                            <IonGrid>
-                                <IonRow className="ion-justify-content-center ion-align-items-center">
-                                    {/* Order Card */}
-                                    <IonCol size="12" size-md="4">
-                                        <IonCard className="stats-card">
-                                            <IonCardContent>
+                            <IonGrid className="grid_for_dashboard_data_grid">
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    {/* First Column */}
+                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
+                                            className="grid_for_dashboard_data_col">
+                                        <IonCard className="dashboard-card">
+                                            <IonCardContent className="dashboard-card-content">
                                                 <div className="stats-label">Total Order</div>
                                                 <h2 className="stats-value">{dashboardOrderValueCount.total_orders}</h2>
 
@@ -170,30 +219,34 @@ export default function HomePage() {
 
                                                 <div className="stats-label">Pending</div>
                                                 <h2 className="stats-value">{dashboardOrderValueCount.pending_orders}</h2>
+                                                <div className="title_for_das_text_link">
+                                                    Click to open
+                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                </div>
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
 
-                                    {/* Volume Card */}
-                                    <IonCol size="12" size-md="4">
-                                        <IonCard className="stats-card">
-                                            <IonCardContent>
+                                    {/* Second Column */}
+                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
+                                            className="grid_for_dashboard_data_col">
+                                        <IonCard className="dashboard-card">
+                                            <IonCardContent className="dashboard-card-content">
                                                 <div className="stats-label">Total Volume</div>
-                                                <h2 className="stats-value">{dashboardOrderValueCount.total_values}</h2>
+                                                <h2 className="stats-value">₹{dashboardOrderValueCount.total_values}</h2>
 
                                                 <div className="stats-label">Completed</div>
-                                                <h2 className="stats-value">{dashboardOrderValueCount.completed_values}</h2>
+                                                <h2 className="stats-value">₹{dashboardOrderValueCount.completed_values}</h2>
 
                                                 <div className="stats-label">Pending</div>
-                                                <h2 className="stats-value">{dashboardOrderValueCount.pending_values}</h2>
+                                                <h2 className="stats-value">₹{dashboardOrderValueCount.pending_values}</h2>
+                                                <div className="title_for_das_text_link">
+                                                    Click to open
+                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                </div>
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
-                                </IonRow>
-
-                                {/* Arrow */}
-                                <IonRow className="ion-justify-content-center ion-margin-top">
-                                    <IonIcon icon={arrowForwardCircleOutline} className="arrow-icon" />
                                 </IonRow>
                             </IonGrid>
                         </div>

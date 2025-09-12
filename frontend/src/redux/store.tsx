@@ -2,15 +2,21 @@ import { createStore, compose, applyMiddleware,combineReducers } from 'redux';
 import {thunk} from 'redux-thunk';
 import {
     adminDashboardAllCountDataReducer,
-    adminGameResultListReducer, adminOrderValuesCountDetailReducer,
-    allUsersNormalAndSunAdminListReducer, allUsersSubscriptionsDataReducer,
+    adminGameResultListReducer,
+    adminOrderValuesCountDetailReducer, allUserListObjectReducer,
+    allUsersNormalAndSunAdminListReducer,
+    allUsersSubscriptionsDataReducer,
     allUsersUnsetSubAdminListReducer,
     appSubscriptionPlanDataReducer,
     betActiveUserDataReducer,
     betGameSessionDataReducer,
     changeUserAvatarModal,
-    gameLastResultReducer, gamePlatformDataReducer, gameSessionAndAllSessionReducer,
-    generatedPasscodeListByAdminReducer, latestGameSessionDataReducer,
+    gameLastResultReducer,
+    gamePlatformDataReducer,
+    gamePredictionHistoryListDataReducer,
+    gameSessionAndAllSessionReducer,
+    generatedPasscodeListByAdminReducer,
+    latestGameSessionDataReducer, locallyStorePredictionHistoryDataReducer,
     nearestGameSessionAndActiveSessionReducer,
     passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
@@ -87,7 +93,10 @@ const initialState = {
                         total_values: 0,
                         completed_values: 0,
                         pending_values: 0}},
-    latestGameSessionData: {loading:true, gameSessionData: {}}
+    latestGameSessionData: {loading:true, gameSessionData: {}},
+    gamePredictionHistoryListData: {loading:true, gamePredictionHistoryList:[]},
+    locallyStorePredictionHistoryData:{sessionData:null, predictionListData:null, predictionResultData:null, predictionHistoryUserList:null},
+    allUserListObject:{}
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -120,7 +129,10 @@ export const rootReducer = combineReducers({
     nearestGameSessionAndActiveSession: nearestGameSessionAndActiveSessionReducer,
     gameSessionAndAllSession: gameSessionAndAllSessionReducer,
     adminOrderValuesCountDetail:adminOrderValuesCountDetailReducer,
-    latestGameSessionData:latestGameSessionDataReducer
+    latestGameSessionData:latestGameSessionDataReducer,
+    gamePredictionHistoryListData:gamePredictionHistoryListDataReducer,
+    locallyStorePredictionHistoryData:locallyStorePredictionHistoryDataReducer,
+    allUserListObject:allUserListObjectReducer,
 });
 
 declare global {

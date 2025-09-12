@@ -65,7 +65,14 @@ import {
     ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
     ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
     ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS,
-    LATEST_GAME_SESSION_RECORD_REQUEST, LATEST_GAME_SESSION_RECORD_SUCCESS
+    LATEST_GAME_SESSION_RECORD_REQUEST,
+    LATEST_GAME_SESSION_RECORD_SUCCESS,
+    GAME_PREDICTION_HISTORY_DATA_REQUEST,
+    GAME_PREDICTION_HISTORY_DATA_SUCCESS,
+    LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, ALL_USER_LIST_OBJECT
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -169,6 +176,29 @@ export const adminDashboardAllCountDataReducer = (state = {}, action) => {
     }
 };
 
+export const locallyStorePredictionHistoryDataReducer = (state={}, action) => {
+    switch(action.type){
+        case LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA:
+            return {...state, sessionData:action.payload}
+        case LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA:
+            return {...state, predictionListData:action.payload};
+        case LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT:
+            return{...state, predictionResultData:action.payload};
+        case LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST:
+            return {...state, predictionHistoryUserList:action.payload}
+        default:
+            return state
+    }
+}
+
+export const allUserListObjectReducer = (state={}, action) => {
+    switch(action.type){
+        case ALL_USER_LIST_OBJECT:
+            return action.payload
+        default:
+            return state
+    }
+}
 export const adminOrderValuesCountDetailReducer = (state={}, action) =>{
     switch(action.type){
         case ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST:
@@ -313,6 +343,17 @@ export const userGameHistoryReducer = (state = {}, action) => {
             return state;
     }
 };
+
+export const gamePredictionHistoryListDataReducer = (state={}, action) =>{
+    switch(action.type){
+        case GAME_PREDICTION_HISTORY_DATA_REQUEST:
+            return {loading:true, gamePredictionHistoryList:[]};
+        case GAME_PREDICTION_HISTORY_DATA_SUCCESS:
+            return {loading:false, gamePredictionHistoryList: action.payload};
+        default:
+            return state
+    }
+}
 
 export const userMoneyTransactionsReducer = (state = {}, action) => {
     switch (action.type) {

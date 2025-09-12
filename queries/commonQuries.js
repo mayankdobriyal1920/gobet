@@ -184,6 +184,68 @@ export const getDepositHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
+export const GetGamePredictionHistoryDataQuery = () => {
+
+    // Final query with JSON_OBJECT for user data
+    let query = `
+            WITH session_data AS (
+                SELECT
+                    bgs.id AS session_id,
+                    DATE(bgs.created_at) AS session_date,
+                    bgs.start_time,
+                    bgs.end_time,
+                    bgs.is_active,
+                    bgs.game_type,
+                    bgs.serial_number,
+                    bgs.session_number,
+                    (
+                        SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'game_result_id', gr.id,
+                                'result', gr.result,
+                                'total_bet_amount', gr.total_bet_amount,
+                                'created_at', gr.created_at,
+                                'period_number', gr.game_id,
+                                'result', gr.result,
+                                'bet_distribution_json', gr.bet_distribution_json
+                            )
+                        )
+                        FROM game_result gr
+                        WHERE gr.betting_game_session_id = bgs.id
+                    ) AS game_results,
+                    (
+                        SELECT COALESCE(SUM(gr.total_bet_amount),0)
+                        FROM game_result gr
+                        WHERE gr.betting_game_session_id = bgs.id
+                    ) AS session_total_bet_amount
+                FROM betting_game_session bgs
+            )
+            
+            -- Step 2: Group by date and aggregate sessions
+            SELECT
+                sd.session_date,
+                COUNT(sd.session_id) AS total_sessions,
+                SUM(sd.session_total_bet_amount) AS total_bet_amount,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'session_id', sd.session_id,
+                        'start_time', sd.start_time,
+                        'end_time', sd.end_time,
+                        'is_active', sd.is_active,
+                        'game_type', sd.game_type,
+                        'serial_number', sd.serial_number,
+                        'session_number', sd.session_number,
+                        'session_total_bet_amount', sd.session_total_bet_amount,
+                        'game_results', sd.game_results
+                    )
+                ) AS sessions
+            FROM session_data sd
+            GROUP BY sd.session_date
+            ORDER BY sd.session_date DESC;
+    `;
+
+    return {query };
+};
 export const getGameHistoryQuery = (userId, role, body) => {
     let { status, created_at } = body;
     let values = [userId];

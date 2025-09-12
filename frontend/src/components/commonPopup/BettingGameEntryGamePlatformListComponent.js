@@ -8,7 +8,7 @@ import {
     IonContent,
     IonGrid,
     IonHeader,
-    IonIcon,
+    IonIcon, IonLoading,
     IonPage,
     IonRefresher, IonRefresherContent,
     IonRow
@@ -16,7 +16,7 @@ import {
 import {arrowBack, arrowForwardOutline, beakerSharp, todaySharp} from "ionicons/icons";
 import {useDispatch, useSelector} from "react-redux";
 import GetBetGameSessionListPage from "../../pages/admin/GetBetGameSessionListPage";
-import RunningTimerComponent from "../RunningTimerComponent";
+// import RunningTimerComponent from "../RunningTimerComponent";
 import {
     actionToCreateNewSession,
     actionToGetAdminAllDashboardCountData,
@@ -39,6 +39,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
     const [serialNumber, setSerialNumber] = useState(
         gameSessionData?.serial_number?.toString() || ""
     );
+    const [userEnterLoading,setUserEnterLoading] = useState(false);
 
 
     useEffect(() => {
@@ -85,7 +86,13 @@ const BettingGameEntryGamePlatformListComponent = () => {
         dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType))
     }
 
+    const callFunctionToEnterInGame = ()=>{
+        goToPage(`/win-go-betting`);
+        setUserEnterLoading(false);
+    }
+
     const callFunctionToCreateNewSession = () =>{
+        setUserEnterLoading(true);
         let payload = {
             currentSessionId: gameSessionData.id,
             newSessionSerialNumber: serialNumber ? serialNumber : gameSessionData.serial_number,
@@ -95,222 +102,223 @@ const BettingGameEntryGamePlatformListComponent = () => {
             game_type:gameType,
             betting_platform_id:gameSessionData.betting_platform_id
         }
-        dispatch(actionToCreateNewSession(payload))
+        dispatch(actionToCreateNewSession(payload,callFunctionToEnterInGame))
     }
 
 
     return (
-        <IonPage className={"home_welcome_page_container"}>
-            <IonHeader>
-                <div className={"content-getbet content"}>
-                    <div className="navbar">
-                        <div className="navbar-fixed">
-                            <div className="navbar__content">
-                                <div onClick={goBack} className="navbar__content-left">
-                                    <IonIcon icon={arrowBack}
-                                             style={{color: "#ffffff", width: "24px", height: "24px"}}/>
-                                </div>
-                                <div className="navbar__content-center">
-                                    <div className="navbar__content-title">
-                                        <span>{gameType?.toUpperCase()}</span>
+        <React.Fragment>
+            <IonPage className={"home_welcome_page_container"}>
+                <IonHeader>
+                    <div className={"content-getbet content"}>
+                        <div className="navbar">
+                            <div className="navbar-fixed">
+                                <div className="navbar__content">
+                                    <div onClick={goBack} className="navbar__content-left">
+                                        <IonIcon icon={arrowBack}
+                                                 style={{color: "#ffffff", width: "24px", height: "24px"}}/>
                                     </div>
-                                </div>
-                                <div className="navbar__content-right">
-                                    <RunningTimerComponent/>
+                                    <div className="navbar__content-center">
+                                        <div className="navbar__content-title">
+                                            <span>{gameType?.toUpperCase()}</span>
+                                        </div>
+                                    </div>
+                                    <div className="navbar__content-right">
+                                        {/*<RunningTimerComponent/>*/}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </IonHeader>
-            <IonContent className={"content-theme-off-white-bg-color"}>
-                <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-                    <IonRefresherContent></IonRefresherContent>
-                </IonRefresher>
-                {(userInfo?.role === 1) ?
-                    <div className={"sysMessage__container"}>
-                        <IonGrid>
-                            {/* Period Number & Time */}
-                            <IonRow className="period-row">
-                                <IonCol className="period-col">
-                                    <div className="label">PERIOD NUMBER</div>
-                                    <input
-                                        value={serialNumber}
-                                        type="number"
-                                        onChange={(e) => setSerialNumber(e.target.value)}
-                                        className="period-input"
-                                    />
-                                    {/*<div className="value">{gameSessionData.serial_number}</div>*/}
-                                    {/*<IonButton size="small" color="medium" className="edit-btn">*/}
-                                    {/*    EDIT*/}
-                                    {/*</IonButton>*/}
-                                </IonCol>
-                                <IonCol className="time-col">
-                                    <div className="label">TIME</div>
-                                    <div className="value"> {formatTime(time)}</div>
-                                </IonCol>
-                            </IonRow>
+                </IonHeader>
+                <IonContent className={"content-theme-off-white-bg-color"}>
+                    <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+                        <IonRefresherContent></IonRefresherContent>
+                    </IonRefresher>
+                    {(userInfo?.role === 1) ?
+                        <div className={"sysMessage__container"}>
+                            <IonGrid>
+                                {/* Period Number & Time */}
+                                <IonRow className="period-row">
+                                    <IonCol className="period-col">
+                                        <div className="label">PERIOD NUMBER</div>
+                                        <input
+                                            value={serialNumber}
+                                            type="number"
+                                            onChange={(e) => setSerialNumber(e.target.value)}
+                                            className="period-input"
+                                        />
+                                        {/*<div className="value">{gameSessionData.serial_number}</div>*/}
+                                        {/*<IonButton size="small" color="medium" className="edit-btn">*/}
+                                        {/*    EDIT*/}
+                                        {/*</IonButton>*/}
+                                    </IonCol>
+                                    <IonCol className="time-col">
+                                        <div className="label">TIME</div>
+                                        <div className="value"> {formatTime(time)}</div>
+                                    </IonCol>
+                                </IonRow>
 
-                            {/* Activate Session */}
-                            {/* Activate Session */}
-                            <IonRow className="ion-justify-content-center ion-margin-top">
-                                {isActivatable ? (
-                                    <IonButton expand="block" color="success" className="activate-btn" onClick={callFunctionToCreateNewSession}>
-                                        ACTIVATE SESSION
-                                    </IonButton>
-                                ) : (
-                                    <IonButton expand="block" color="warning" className="activate-btn" disabled>
-                                        WAIT...
-                                    </IonButton>
-                                )}
-                            </IonRow>
+                                {/* Activate Session */}
+                                {/* Activate Session */}
+                                <IonRow className="ion-justify-content-center ion-margin-top">
+                                    {isActivatable ? (
+                                        <IonButton expand="block" color="success" className="activate-btn" onClick={callFunctionToCreateNewSession}>
+                                            ACTIVATE SESSION
+                                        </IonButton>
+                                    ) : (
+                                        <IonButton expand="block" color="warning" className="activate-btn" disabled>
+                                            WAIT...
+                                        </IonButton>
+                                    )}
+                                </IonRow>
 
-                            {/* Green arrow */}
-                            <IonRow className="ion-justify-content-center ion-margin-top">
-                                <IonButton color="success" className="green-arrow">
-                                    <IonIcon icon={arrowForwardOutline} />
-                                </IonButton>
-                            </IonRow>
+                            </IonGrid>
 
-                            {/* Info text */}
-                            <IonRow className="ion-justify-content-center ion-margin-top">
-                                <p className="info-text">
-                                    अगला period आने में जब 10 सेकेंड बाकी हों तब
-                                    एक्टिवेट का ऑप्शन आएगा।
-                                </p>
-                            </IonRow>
+                            <div className="settingPanel__container" style={{paddingTop: '1rem'}}>
+                                <div className="getbet-title getbet-line">
+                                    <div className="getbet-title-left">
+                                        <span>HISTORY</span>
+                                    </div>
+                                </div>
+                                <div className="">
+                                    <IonGrid
+                                             className="grid_for_dashboard_data_grid">
+                                        <IonRow className="grid_for_dashboard_data_row">
+                                            {/* First Column */}
+                                            <IonCol className="grid_for_dashboard_data_col" onClick={()=>goToPage('/game-history')}>
+                                                <IonCard className="dashboard-card">
+                                                    <IonCardContent className="dashboard-card-content">
+                                                        <IonIcon icon={todaySharp} className="dashboard-icon"/>
+                                                        <div className="title_for_das_heading">RESULT HISTORY</div>
+                                                        <div className="title_for_das_text_link">
+                                                            Click to open
+                                                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                        </div>
+                                                    </IonCardContent>
+                                                </IonCard>
+                                            </IonCol>
 
-                            {/* History */}
-                            <IonRow>
-                                <IonCol>
-                                    <h3 className="history-title">HISTORY :</h3>
-                                </IonCol>
-                            </IonRow>
+                                            {/* Second Column */}
+                                            <IonCol onClick={() => goToPage('/admin-game-prediction-history-list')}
+                                                    className="grid_for_dashboard_data_col">
+                                                <IonCard className="dashboard-card">
+                                                    <IonCardContent className="dashboard-card-content">
+                                                        <IonIcon icon={beakerSharp} className="dashboard-icon"/>
+                                                        <div className="title_for_das_heading">PREDICTION HISTORY</div>
+                                                        <div className="title_for_das_text_link">
+                                                            Click to open
+                                                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                        </div>
+                                                    </IonCardContent>
+                                                </IonCard>
+                                            </IonCol>
+                                        </IonRow>
+                                    </IonGrid>
+                                </div>
+                                {/*<div className="getbet-title getbet-line">*/}
+                                {/*    <div className="getbet-title-left">*/}
+                                {/*        <span>Active Users</span>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
+                                {/*<div className="">*/}
+                                {/*    <IonGrid onClick={() => goToPage('/admin-admin-users-list')}*/}
+                                {/*             className="grid_for_dashboard_data_grid">*/}
+                                {/*        <IonRow className="grid_for_dashboard_data_row">*/}
+                                {/*            /!* First Column *!/*/}
+                                {/*            <IonCol className="grid_for_dashboard_data_col">*/}
+                                {/*                <IonCard className="dashboard-card">*/}
+                                {/*                    <IonCardContent className="dashboard-card-content">*/}
+                                {/*                        <IonIcon icon={todaySharp} className="dashboard-icon"/>*/}
+                                {/*                        <div className="title_for_das_heading">Online Users</div>*/}
+                                {/*                        <div*/}
+                                {/*                            className="title_for_das_text">{dashboardCount?.online_users}</div>*/}
+                                {/*                        <div className="title_for_das_text_link">*/}
+                                {/*                            Click to open*/}
+                                {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                {/*                        </div>*/}
+                                {/*                    </IonCardContent>*/}
+                                {/*                </IonCard>*/}
+                                {/*            </IonCol>*/}
 
-                            <IonRow>
-                                <IonCol size="6">
-                                    <IonCard className="history-card">
-                                        <IonCardContent>
-                                            <div className="history-card-title">RESULT HISTORY</div>
-                                            <div className="history-click">Click to open</div>
-                                            <IonIcon icon={arrowForwardOutline} />
-                                        </IonCardContent>
-                                    </IonCard>
-                                </IonCol>
-                                <IonCol size="6">
-                                    <IonCard className="history-card">
-                                        <IonCardContent>
-                                            <div className="history-card-title">PREDICTION HISTORY</div>
-                                            <div className="history-click">Click to open</div>
-                                            <IonIcon icon={arrowForwardOutline} />
-                                        </IonCardContent>
-                                    </IonCard>
-                                </IonCol>
-                            </IonRow>
-                        </IonGrid>
+                                {/*            /!* Second Column *!/*/}
+                                {/*            <IonCol onClick={() => goToPage('/admin-admin-users-list')}*/}
+                                {/*                    className="grid_for_dashboard_data_col">*/}
+                                {/*                <IonCard className="dashboard-card">*/}
+                                {/*                    <IonCardContent className="dashboard-card-content">*/}
+                                {/*                        <IonIcon icon={beakerSharp} className="dashboard-icon"/>*/}
+                                {/*                        <div className="title_for_das_heading">Playing Users</div>*/}
+                                {/*                        <div*/}
+                                {/*                            className="title_for_das_text">{dashboardCount?.playing_users}</div>*/}
+                                {/*                        <div className="title_for_das_text_link">*/}
+                                {/*                            Click to open*/}
+                                {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                {/*                        </div>*/}
+                                {/*                    </IonCardContent>*/}
+                                {/*                </IonCard>*/}
+                                {/*            </IonCol>*/}
+                                {/*        </IonRow>*/}
+                                {/*    </IonGrid>*/}
+                                {/*</div>*/}
+                                {/*<div className="getbet-title getbet-line">*/}
+                                {/*    <div className="getbet-title-left">*/}
+                                {/*        <span>Orders</span>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
+                                {/*<div className="">*/}
+                                {/*    <IonGrid className="grid_for_dashboard_data_grid">*/}
+                                {/*        <IonRow className="grid_for_dashboard_data_row">*/}
+                                {/*            /!* First Column *!/*/}
+                                {/*            <IonCol onClick={() => goToPage('/game-history')}*/}
+                                {/*                    className="grid_for_dashboard_data_col">*/}
+                                {/*                <IonCard className="dashboard-card">*/}
+                                {/*                    <IonCardContent className="dashboard-card-content">*/}
+                                {/*                        <IonIcon icon={todaySharp} className="dashboard-icon"/>*/}
+                                {/*                        <div className="title_for_das_heading">{`Today's`} Orders</div>*/}
+                                {/*                        <div*/}
+                                {/*                            className="title_for_das_text">*/}
+                                {/*                            Count: {dashboardCount?.current_orders_count} Cost: {dashboardCount?.today_orders_amount_sum}*/}
+                                {/*                        </div>*/}
+                                {/*                        <div className="title_for_das_text_link">*/}
+                                {/*                            Click to open*/}
+                                {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                {/*                        </div>*/}
+                                {/*                    </IonCardContent>*/}
+                                {/*                </IonCard>*/}
+                                {/*            </IonCol>*/}
 
-                        {/*/////  OLD HTML //////*/}
-                        {/*<div className="settingPanel__container" style={{paddingTop: '1rem'}}>*/}
-                        {/*    <div className="getbet-title getbet-line">*/}
-                        {/*        <div className="getbet-title-left">*/}
-                        {/*            <span>Active Users</span>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*    <div className="">*/}
-                        {/*        <IonGrid onClick={() => goToPage('/admin-admin-users-list')}*/}
-                        {/*                 className="grid_for_dashboard_data_grid">*/}
-                        {/*            <IonRow className="grid_for_dashboard_data_row">*/}
-                        {/*                /!* First Column *!/*/}
-                        {/*                <IonCol className="grid_for_dashboard_data_col">*/}
-                        {/*                    <IonCard className="dashboard-card">*/}
-                        {/*                        <IonCardContent className="dashboard-card-content">*/}
-                        {/*                            <IonIcon icon={todaySharp} className="dashboard-icon"/>*/}
-                        {/*                            <div className="title_for_das_heading">Online Users</div>*/}
-                        {/*                            <div*/}
-                        {/*                                className="title_for_das_text">{dashboardCount?.online_users}</div>*/}
-                        {/*                            <div className="title_for_das_text_link">*/}
-                        {/*                                Click to open*/}
-                        {/*                                <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                        {/*                            </div>*/}
-                        {/*                        </IonCardContent>*/}
-                        {/*                    </IonCard>*/}
-                        {/*                </IonCol>*/}
+                                {/*            /!* Second Column *!/*/}
+                                {/*            <IonCol onClick={() => goToPage('/game-history')}*/}
+                                {/*                    className="grid_for_dashboard_data_col">*/}
+                                {/*                <IonCard className="dashboard-card">*/}
+                                {/*                    <IonCardContent className="dashboard-card-content">*/}
+                                {/*                        <IonIcon icon={beakerSharp} className="dashboard-icon"/>*/}
+                                {/*                        <div className="title_for_das_heading">Total Orders</div>*/}
+                                {/*                        <div*/}
+                                {/*                            className="title_for_das_text">*/}
+                                {/*                            Count: {dashboardCount?.total_orders_count} Cost:*/}
+                                {/*                            ₹{dashboardCount?.total_orders_amount_sum}*/}
+                                {/*                        </div>*/}
+                                {/*                        <div className="title_for_das_text_link">*/}
+                                {/*                            Click to open*/}
+                                {/*                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                {/*                        </div>*/}
+                                {/*                    </IonCardContent>*/}
+                                {/*                </IonCard>*/}
+                                {/*            </IonCol>*/}
+                                {/*        </IonRow>*/}
+                                {/*    </IonGrid>*/}
+                                {/*</div>*/}
+                            </div>
+                        </div>
+                        : ''
+                    }
+                    {/*<GetBetGameSessionListPage gameType={gameType}/>*/}
+                </IonContent>
+            </IonPage>
+            <IonLoading isOpen={userEnterLoading} message={"Please wait..."}/>
+        </React.Fragment>
 
-                        {/*                /!* Second Column *!/*/}
-                        {/*                <IonCol onClick={() => goToPage('/admin-admin-users-list')}*/}
-                        {/*                        className="grid_for_dashboard_data_col">*/}
-                        {/*                    <IonCard className="dashboard-card">*/}
-                        {/*                        <IonCardContent className="dashboard-card-content">*/}
-                        {/*                            <IonIcon icon={beakerSharp} className="dashboard-icon"/>*/}
-                        {/*                            <div className="title_for_das_heading">Playing Users</div>*/}
-                        {/*                            <div*/}
-                        {/*                                className="title_for_das_text">{dashboardCount?.playing_users}</div>*/}
-                        {/*                            <div className="title_for_das_text_link">*/}
-                        {/*                                Click to open*/}
-                        {/*                                <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                        {/*                            </div>*/}
-                        {/*                        </IonCardContent>*/}
-                        {/*                    </IonCard>*/}
-                        {/*                </IonCol>*/}
-                        {/*            </IonRow>*/}
-                        {/*        </IonGrid>*/}
-                        {/*    </div>*/}
-                        {/*    <div className="getbet-title getbet-line">*/}
-                        {/*        <div className="getbet-title-left">*/}
-                        {/*            <span>Orders</span>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*    <div className="">*/}
-                        {/*        <IonGrid className="grid_for_dashboard_data_grid">*/}
-                        {/*            <IonRow className="grid_for_dashboard_data_row">*/}
-                        {/*                /!* First Column *!/*/}
-                        {/*                <IonCol onClick={() => goToPage('/game-history')}*/}
-                        {/*                        className="grid_for_dashboard_data_col">*/}
-                        {/*                    <IonCard className="dashboard-card">*/}
-                        {/*                        <IonCardContent className="dashboard-card-content">*/}
-                        {/*                            <IonIcon icon={todaySharp} className="dashboard-icon"/>*/}
-                        {/*                            <div className="title_for_das_heading">{`Today's`} Orders</div>*/}
-                        {/*                            <div*/}
-                        {/*                                className="title_for_das_text">*/}
-                        {/*                                Count: {dashboardCount?.current_orders_count} Cost: {dashboardCount?.today_orders_amount_sum}*/}
-                        {/*                            </div>*/}
-                        {/*                            <div className="title_for_das_text_link">*/}
-                        {/*                                Click to open*/}
-                        {/*                                <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                        {/*                            </div>*/}
-                        {/*                        </IonCardContent>*/}
-                        {/*                    </IonCard>*/}
-                        {/*                </IonCol>*/}
-
-                        {/*                /!* Second Column *!/*/}
-                        {/*                <IonCol onClick={() => goToPage('/game-history')}*/}
-                        {/*                        className="grid_for_dashboard_data_col">*/}
-                        {/*                    <IonCard className="dashboard-card">*/}
-                        {/*                        <IonCardContent className="dashboard-card-content">*/}
-                        {/*                            <IonIcon icon={beakerSharp} className="dashboard-icon"/>*/}
-                        {/*                            <div className="title_for_das_heading">Total Orders</div>*/}
-                        {/*                            <div*/}
-                        {/*                                className="title_for_das_text">*/}
-                        {/*                                Count: {dashboardCount?.total_orders_count} Cost:*/}
-                        {/*                                ₹{dashboardCount?.total_orders_amount_sum}*/}
-                        {/*                            </div>*/}
-                        {/*                            <div className="title_for_das_text_link">*/}
-                        {/*                                Click to open*/}
-                        {/*                                <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                        {/*                            </div>*/}
-                        {/*                        </IonCardContent>*/}
-                        {/*                    </IonCard>*/}
-                        {/*                </IonCol>*/}
-                        {/*            </IonRow>*/}
-                        {/*        </IonGrid>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
-                    </div>
-                    : ''
-                }
-                {/*<GetBetGameSessionListPage gameType={gameType}/>*/}
-            </IonContent>
-        </IonPage>
     );
 };
 
