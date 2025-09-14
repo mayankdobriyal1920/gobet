@@ -29,7 +29,7 @@ import {
     userGameHistoryReducer,
     userMoneyTransactionsReducer,
     userOtpReducer,
-    userSessionReducer,
+    userSessionReducer, usersOrderAndStatusDataListReducer,
     userSubscriptionDataReducer,
     userWalletAndGameBalanceReducer,
     userWithdrawalAmountHistoryReducer
@@ -95,8 +95,9 @@ const initialState = {
                         pending_values: 0}},
     latestGameSessionData: {loading:true, gameSessionData: {}},
     gamePredictionHistoryListData: {loading:true, gamePredictionHistoryList:[]},
-    locallyStorePredictionHistoryData:{sessionData:null, predictionListData:null, predictionResultData:null, predictionHistoryUserList:null},
-    allUserListObject:{}
+    locallyStorePredictionHistoryData:{sessionData:null, predictionListData:null, predictionResultData:null, predictionHistoryUserList:null, usersOrderStatusDetail:null},
+    allUserListObject:{},
+    usersOrderAndStatusDataList:{loading:true, usersOrderAndStatusList:[]}
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -133,6 +134,7 @@ export const rootReducer = combineReducers({
     gamePredictionHistoryListData:gamePredictionHistoryListDataReducer,
     locallyStorePredictionHistoryData:locallyStorePredictionHistoryDataReducer,
     allUserListObject:allUserListObjectReducer,
+    usersOrderAndStatusDataList:usersOrderAndStatusDataListReducer
 });
 
 declare global {

@@ -71,7 +71,10 @@ import {
     LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
     LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
     LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
-    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, ALL_USER_LIST_OBJECT
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST,
+    ALL_USER_LIST_OBJECT,
+    USERS_ORDER_STATUS_DATA_SUCCESS,
+    USERS_ORDER_STATUS_DATA_REQUEST, LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
@@ -293,6 +296,17 @@ export const actionToGetAdminAllDashboardCountData = (event) => async (dispatch)
     }
 }
 
+export const actionToGetOrderStatusListData = () => async(dispatch) => {
+    dispatch({type:USERS_ORDER_STATUS_DATA_REQUEST});
+    try {
+        api.post(`actionToGetOrderStatusListDataApiCall`, {}).then(responseData => {
+            dispatch({ type: USERS_ORDER_STATUS_DATA_SUCCESS, payload: responseData.data});
+        })
+    }catch (e) {
+        console.log(e)
+    }
+}
+
 export const actionToGetAdminOderAndValueCountData = (event) => async (dispatch) =>{
     dispatch({type: ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST})
     try {
@@ -329,6 +343,9 @@ export const actionToGetPredictionHistoryData = (data, type) => async(dispatch) 
     if(type === "prediction_data_user_list"){
         await dispatch(actionToGetAllUserListData())
         dispatch({type: LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, payload:data})
+    }
+    if(type === "order_status_Detail"){
+        dispatch({type: LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL, payload:data})
     }
 }
 

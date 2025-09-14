@@ -207,8 +207,7 @@ export default function HomePage() {
                             <IonGrid className="grid_for_dashboard_data_grid">
                                 <IonRow className="grid_for_dashboard_data_row">
                                     {/* First Column */}
-                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
-                                            className="grid_for_dashboard_data_col">
+                                    <IonCol className="grid_for_dashboard_data_col">
                                         <IonCard className="dashboard-card">
                                             <IonCardContent className="dashboard-card-content">
                                                 <div className="stats-label">Total Order</div>
@@ -219,17 +218,16 @@ export default function HomePage() {
 
                                                 <div className="stats-label">Pending</div>
                                                 <h2 className="stats-value">{dashboardOrderValueCount.pending_orders}</h2>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
+                                                {/*<div className="title_for_das_text_link">*/}
+                                                {/*    Click to open*/}
+                                                {/*    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                                {/*</div>*/}
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
 
                                     {/* Second Column */}
-                                    <IonCol onClick={() => goToPage('/all-user-subscriptions')}
-                                            className="grid_for_dashboard_data_col">
+                                    <IonCol className="grid_for_dashboard_data_col">
                                         <IonCard className="dashboard-card">
                                             <IonCardContent className="dashboard-card-content">
                                                 <div className="stats-label">Total Volume</div>
@@ -240,12 +238,19 @@ export default function HomePage() {
 
                                                 <div className="stats-label">Pending</div>
                                                 <h2 className="stats-value">₹{dashboardOrderValueCount.pending_values}</h2>
-                                                <div className="title_for_das_text_link">
-                                                    Click to open
-                                                    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                                </div>
+                                                {/*<div className="title_for_das_text_link">*/}
+                                                {/*    Click to open*/}
+                                                {/*    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
+                                                {/*</div>*/}
                                             </IonCardContent>
                                         </IonCard>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow className="grid_for_dashboard_data_row">
+                                    <IonCol className="grid_for_dashboard_data_col">
+                                        <div className="title_for_das_text_link" onClick={() => goToPage('/game-users-order-status-list')}>
+                                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                        </div>
                                     </IonCol>
                                 </IonRow>
                             </IonGrid>

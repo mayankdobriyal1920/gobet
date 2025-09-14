@@ -72,7 +72,10 @@ import {
     LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
     LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
     LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
-    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST, ALL_USER_LIST_OBJECT
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST,
+    ALL_USER_LIST_OBJECT,
+    USERS_ORDER_STATUS_DATA_SUCCESS,
+    USERS_ORDER_STATUS_DATA_REQUEST, LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -186,6 +189,8 @@ export const locallyStorePredictionHistoryDataReducer = (state={}, action) => {
             return{...state, predictionResultData:action.payload};
         case LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST:
             return {...state, predictionHistoryUserList:action.payload}
+        case LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL:
+            return {...state, usersOrderStatusDetail: action.payload}
         default:
             return state
     }
@@ -197,6 +202,17 @@ export const allUserListObjectReducer = (state={}, action) => {
             return action.payload
         default:
             return state
+    }
+}
+
+export const usersOrderAndStatusDataListReducer = (state={}, action) =>{
+    switch (action.type) {
+        case USERS_ORDER_STATUS_DATA_REQUEST:
+            return {loading:true, usersOrderAndStatusList:[]};
+        case USERS_ORDER_STATUS_DATA_SUCCESS:
+            return {loading:false, usersOrderAndStatusList: action.payload};
+        default:
+            return state;
     }
 }
 export const adminOrderValuesCountDetailReducer = (state={}, action) =>{

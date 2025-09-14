@@ -186,7 +186,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                              className="grid_for_dashboard_data_grid">
                                         <IonRow className="grid_for_dashboard_data_row">
                                             {/* First Column */}
-                                            <IonCol className="grid_for_dashboard_data_col" onClick={()=>goToPage('/game-history')}>
+                                            <IonCol className="grid_for_dashboard_data_col" onClick={()=>goToPage('/game-result-history')}>
                                                 <IonCard className="dashboard-card">
                                                     <IonCardContent className="dashboard-card-content">
                                                         <IonIcon icon={todaySharp} className="dashboard-icon"/>

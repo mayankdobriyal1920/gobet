@@ -58,7 +58,10 @@ import {
     actionToUpdateBettingUserIsOnlineUseDataApiCall,
     actionToGetAdminOderAndValueCountDataApiCall,
     actionToGetNearestGameSessionBasedOnGameTypeApiCall,
-    actionToInsertGameSessionDataApiCall, actionToGetGamePredictionHistoryDataApiCall, actionToGetAllUserListDataApiCall
+    actionToInsertGameSessionDataApiCall,
+    actionToGetGamePredictionHistoryDataApiCall,
+    actionToGetAllUserListDataApiCall,
+    actionToGetOrderStatusListDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -166,7 +169,19 @@ commonRouter.post(
         })
     })
 )
-
+commonRouter.post(
+    '/actionToGetOrderStatusListDataApiCall',
+    expressAsyncHandler(async(req, res) =>{
+        if(req?.session?.userSessionData?.id && req?.session?.userSessionData?.role === 1){
+            actionToGetOrderStatusListDataApiCall()
+                .then((data) => {
+                    res.status(200).send(data);
+            }).catch(error =>{
+                response.status(500).send(error)
+            })
+        }
+    })
+)
 commonRouter.post(
     '/actionToGetAdminOderAndValueCountDataApiCall',
     expressAsyncHandler(async (req, res) => {

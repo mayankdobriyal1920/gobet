@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import {
     actionToGetAllUsersSubscriptionsDataQuery,
     actionToGetGameSessionOrAllSessionAndGamePlatformQuery, actionToGetNearestGameSessionBasedOnGameTypeQuery,
-    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
+    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery, actionToGetOrderStatusListDataQuery,
     checkMobNumberAlreadyExistQuery,
     getAdminPassCodeListQuery, getAliveUsersQuery,
     getDepositHistoryQuery,
@@ -478,6 +478,18 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
         });
     });
 };
+
+export const actionToGetOrderStatusListDataApiCall = () => {
+    return new Promise((resolve, reject) => {
+        let query = actionToGetOrderStatusListDataQuery()
+        pool.query(query, (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(results);   // <-- return all rows, not just one
+        });
+    })
+}
 
 export const actionToGetAdminOderAndValueCountDataApiCall = () => {
     return new Promise((resolve, reject) =>{

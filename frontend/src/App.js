@@ -60,6 +60,13 @@ import GamePredictionHistoryPeriodList from "./pages/admin/AdminGamePredictionHi
 import GamePredictionHistoryPredictionResult from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryPredictionResult"
 import GamePredictionHistoryPredictionUserList
     from "./pages/admin/AdminGamePredictionHistory/GamePredictionHistoryPredictionUserList";
+import GameResultHistoryComponent from "./pages/admin/AdminGameResultHistory/GameResultHistoryComponent"
+import GameResultHistorySessionListComponent
+    from "./pages/admin/AdminGameResultHistory/GameResultHistorySessionListComponent";
+import GameResultHistoryPeriodListStatusComponent
+    from "./pages/admin/AdminGameResultHistory/GameResultHistoryPeriodListStatusComponent";
+import GameUsersOrderStatusListComponent from "./pages/admin/GameUsersOrderStatusListComponent";
+import GameUsersOrderStatusDetailComponent from "./pages/admin/GameUsersOrderStatusDetailComponent";
 setupIonicReact();
 
 const PublicRoutes = () => {
@@ -117,6 +124,13 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/prediction-result" component={GamePredictionHistoryPredictionResult}/>
                 <Route exact={true} path="/prediction-history-user-list" component={GamePredictionHistoryPredictionUserList} />
                 {/*/// PREDICTION HISTORY PAGE ///*/}
+                <Route exact={true} path="/game-result-history" component={GameResultHistoryComponent} />
+                <Route exact={true} path="/result-history-session-list" component={GameResultHistorySessionListComponent} />
+                <Route exact={true} path="/game-result-period-list" component={GameResultHistoryPeriodListStatusComponent} />
+                <Route exact={true} path="/game-users-order-status-list" component={GameUsersOrderStatusListComponent} />
+                <Route exact={true} path={"/game-users-order-status-detail"} component={GameUsersOrderStatusDetailComponent}/>
+
+
                 <Redirect  exact from="/"  to="/dashboard" />
                 <Route render={() => <Redirect to="/dashboard" />} />
             </IonRouterOutlet>
