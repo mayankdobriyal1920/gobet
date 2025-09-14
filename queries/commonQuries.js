@@ -184,8 +184,16 @@ export const getDepositHistoryQuery = (userId, body) => {
     return { values, query };
 };
 
-export const GetGamePredictionHistoryDataQuery = () => {
+export const GetGamePredictionHistoryDataQuery = (body) => {
+    const { created_at } = body;
+    let condition = ``;
+    let values = [];
 
+    // Add condition for created_at if provided
+    if (created_at) {
+        condition = `WHERE sd.session_date = ?`;
+        values.push(created_at);
+    }
     // Final query with JSON_OBJECT for user data
     let query = `
             WITH session_data AS (
@@ -239,12 +247,13 @@ export const GetGamePredictionHistoryDataQuery = () => {
                         'game_results', sd.game_results
                     )
                 ) AS sessions
-            FROM session_data sd
+            FROM session_data sd 
+            ${condition}
             GROUP BY sd.session_date
             ORDER BY sd.session_date DESC;
     `;
 
-    return {query };
+    return {query ,values};
 };
 
 export const actionToGetOrderStatusListDataQuery = () => {

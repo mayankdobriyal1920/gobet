@@ -1699,8 +1699,8 @@ export const actionToGetGamePredictionHistoryDataApiCall = (userId,role,body) =>
     let {payload} = body;
     return new Promise(function(resolve, reject) {
         let responseData = [];
-        const {query} = GetGamePredictionHistoryDataQuery(userId,role,payload);
-        pool.query(query, (error, results) => {
+        const {query, values} = GetGamePredictionHistoryDataQuery(payload);
+        pool.query(query,values, (error, results) => {
             if (error) {
                 reject(error)
             }

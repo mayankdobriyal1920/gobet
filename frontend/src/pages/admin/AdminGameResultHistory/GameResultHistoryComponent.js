@@ -1,9 +1,9 @@
 import React, {createRef, useEffect, useState} from "react";
-import {IonCol, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage, IonRow} from "@ionic/react";
+import {IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage} from "@ionic/react";
 import {arrowBack, arrowForwardOutline} from "ionicons/icons";
 import {useHistory} from "react-router";
 import {
-    actionToGetGameHistoryData,
+    //actionToGetGameHistoryData,
     actionToGetGamePredictionHistoryData,
     actionToGetPredictionHistoryData
 } from "../../../redux/CommonAction";
@@ -16,27 +16,23 @@ export default function GameResultHistoryComponent() {
     const dispatch = useDispatch();
     const history = useHistory();
     const {loading,gamePredictionHistoryList} = useSelector((state) => state.gamePredictionHistoryListData);
-    const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
+    //const [isTypeFilterOpen,setIsTypeFilterOpen] = useState(false);
     const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
-    const [statusTypeFilter,setStatusTypeFilter] = useState('All');
-    const [optionFilter,setOptionFilter] = useState('All');
+    // const [statusTypeFilter,setStatusTypeFilter] = useState('All');
+    // const [optionFilter,setOptionFilter] = useState('All');
     const [dateTypeFilter,setDateTypeFilter] = useState(null);
     const datetimeRef = createRef();
     const goBack = ()=>{
+        setDateTypeFilter(null);
         history.goBack();
         window.history.back();
     }
 
     const callFunctionToOpenSessionDetailPage = (data) => {
-        console.log("Data", data)
         dispatch(actionToGetPredictionHistoryData(data, "session_data"));
         history.push("/result-history-session-list");
     }
 
-
-    useEffect(()=>{
-        console.log("gamePredictionHistoryList", gamePredictionHistoryList)
-    },[gamePredictionHistoryList])
 
     const renderVirtualElement = (dataItems)=>{
         return (
@@ -56,32 +52,32 @@ export default function GameResultHistoryComponent() {
         )
     }
 
-    const callFunctionToApplyTypeFilter = (filter, optionValue) => {
-        if (statusTypeFilter !== filter) {
-            setStatusTypeFilter(filter);
-            setOptionFilter(optionValue);
-            setIsTypeFilterOpen(false);
-            callFunctionToAddFilterAndGetData(filter, dateTypeFilter);
-        }
-    }
+    // const callFunctionToApplyTypeFilter = (filter, optionValue) => {
+    //     if (statusTypeFilter !== filter) {
+    //         setStatusTypeFilter(filter);
+    //         setOptionFilter(optionValue);
+    //         setIsTypeFilterOpen(false);
+    //         callFunctionToAddFilterAndGetData(dateTypeFilter, filter);
+    //     }
+    // }
 
     const callFunctionToApplyDateFilter = (filter) => {
         if (dateTypeFilter !== filter) {
             setDateTypeFilter(filter);
             setIsDateFilterOpen(false);
-            callFunctionToAddFilterAndGetData(statusTypeFilter, filter);
+            callFunctionToAddFilterAndGetData(filter);
         }
     }
 
     const callFunctionClearToAddFilterAndGetData = () => {
-        setStatusTypeFilter('All');
-        setOptionFilter('All');
+        // setStatusTypeFilter('All');
+        // setOptionFilter('All');
         setDateTypeFilter(null);
-        callFunctionToAddFilterAndGetData('All', null)
+        callFunctionToAddFilterAndGetData(null)
     }
 
-    const callFunctionToAddFilterAndGetData = (typeFilter, dateFilter) => {
-        dispatch(actionToGetGameHistoryData(true, {status: typeFilter, created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
+    const callFunctionToAddFilterAndGetData = (dateFilter) => {
+        dispatch(actionToGetGamePredictionHistoryData(true, {created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
     useEffect(() => {
@@ -142,20 +138,20 @@ export default function GameResultHistoryComponent() {
                     <div style={{background: "var(--bg_color_L1)"}}>
                         <div className="bet-container-searchBar">
                             <div className="ar-searchbar">
-                                <div onClick={() => setIsTypeFilterOpen(true)} className="ar-searchbar__selector">
-                                    <div>
-                                        <span
-                                            className="ar-searchbar__selector-default">{optionFilter}</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             className="van-badge__wrapper van-icon van-icon-arrow"
-                                             fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
-                                             id="Layer_1"
-                                             viewBox="0 0 330 330">
-                                            <path id="XMLID_222_"
-                                                  d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
-                                        </svg>
-                                    </div>
-                                </div>
+                                {/*<div onClick={() => setIsTypeFilterOpen(true)} className="ar-searchbar__selector">*/}
+                                {/*    <div>*/}
+                                {/*        <span*/}
+                                {/*            className="ar-searchbar__selector-default">{optionFilter}</span>*/}
+                                {/*        <svg xmlns="http://www.w3.org/2000/svg"*/}
+                                {/*             className="van-badge__wrapper van-icon van-icon-arrow"*/}
+                                {/*             fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"*/}
+                                {/*             id="Layer_1"*/}
+                                {/*             viewBox="0 0 330 330">*/}
+                                {/*            <path id="XMLID_222_"*/}
+                                {/*                  d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>*/}
+                                {/*        </svg>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                                 <div onClick={() => setIsDateFilterOpen(true)} className="ar-searchbar__selector">
                                     <div>
                                         <span className="ar-searchbar__selector-default">
@@ -171,7 +167,7 @@ export default function GameResultHistoryComponent() {
                                         </svg>
                                     </div>
                                 </div>
-                                {(statusTypeFilter !== 'All' || dateTypeFilter !== null) ?
+                                {(dateTypeFilter !== null) ?
                                     <div onClick={() => callFunctionClearToAddFilterAndGetData('All', null)}
                                          className="ar-searchbar__selector_clear">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
@@ -229,31 +225,31 @@ export default function GameResultHistoryComponent() {
                 </div>
             </IonContent>
 
-            <IonModal
-                className="add-money-to-game-wallet-modal"
-                isOpen={isTypeFilterOpen}
-                onDidDismiss={() => setIsTypeFilterOpen(false)}
-                initialBreakpoint={0.5} breakpoints={[0.5]}>
-                <IonContent className="ion-padding">
-                    <div className="add_money_game_wallet_heading">
-                        <h2>Game Type</h2>
-                    </div>
-                    <div className={"list_status_type"}>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('All', 'All')}>All
-                        </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'win_go' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('win_go', 'Win Go')}>Win Go
-                        </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'aviator' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('aviator', 'Aviator')}>Aviator
-                        </div>
-                        <div className={`list_status_type_item ${statusTypeFilter === 'limbo' ? 'active' : ''}`}
-                             onClick={() => callFunctionToApplyTypeFilter('limbo', 'Limbo')}>Limbo
-                        </div>
-                    </div>
-                </IonContent>
-            </IonModal>
+            {/*<IonModal*/}
+            {/*    className="add-money-to-game-wallet-modal"*/}
+            {/*    isOpen={isTypeFilterOpen}*/}
+            {/*    onDidDismiss={() => setIsTypeFilterOpen(false)}*/}
+            {/*    initialBreakpoint={0.5} breakpoints={[0.5]}>*/}
+            {/*    <IonContent className="ion-padding">*/}
+            {/*        <div className="add_money_game_wallet_heading">*/}
+            {/*            <h2>Game Type</h2>*/}
+            {/*        </div>*/}
+            {/*        <div className={"list_status_type"}>*/}
+            {/*            <div className={`list_status_type_item ${statusTypeFilter === 'All' ? 'active' : ''}`}*/}
+            {/*                 onClick={() => callFunctionToApplyTypeFilter('All', 'All')}>All*/}
+            {/*            </div>*/}
+            {/*            <div className={`list_status_type_item ${statusTypeFilter === 'win_go' ? 'active' : ''}`}*/}
+            {/*                 onClick={() => callFunctionToApplyTypeFilter('win_go', 'Win Go')}>Win Go*/}
+            {/*            </div>*/}
+            {/*            <div className={`list_status_type_item ${statusTypeFilter === 'aviator' ? 'active' : ''}`}*/}
+            {/*                 onClick={() => callFunctionToApplyTypeFilter('aviator', 'Aviator')}>Aviator*/}
+            {/*            </div>*/}
+            {/*            <div className={`list_status_type_item ${statusTypeFilter === 'limbo' ? 'active' : ''}`}*/}
+            {/*                 onClick={() => callFunctionToApplyTypeFilter('limbo', 'Limbo')}>Limbo*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </IonContent>*/}
+            {/*</IonModal>*/}
 
 
             <IonModal
