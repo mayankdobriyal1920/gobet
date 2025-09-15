@@ -296,10 +296,10 @@ export const actionToGetAdminAllDashboardCountData = (event) => async (dispatch)
     }
 }
 
-export const actionToGetOrderStatusListData = () => async(dispatch) => {
-    dispatch({type:USERS_ORDER_STATUS_DATA_REQUEST});
+export const actionToGetOrderStatusListData = (isLoading = true, payload={} ) => async(dispatch) => {
+    if(isLoading) dispatch({type:USERS_ORDER_STATUS_DATA_REQUEST});
     try {
-        api.post(`actionToGetOrderStatusListDataApiCall`, {}).then(responseData => {
+        api.post(`actionToGetOrderStatusListDataApiCall`, {payload}).then(responseData => {
             dispatch({ type: USERS_ORDER_STATUS_DATA_SUCCESS, payload: responseData.data});
         })
     }catch (e) {

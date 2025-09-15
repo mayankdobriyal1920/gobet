@@ -479,10 +479,11 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
     });
 };
 
-export const actionToGetOrderStatusListDataApiCall = () => {
+export const actionToGetOrderStatusListDataApiCall = (body) => {
+    let {payload} = body;
     return new Promise((resolve, reject) => {
-        let query = actionToGetOrderStatusListDataQuery()
-        pool.query(query, (error, results) => {
+        let {query,values} = actionToGetOrderStatusListDataQuery(payload)
+        pool.query(query,values, (error, results) => {
             if (error) {
                 return reject(error);
             }

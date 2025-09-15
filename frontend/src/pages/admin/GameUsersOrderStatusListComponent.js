@@ -1,5 +1,5 @@
-import React from "react";
-import {IonContent,IonHeader, IonIcon, IonPage} from "@ionic/react";
+import React, {createRef, useState} from "react";
+import {IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage} from "@ionic/react";
 import {arrowBack, arrowForwardOutline} from "ionicons/icons";
 import {useHistory} from "react-router";
 
@@ -12,8 +12,10 @@ import LineLoaderComponent from "../../components/LineLoaderComponent";
 export default function GameUsersOrderStatusListComponent() {
     const dispatch = useDispatch();
     const history = useHistory();
-    const {predictionListData} = useSelector((state) => state.locallyStorePredictionHistoryData);
     const {loading, usersOrderAndStatusList } = useSelector((state) => state.usersOrderAndStatusDataList);
+    const [isDateFilterOpen,setIsDateFilterOpen] = useState(false);
+    const [dateTypeFilter,setDateTypeFilter] = useState(null);
+    const datetimeRef = createRef();
 
     const goBack = ()=>{
         history.goBack();
@@ -24,6 +26,23 @@ export default function GameUsersOrderStatusListComponent() {
     const callFunctionToOpenUserStatusDetailPage = (data) => {
         dispatch(actionToGetPredictionHistoryData(data, "order_status_Detail"));
         history.push("/game-users-order-status-detail");
+    }
+
+    const callFunctionClearToAddFilterAndGetData = () => {
+        setDateTypeFilter(null);
+        callFunctionToAddFilterAndGetData(null)
+    }
+
+    const callFunctionToApplyDateFilter = (filter) => {
+        if (dateTypeFilter !== filter) {
+            setDateTypeFilter(filter);
+            setIsDateFilterOpen(false);
+            callFunctionToAddFilterAndGetData(filter);
+        }
+    }
+
+    const callFunctionToAddFilterAndGetData = (dateFilter) => {
+        dispatch(actionToGetOrderStatusListData(true, {created_at:dateFilter ? moment(dateFilter).format('YYYY-MM-DD') : null}))
     }
 
     React.useEffect(()=>{
@@ -70,11 +89,39 @@ export default function GameUsersOrderStatusListComponent() {
                     </div>
                 </div>
             </IonHeader>
+
             <div className={"bet-container-sticky"}>
                 <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: --/--/--</div>
+                    <div style={{background: "var(--bg_color_L1)"}}>
+                        <div className="bet-container-searchBar">
+                            <div className="ar-searchbar">
+                                <div onClick={() => setIsDateFilterOpen(true)} className="ar-searchbar__selector">
+                                    <div>
+                                        <span className="ar-searchbar__selector-default">
+                                            {dateTypeFilter ? moment(dateTypeFilter).format('YYYY-MM-DD') : 'Choose a date'}
+                                        </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             className="van-badge__wrapper van-icon van-icon-arrow"
+                                             fill="rgb(136, 136, 136)" height="12px" width="12px" version="1.1"
+                                             id="Layer_1"
+                                             viewBox="0 0 330 330">
+                                            <path id="XMLID_222_"
+                                                  d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                {(dateTypeFilter !== null) ?
+                                    <div onClick={() => callFunctionClearToAddFilterAndGetData('All', null)}
+                                         className="ar-searchbar__selector_clear">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px"
+                                             viewBox="0 0 24 24" fill="var(--main-color)">
+                                            <circle cx="12" cy="12" r="10" stroke="#ffffff" strokeWidth="1.5"/>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#ffffff"
+                                                  strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                    </div> : ''
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,6 +167,27 @@ export default function GameUsersOrderStatusListComponent() {
                     </div>
                 </div>
             </IonContent>
+
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={isDateFilterOpen}
+                onDidDismiss={() => setIsDateFilterOpen(false)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Date Filter</h2>
+                    </div>
+                    <div className={"list_date_type"}>
+                        <IonDatetime
+                            className={"custom-datetime"}
+                            presentation="date"
+                            ref={datetimeRef}
+                            value={dateTypeFilter}
+                            onIonChange={(e) => callFunctionToApplyDateFilter(e.detail.value)}
+                        />
+                    </div>
+                </IonContent>
+            </IonModal>
         </IonPage>
     )
 }

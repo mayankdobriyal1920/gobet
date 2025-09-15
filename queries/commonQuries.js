@@ -256,58 +256,71 @@ export const GetGamePredictionHistoryDataQuery = (body) => {
     return {query ,values};
 };
 
-export const actionToGetOrderStatusListDataQuery = () => {
-    return `
-            SELECT
-                bau.status AS active_status,
-                bau.is_test_user,
-                bau.betting_game_session_id,
-                bau.betting_platform_id,
-            
-                au.uid,
-                au.betting_balance,
-                au.game_balance,
-                au.wallet_balance,
-            
-                NULL AS amount,
-                NULL AS bet_id,
-                NULL AS option_name,
-                NULL AS prediction_status,
-            
-                bau.created_at AS created_at,
-                'Pending' AS order_status
-            FROM betting_active_users bau
-            INNER JOIN app_user au
-                ON bau.user_id = au.id
-            WHERE bau.status = 1
-            
-            UNION ALL
-            
-            -- Completed from bet_prediction_history
-            SELECT
-                NULL AS active_status,
-                NULL AS is_test_user,
-                NULL AS betting_game_session_id,
-                NULL AS betting_platform_id,
-            
-                au.uid,
-                au.betting_balance,
-                au.game_balance,
-                au.wallet_balance,
-            
-                bph.amount,
-                bph.bet_id,
-                bph.option_name,
-                bph.status AS prediction_status,
-            
-                bph.created_at AS created_at,
-                'Completed' AS order_status
-            FROM bet_prediction_history bph
-            INNER JOIN app_user au
-                ON bph.user_id = au.id;
+export const actionToGetOrderStatusListDataQuery = (body) => {
+    const { created_at } = body;
+    let activeUserCondition = `bau.status = ?`;
+    let predictionHistoryCondition = ``;
+    let values = [1];
 
-    `
-}
+    // Add condition for created_at if provided
+    if (created_at) {
+        activeUserCondition += ` AND DATE(bau.created_at) = ?`;
+        predictionHistoryCondition = `WHERE DATE(bph.created_at) = '${created_at}'`;
+        values.push(created_at);
+    }
+
+    let query = `
+        SELECT
+            bau.status AS active_status,
+            bau.is_test_user,
+            bau.betting_game_session_id,
+            bau.betting_platform_id,
+
+            au.uid,
+            au.betting_balance,
+            au.game_balance,
+            au.wallet_balance,
+
+            NULL AS amount,
+            NULL AS bet_id,
+            NULL AS option_name,
+            NULL AS prediction_status,
+
+            bau.created_at AS created_at,
+            'Pending' AS order_status
+        FROM betting_active_users bau
+        INNER JOIN app_user au
+            ON bau.user_id = au.id
+        WHERE ${activeUserCondition}
+
+        UNION ALL
+        SELECT
+            NULL AS active_status,
+            NULL AS is_test_user,
+            NULL AS betting_game_session_id,
+            NULL AS betting_platform_id,
+
+            au.uid,
+            au.betting_balance,
+            au.game_balance,
+            au.wallet_balance,
+
+            bph.amount,
+            bph.bet_id,
+            bph.option_name,
+            bph.status AS prediction_status,
+
+            bph.created_at AS created_at,
+            'Completed' AS order_status
+        FROM bet_prediction_history bph
+        INNER JOIN app_user au
+            ON bph.user_id = au.id
+        ${predictionHistoryCondition}
+        `;
+
+    return { query, values };
+};
+
 export const getGameHistoryQuery = (userId, role, body) => {
     let { status, created_at } = body;
     let values = [userId];

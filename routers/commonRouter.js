@@ -173,7 +173,7 @@ commonRouter.post(
     '/actionToGetOrderStatusListDataApiCall',
     expressAsyncHandler(async(req, res) =>{
         if(req?.session?.userSessionData?.id && req?.session?.userSessionData?.role === 1){
-            actionToGetOrderStatusListDataApiCall()
+            actionToGetOrderStatusListDataApiCall(req.body)
                 .then((data) => {
                     res.status(200).send(data);
             }).catch(error =>{
