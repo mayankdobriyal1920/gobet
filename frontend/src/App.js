@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import {IonApp, IonLoading, IonRouterOutlet, setupIonicReact, useIonAlert} from '@ionic/react';
+import {IonApp, IonLoading, IonRouterOutlet, setupIonicReact} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
