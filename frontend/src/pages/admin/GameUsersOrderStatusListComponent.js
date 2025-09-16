@@ -50,21 +50,23 @@ export default function GameUsersOrderStatusListComponent() {
     },[])
     const renderVirtualElement = (dataItems, index)=>{
         return (
-            <div key={index+dataItems?.uid} className="sysMessage__container-msgWrapper__item">
+            <div key={index+dataItems?.uid} onClick={() => callFunctionToOpenUserStatusDetailPage(dataItems)} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{dataItems.uid}</span></div>
-                    <div> <span className={"title"}>{dataItems.betting_balance}</span>
+                    <div>
+                        <span className={"title"}>User Id: {dataItems.uid}</span>
                     </div>
-
-                    <span className={`action_button`}>{dataItems.order_status} </span>
-                    <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenUserStatusDetailPage(dataItems)}>
-                        <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                    </div>
-
+                    <span className={`action_button update}`}>
+                       <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
+                    </span>
                 </div>
-
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TOTAL VALUE :</strong> {dataItems.betting_balance}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {moment(dataItems?.created_at).format('YYYY/MM/DD hh:mm a')}
+                </div>
             </div>
-
         )
     }
 
@@ -140,19 +142,15 @@ export default function GameUsersOrderStatusListComponent() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (usersOrderAndStatusList?.length) ?
-                                <div className={"sysMessage__container"}>
-                                    <div className="sysMessage__container-msgWrapper__item-title">
-                                        <div> <span className={"title"}>USER</span>
+                                    <div className={"GameRecord__C-body in_table_form"}>
+                                        <div className={"sysMessage__container_game_result"}>
+                                            <Virtuoso
+                                                className={"virtual_item_listing"}
+                                                totalCount={usersOrderAndStatusList.length}
+                                                itemContent={index => renderVirtualElement(usersOrderAndStatusList[index], index)}
+                                            />
                                         </div>
-                                        <div><span className={`action_button`}>ORDER</span></div>
-                                        <div><span className={`action_button`}>STATUS</span></div>
                                     </div>
-                                    <Virtuoso
-                                        className={"virtual_item_listing"}
-                                        totalCount={usersOrderAndStatusList.length}
-                                        itemContent={index => renderVirtualElement(usersOrderAndStatusList[index], index)}
-                                    />
-                                </div>
                                 :
                                 <div className={"empty__container empty"}>
                                     <svg className={"svg-icon icon-empty"} xmlns="http://www.w3.org/2000/svg"

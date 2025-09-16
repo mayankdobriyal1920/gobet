@@ -468,18 +468,14 @@ export default function WinAndGoBettingMainPage() {
                                             <LineLoaderComponent/>
                                             : (userGameHistory?.gameResult?.length) ?
                                                 <div className={"sysMessage__container_game_result"}>
-
                                                     {(userGameHistory?.gameResult?.map((dataItems)=> (
                                                         <div key={dataItems?.id} className="sysMessage__container-msgWrapper__item">
                                                             <div
                                                                 className="sysMessage__container-msgWrapper__item-title">
                                                                 <div>
-                                                                    <span
-                                                                        className={"title"}>Period: {dataItems?.game_id}</span>
+                                                                    <span className={"title"}>Period: {dataItems?.game_id}</span>
                                                                 </div>
-                                                                <span
-                                                                    onClick={() => callFunctionToUpdateGameResultPopup(dataItems)}
-                                                                    className={`action_button ${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span>
+                                                                <span onClick={() => callFunctionToUpdateGameResultPopup(dataItems)} className={`action_button ${dataItems?.result ? dataItems?.result : 'update'}`}>{dataItems?.result ? dataItems?.result : 'update'}</span>
                                                             </div>
                                                             <div
                                                                 className="sysMessage__container-msgWrapper__item-time">
@@ -499,7 +495,6 @@ export default function WinAndGoBettingMainPage() {
                                                             </div>
                                                         </div>
                                                     )))}
-
                                                 </div>
                                                 :
                                                 <div className={"no_data_img"}>

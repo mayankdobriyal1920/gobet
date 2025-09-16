@@ -16,7 +16,12 @@ ion-header {
     box-shadow: none!important;
     height: 3.5rem;
 }
-
+.GameRecord__C-body.in_table_form {
+    padding: 0px 10px;
+}
+.sysMessage__container-msgWrapper__item-title {
+    color: var(--ion-color-primary);
+}
 .main_logo_and_slogan_container_header {
     background: var(--theme-gradiant-color);
     display: flex;
@@ -1960,7 +1965,6 @@ overflow: hidden;
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    color: var(--text_color_L1);
 }
 .sysMessage__container-msgWrapper__item-title>div {
     display: -webkit-box;

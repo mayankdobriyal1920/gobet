@@ -205,7 +205,7 @@ export default function HomePage() {
                         </div>
                         <div className="">
                             <IonGrid className="grid_for_dashboard_data_grid">
-                                <IonRow className="grid_for_dashboard_data_row">
+                                <IonRow className="grid_for_dashboard_data_row" onClick={() => goToPage('/game-users-order-status-list')}>
                                     {/* First Column */}
                                     <IonCol className="grid_for_dashboard_data_col">
                                         <IonCard className="dashboard-card">
@@ -218,10 +218,9 @@ export default function HomePage() {
 
                                                 <div className="stats-label">Pending</div>
                                                 <h2 className="stats-value">{dashboardOrderValueCount.pending_orders}</h2>
-                                                {/*<div className="title_for_das_text_link">*/}
-                                                {/*    Click to open*/}
-                                                {/*    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                                                {/*</div>*/}
+                                                <div className="title_for_das_text_link">
+                                                    Open <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                </div>
                                             </IonCardContent>
                                         </IonCard>
                                     </IonCol>
@@ -238,19 +237,11 @@ export default function HomePage() {
 
                                                 <div className="stats-label">Pending</div>
                                                 <h2 className="stats-value">₹{dashboardOrderValueCount.pending_values}</h2>
-                                                {/*<div className="title_for_das_text_link">*/}
-                                                {/*    Click to open*/}
-                                                {/*    <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>*/}
-                                                {/*</div>*/}
+                                                <div className="title_for_das_text_link">
+                                                    Open <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+                                                </div>
                                             </IonCardContent>
                                         </IonCard>
-                                    </IonCol>
-                                </IonRow>
-                                <IonRow className="grid_for_dashboard_data_row">
-                                    <IonCol className="grid_for_dashboard_data_col">
-                                        <div className="title_for_das_text_link" onClick={() => goToPage('/game-users-order-status-list')}>
-                                            <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                                        </div>
                                     </IonCol>
                                 </IonRow>
                             </IonGrid>
