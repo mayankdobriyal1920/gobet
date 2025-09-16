@@ -55,7 +55,7 @@ export default function GameUsersOrderStatusListComponent() {
                     <div>
                         <span className={"title"}>User Id: {dataItems.uid}</span>
                     </div>
-                    <span className={`action_button update}`}>
+                    <span className={`action_button`}>
                        <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
                     </span>
                 </div>
