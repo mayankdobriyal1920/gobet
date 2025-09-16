@@ -34,24 +34,37 @@ export default function GamePredictionHistoryDetailPage() {
     }
 
 
-    useEffect(()=>{
-        console.log("gamePredictionHistoryList", gamePredictionHistoryList)
-    },[gamePredictionHistoryList])
-
     const renderVirtualElement = (dataItems)=>{
         return (
-            <div key={dataItems?.session_date} className="sysMessage__container-msgWrapper__item">
-                <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{moment(dataItems?.session_date).format('DD-MM-YYYY')}</span>
-                    </div>
-                    <span className={`action_button`}>{dataItems.total_sessions}</span>
-                    <div><span className={"title"}>{dataItems.total_bet_amount}</span></div>
-                    <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
-                        Click to open
-                        <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                    </div>
-                </div>
+            // <div key={dataItems?.session_date} className="sysMessage__container-msgWrapper__item">
+            //     <div className="sysMessage__container-msgWrapper__item-title">
+            //         <div> <span className={"title"}>{moment(dataItems?.session_date).format('DD-MM-YYYY')}</span>
+            //         </div>
+            //         <span className={`action_button`}>{dataItems.total_sessions}</span>
+            //         <div><span className={"title"}>{dataItems.total_bet_amount}</span></div>
+            //         <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
+            //             Click to open
+            //             <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+            //         </div>
+            //     </div>
+            //
+            // </div>
 
+            <div key={dataItems?.session_date} onClick={() => callFunctionToOpenSessionDetailPage(dataItems)} className="sysMessage__container-msgWrapper__item">
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>DATE: {moment(dataItems?.session_date).format('DD-MM-YYYY')}</span>
+                    </div>
+                    <span className={`action_button`}>
+                       <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
+                    </span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TOTAL SESSION:</strong> {dataItems.total_sessions}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TURN OVER:</strong> {dataItems.total_bet_amount}
+                </div>
             </div>
 
         )
@@ -202,27 +215,15 @@ export default function GamePredictionHistoryDetailPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (gamePredictionHistoryList?.length) ?
-                                    <div className={"sysMessage__container"}>
-                                        <div className="sysMessage__container-msgWrapper__item-title">
-                                            <div> <span className={"title"}>DATE</span>
+                                        <div className={"GameRecord__C-body in_table_form"}>
+                                            <div className={"sysMessage__container_game_result"}>
+                                                <Virtuoso
+                                                    className={"virtual_item_listing"}
+                                                    totalCount={gamePredictionHistoryList?.length}
+                                                    itemContent={index => renderVirtualElement(gamePredictionHistoryList[index])}
+                                                />
                                             </div>
-                                            <div><span className={`action_button`}>TOTAL SESSION</span></div>
-                                            <div><span className={"title"}>TURN OVER</span></div>
                                         </div>
-
-                                        {/*<div className="GameRecord__C-head">*/}
-                                        {/*    <div className="van-row">*/}
-                                        {/*        <div className="van-col van-col--5">DATE</div>*/}
-                                        {/*        <div className="van-col van-col--5">TOTAL SESSION</div>*/}
-                                        {/*        <div className="van-col van-col--9">TURN OVER</div>*/}
-                                        {/*    </div>*/}
-                                        {/*</div>*/}
-                                        <Virtuoso
-                                            className={"virtual_item_listing"}
-                                            totalCount={gamePredictionHistoryList?.length}
-                                            itemContent={index => renderVirtualElement(gamePredictionHistoryList[index])}
-                                        />
-                                    </div>
                                     :
                                     <div className={"empty__container empty"}>
                                         <svg className={"svg-icon icon-empty"} xmlns="http://www.w3.org/2000/svg"

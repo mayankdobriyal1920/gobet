@@ -58,17 +58,22 @@ export default function GameResultHistorySessionListComponent() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <div key={dataItems?.session_id} className="sysMessage__container-msgWrapper__item">
+            <div key={dataItems?.session_id} onClick={() => callFunctionToOpenSessionDetailPage(dataItems)} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{dataItems.session_number}</span>
+                    <div>
+                        <span className={"title"}>SESSION NO: {dataItems.session_number}</span>
                     </div>
-                    <span className={`action_button`}>{dataItems.sessionStatus}</span>
-                    <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
-                        Click to open
-                        <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                    </div>
+                    <span className={`action_button`}>
+                       <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
+                    </span>
                 </div>
-
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>RESULT STATUS :</strong> {dataItems.sessionStatus}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {sessionData ? moment(sessionData?.session_date).format('YYYY/MM/DD hh:mm a') : " - "}
+                </div>
             </div>
 
         )
@@ -95,15 +100,15 @@ export default function GameResultHistorySessionListComponent() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {sessionData ? moment(sessionData?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {sessionData ? moment(sessionData?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
@@ -118,18 +123,15 @@ export default function GameResultHistorySessionListComponent() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (sortedSessions?.length) ?
-                                    <div className={"sysMessage__container"}>
-                                        <div className="sysMessage__container-msgWrapper__item-title">
-                                            <div> <span className={"title"}>SESSION NO.</span>
+                                    <div className={"GameRecord__C-body in_table_form"}>
+                                        <div className={"sysMessage__container_game_result"}>
+                                                <Virtuoso
+                                                    className={"virtual_item_listing"}
+                                                    totalCount={sortedSessions.length}
+                                                    itemContent={index => renderVirtualElement(sortedSessions[index])}
+                                                />
                                             </div>
-                                            <div><span className={`action_button`}>RESULT STATUS</span></div>
                                         </div>
-                                        <Virtuoso
-                                            className={"virtual_item_listing"}
-                                            totalCount={sortedSessions.length}
-                                            itemContent={index => renderVirtualElement(sortedSessions[index])}
-                                        />
-                                    </div>
                                     :
                                     <div className={"empty__container empty"}>
                                         <svg className={"svg-icon icon-empty"} xmlns="http://www.w3.org/2000/svg"

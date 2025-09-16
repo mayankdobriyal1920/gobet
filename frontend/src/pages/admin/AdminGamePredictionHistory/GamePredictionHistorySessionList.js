@@ -43,17 +43,41 @@ export default function GamePredictionHistoryDetailPage() {
 
     const renderVirtualElement = (dataItems)=>{
         return (
-            <div key={dataItems?.session_id} className="sysMessage__container-msgWrapper__item">
-                <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{dataItems.session_number}</span>
-                    </div>
-                    <span className={`action_button`}>{dataItems.session_total_bet_amount}</span>
-                    <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
-                        Click to open
-                        <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                    </div>
-                </div>
+            // <div key={dataItems?.session_id} className="sysMessage__container-msgWrapper__item">
+            //     <div className="sysMessage__container-msgWrapper__item-title">
+            //         <div> <span className={"title"}>{dataItems.session_number}</span>
+            //         </div>
+            //         <span className={`action_button`}>{dataItems.session_total_bet_amount}</span>
+            //         <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
+            //             Click to open
+            //             <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+            //         </div>
+            //     </div>
+            //
+            // </div>
 
+            <div key={dataItems?.session_id} className="sysMessage__container-msgWrapper__item"  onClick={() => callFunctionToOpenSessionDetailPage(dataItems)}>
+                <div className="sysMessage__container-msgWrapper__item-title">
+                    <div>
+                        <span className={"title"}>SESSION NO: {dataItems.session_number}</span>
+                    </div>
+                    <span className={`action_button`}>
+                       <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
+                    </span>
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TURNOVER:</strong> {dataItems.session_total_bet_amount}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    <strong>TOTAL TURNOVER:</strong> {sessionData ? sessionData.total_bet_amount : " - "}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TOTAL SESSION:</strong> {sessionData ? sessionData.total_sessions : " - "}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {sessionData ? moment(sessionData?.session_date).format('DD-MM-YYYY') : " - "}
+                </div>
             </div>
 
         )
@@ -80,21 +104,21 @@ export default function GamePredictionHistoryDetailPage() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {sessionData ? moment(sessionData?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">TOTAL TURNOVER {sessionData ? sessionData.total_bet_amount : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">TOTAL SESSION - {sessionData ? sessionData.total_sessions : " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {sessionData ? moment(sessionData?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">TOTAL TURNOVER {sessionData ? sessionData.total_bet_amount : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">TOTAL SESSION - {sessionData ? sessionData.total_sessions : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
@@ -109,17 +133,14 @@ export default function GamePredictionHistoryDetailPage() {
                                     <LineLoaderComponent/>
                                 </React.Fragment>
                                 : (sortedSessions?.length) ?
-                                    <div className={"sysMessage__container"}>
-                                        <div className="sysMessage__container-msgWrapper__item-title">
-                                            <div> <span className={"title"}>SESSION NO.</span>
-                                            </div>
-                                            <div><span className={`action_button`}>TURNOVER</span></div>
+                                    <div className={"GameRecord__C-body in_table_form"}>
+                                        <div className={"sysMessage__container_game_result"}>
+                                            <Virtuoso
+                                                className={"virtual_item_listing"}
+                                                totalCount={sortedSessions.length}
+                                                itemContent={index => renderVirtualElement(sortedSessions[index])}
+                                            />
                                         </div>
-                                        <Virtuoso
-                                            className={"virtual_item_listing"}
-                                            totalCount={sortedSessions.length}
-                                            itemContent={index => renderVirtualElement(sortedSessions[index])}
-                                        />
                                     </div>
                                     :
                                     <div className={"empty__container empty"}>

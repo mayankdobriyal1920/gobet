@@ -27,22 +27,33 @@ export default function GameResultHistoryPeriodListStatusComponent() {
         return (
             <div key={index+dataItems?.game_result_id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{dataItems.period_number}</span>
+                    <div>
+                        <span className={"title"}>PERIOD NO: {dataItems.period_number}</span>
                     </div>
-                    <div> <span className={"title"}>{dataItems.result === "BIG" ? 'Big' : dataItems.result === "SMALL"? "Small" : "Pending"}</span>
-                    </div>
-
-                    {predictionListData.sessionStatus === "Verified" ? "Verified" :
-
-                        !dataItems.result ?
-                            <span onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
-                          className={`action_button delete`}>Update </span> :
-                    <span
-                        onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
-                        className={`action_button update`}>EDIT</span> }
-
+                    {/*<span className={`action_button`}>*/}
+                    {/*   <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>*/}
+                    {/*</span>*/}
                 </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>RESULT:</strong> {dataItems.result === "BIG" ? 'Big' : dataItems.result === "SMALL"? "Small" : "Pending"}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    <strong>STATUS:</strong> {predictionListData.sessionStatus === "Verified" ? "Verified" :
 
+                    !dataItems.result ?
+                        <span onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
+                              className={`action_button delete`}>Update </span> :
+                        <span
+                            onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
+                            className={`action_button update`}>EDIT</span> }
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>SESSION NO:</strong> {predictionListData ? predictionListData.session_number : " - "}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {predictionListData ? moment(predictionListData?.session_date).format('YYYY/MM/DD hh:mm a') : " - "}
+                </div>
             </div>
 
         )
@@ -69,35 +80,31 @@ export default function GameResultHistoryPeriodListStatusComponent() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {predictionListData ? moment(predictionListData?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">SESSION NO. {predictionListData ? predictionListData.session_number : " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {predictionListData ? moment(predictionListData?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">SESSION NO. {predictionListData ? predictionListData.session_number : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {(predictionListData && predictionListData?.game_results?.length) ?
-                                <div className={"sysMessage__container"}>
-                                    <div className="sysMessage__container-msgWrapper__item-title">
-                                        <div> <span className={"title"}>PERIOD NO.</span>
-                                        </div>
-                                        <div><span className={`action_button`}>RESULT</span></div>
-                                        <div><span className={`action_button`}>STATUS</span></div>
+                                <div className={"GameRecord__C-body in_table_form"}>
+                                    <div className={"sysMessage__container_game_result"}>
+                                        <Virtuoso
+                                            className={"virtual_item_listing"}
+                                            totalCount={predictionListData?.game_results.length}
+                                            itemContent={index => renderVirtualElement(predictionListData?.game_results[index], index)}
+                                        />
                                     </div>
-                                    <Virtuoso
-                                        className={"virtual_item_listing"}
-                                        totalCount={predictionListData?.game_results.length}
-                                        itemContent={index => renderVirtualElement(predictionListData?.game_results[index], index)}
-                                    />
                                 </div>
                                 :
                                 <div className={"empty__container empty"}>

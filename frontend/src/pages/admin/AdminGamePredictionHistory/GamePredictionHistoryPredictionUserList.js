@@ -18,15 +18,42 @@ export default function GamePredictionHistoryPredictionUserList() {
 
     const renderVirtualElement = (dataItems, index)=>{
         return (
+            // <div key={index+dataItems?.betting_active_users_id} className="sysMessage__container-msgWrapper__item">
+            //     <div className="sysMessage__container-msgWrapper__item-title">
+            //         <div> <span className={"title"}>{index}</span>
+            //         </div>
+            //         <div> <span className={"title"}>{Object.keys(allUserListObject).length ? "user " + allUserListObject[dataItems.user_id]?.uid : " - "}</span>
+            //         </div>
+            //         <span className={`action_button`}>{dataItems.amount}</span>
+            //     </div>
+            //
+            // </div>
+
             <div key={index+dataItems?.betting_active_users_id} className="sysMessage__container-msgWrapper__item">
                 <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{index}</span>
+                    <div>
+                        <span className={"title"}>{index}. {Object.keys(allUserListObject).length ? "user " + allUserListObject[dataItems.user_id]?.uid : " - "}</span>
                     </div>
-                    <div> <span className={"title"}>{Object.keys(allUserListObject).length ? "user " + allUserListObject[dataItems.user_id]?.uid : " - "}</span>
-                    </div>
-                    <span className={`action_button`}>{dataItems.amount}</span>
                 </div>
-
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>AMOUNT:</strong> {dataItems.amount}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    <strong>PERIOD NUMBER:</strong> {predictionHistoryUserList ? predictionHistoryUserList.period_number :  0}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>PREDICTION:</strong> {predictionHistoryUserList ? predictionHistoryUserList.type : " - "}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>VOLUME:</strong> {predictionHistoryUserList ? predictionHistoryUserList.volume : " - "}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>USER COUNT:</strong> {predictionHistoryUserList.data.length ?? " - "}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {predictionHistoryUserList ? moment(predictionHistoryUserList?.session_date).format('DD-MM-YYYY') : " - "}
+                </div>
             </div>
 
         )
@@ -53,38 +80,40 @@ export default function GamePredictionHistoryPredictionUserList() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {predictionHistoryUserList ? moment(predictionHistoryUserList?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">PERIOD NUMBER - {predictionHistoryUserList ? predictionHistoryUserList.period_number :  0}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">Prediction - {predictionHistoryUserList ? predictionHistoryUserList.type : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">Volume - {predictionHistoryUserList ? predictionHistoryUserList.volume : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">User count - {predictionHistoryUserList.data.length ?? " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {predictionHistoryUserList ? moment(predictionHistoryUserList?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">PERIOD NUMBER - {predictionHistoryUserList ? predictionHistoryUserList.period_number :  0}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Prediction - {predictionHistoryUserList ? predictionHistoryUserList.type : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Volume - {predictionHistoryUserList ? predictionHistoryUserList.volume : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">User count - {predictionHistoryUserList.data.length ?? " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {(predictionHistoryUserList && predictionHistoryUserList?.data?.length) ?
-                                <div className={"sysMessage__container"}>
+                                <div className={"GameRecord__C-body in_table_form"}>
+                                    <div className={"sysMessage__container_game_result"}>
                                     <Virtuoso
                                         className={"virtual_item_listing"}
                                         totalCount={predictionHistoryUserList?.data.length}
                                         itemContent={index => renderVirtualElement(predictionHistoryUserList?.data[index], index+1)}
                                     />
+                                    </div>
                                 </div>
                                 :
                                 <div className={"empty__container empty"}>

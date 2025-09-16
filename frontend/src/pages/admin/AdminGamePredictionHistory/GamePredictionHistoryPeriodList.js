@@ -29,19 +29,41 @@ export default function GamePredictionHistoryPeriodList() {
 
     const renderVirtualElement = (dataItems, index)=>{
         return (
-            <div key={index+dataItems?.game_result_id} className="sysMessage__container-msgWrapper__item">
+            // <div key={index+dataItems?.game_result_id} className="sysMessage__container-msgWrapper__item">
+            //     <div className="sysMessage__container-msgWrapper__item-title">
+            //         <div> <span className={"title"}>{dataItems.period_number}</span>
+            //         </div>
+            //         <span className={`action_button`}>{dataItems.total_bet_amount}</span>
+            //         <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
+            //             Click to open
+            //             <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
+            //         </div>
+            //     </div>
+            //
+            // </div>
+            <div key={index+dataItems?.game_result_id} className="sysMessage__container-msgWrapper__item"  onClick={() => callFunctionToOpenSessionDetailPage(dataItems)}>
                 <div className="sysMessage__container-msgWrapper__item-title">
-                    <div> <span className={"title"}>{dataItems.period_number}</span>
+                    <div>
+                        <span className={"title"}>PERIOD NO: {dataItems.period_number}</span>
                     </div>
-                    <span className={`action_button`}>{dataItems.total_bet_amount}</span>
-                    <div className="title_for_das_text_link" onClick={()=> callFunctionToOpenSessionDetailPage(dataItems)}>
-                        Click to open
-                        <IonIcon icon={arrowForwardOutline} className="arrow-icon"/>
-                    </div>
+                    <span className={`action_button`}>
+                       <IonIcon icon={arrowForwardOutline} className={'arrow-icon'}/>
+                    </span>
                 </div>
-
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>VOLUME:</strong> {dataItems.total_bet_amount}
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-content">
+                    <strong>SESSION NO:</strong> {predictionListData ? predictionListData.session_number : " - " }
+                </div>
+                <div className="sysMessage__container-msgWrapper__item-time">
+                    <strong>TOTAL TURNOVER:</strong> {predictionListData ? predictionListData.session_total_bet_amount : " - "}
+                </div>
+                <div
+                    className="sysMessage__container-msgWrapper__item-content">
+                    Created at {predictionListData ? moment(predictionListData?.session_date).format('DD-MM-YYYY') : " - "}
+                </div>
             </div>
-
         )
     }
 
@@ -66,38 +88,35 @@ export default function GamePredictionHistoryPeriodList() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {predictionListData ? moment(predictionListData?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">SESSION NO. {predictionListData ? predictionListData.session_number : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">TOTAL TURNOVER - {predictionListData ? predictionListData.session_total_bet_amount : " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {predictionListData ? moment(predictionListData?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">SESSION NO. {predictionListData ? predictionListData.session_number : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">TOTAL TURNOVER - {predictionListData ? predictionListData.session_total_bet_amount : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             <IonContent className={"content-theme-off-white-bg-color"}>
                 <div className={"bet-content__box"}>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {(predictionListData && predictionListData?.game_results?.length) ?
-                                    <div className={"sysMessage__container"}>
-                                        <div className="sysMessage__container-msgWrapper__item-title">
-                                            <div> <span className={"title"}>SESSION NO.</span>
-                                            </div>
-                                            <div><span className={`action_button`}>TURNOVER</span></div>
-                                        </div>
+                                <div className={"GameRecord__C-body in_table_form"}>
+                                    <div className={"sysMessage__container_game_result"}>
                                         <Virtuoso
                                             className={"virtual_item_listing"}
                                             totalCount={predictionListData?.game_results.length}
                                             itemContent={index => renderVirtualElement(predictionListData?.game_results[index], index)}
                                         />
                                     </div>
+                                </div>
                                     :
                                     <div className={"empty__container empty"}>
                                         <svg className={"svg-icon icon-empty"} xmlns="http://www.w3.org/2000/svg"
