@@ -410,7 +410,7 @@ export function actionToExecuteFunctionInLast10Seconds() {
                        FROM
                            betting_game_session bgs
                        WHERE 
-                           bgs.start_time <= NOW() AND bgs.end_time >= NOW()
+                           bgs.start_time <= NOW() AND bgs.end_time IS NULL
                          AND game_type = ?
                         AND is_active = ?
                        ORDER BY bgs.start_time LIMIT 1`;

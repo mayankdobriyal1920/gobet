@@ -2,12 +2,17 @@ import pool from "./connection.js";
 import crypto from 'crypto';
 import {
     actionToGetAllUsersSubscriptionsDataQuery,
-    actionToGetGameSessionOrAllSessionAndGamePlatformQuery, actionToGetNearestGameSessionBasedOnGameTypeQuery,
-    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery, actionToGetOrderStatusListDataQuery,
+    actionToGetGameSessionOrAllSessionAndGamePlatformQuery,
+    actionToGetLastGameSessionBasedOnGameTypeQuery,
+    actionToGetNearestGameSessionBasedOnGameTypeQuery,
+    actionToGetNearestGameSessionOrActiveSessionAndGamePlatformQuery,
+    actionToGetOrderStatusListDataQuery,
     checkMobNumberAlreadyExistQuery,
-    getAdminPassCodeListQuery, getAliveUsersQuery,
+    getAdminPassCodeListQuery,
+    getAliveUsersQuery,
     getDepositHistoryQuery,
-    getGameHistoryQuery, GetGamePredictionHistoryDataQuery,
+    getGameHistoryQuery,
+    GetGamePredictionHistoryDataQuery,
     getGameResultListQuery,
     getMoneyTransactionsQuery,
     getPendingDepositRequestListQuery,
@@ -118,11 +123,24 @@ export const actionToGetNearestGameSessionOrActiveSessionAndGamePlatformApiCall 
 }
 
 export const actionToGetNearestGameSessionBasedOnGameTypeApiCall = (body) => {
-    const {game_type} = body;
     return new Promise(function(resolve, reject){
         let resultData = {};
         const query = actionToGetNearestGameSessionBasedOnGameTypeQuery();
-        pool.query(query, [], (error, results) =>{
+        pool.query(query, [body?.game_type,1], (error, results) =>{
+            if(error) reject(error);
+            if(results.length){
+                resultData = results[0];
+            }
+            resolve(resultData);
+        })
+    })
+}
+
+export const actionToGetLastGameSessionBasedOnGameTypeApiCall = (body) => {
+    return new Promise(function(resolve, reject){
+        let resultData = {};
+        const query = actionToGetLastGameSessionBasedOnGameTypeQuery();
+        pool.query(query, [body?.game_type], (error, results) =>{
             if(error) reject(error);
             if(results.length){
                 resultData = results[0];

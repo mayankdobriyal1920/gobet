@@ -20,7 +20,7 @@ import GetBetGameSessionListPage from "../../pages/admin/GetBetGameSessionListPa
 import {
     actionToCreateNewSession,
     actionToGetAdminAllDashboardCountData,
-    actionToGetGameSessionOrAllSessionAndGamePlatform,
+    actionToGetGameSessionOrAllSessionAndGamePlatform, actionToGetLastGameSessionBasedOnGameType,
     actionToGetNearestGameSessionBasedOnGameType,
     actionToGetNearestGameSessionOrActiveSessionAndGamePlatform
 } from "../../redux/CommonAction";
@@ -29,7 +29,6 @@ import moment from "moment-timezone";
 const BettingGameEntryGamePlatformListComponent = () => {
     const {gameType} = useParams();
     const history = useHistory();
-    const {dashboardCount} = useSelector((state) => state.adminDashboardAllCountData);
     const {userInfo} = useSelector((state) => state.userAuthDetail);
     const {gameSessionData} = useSelector(state => state.latestGameSessionData);
     const dispatch = useDispatch();
@@ -69,7 +68,8 @@ const BettingGameEntryGamePlatformListComponent = () => {
     }, [gameSessionData])
 
     useEffect(()=>{
-        dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType))
+        dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType));
+        dispatch(actionToGetLastGameSessionBasedOnGameType(gameType));
     },[gameType])
 
     const goBack = ()=>{
@@ -84,6 +84,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
         dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform(gameType))
         dispatch(actionToGetAdminAllDashboardCountData(event))
         dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType))
+        dispatch(actionToGetLastGameSessionBasedOnGameType(gameType))
     }
 
     const callFunctionToEnterInGame = ()=>{
@@ -163,13 +164,26 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                 {/* Activate Session */}
                                 <IonRow className="ion-justify-content-center ion-margin-top">
                                     {isActivatable ? (
-                                        <IonButton expand="block" color="success" className="activate-btn" onClick={callFunctionToCreateNewSession}>
-                                            ACTIVATE SESSION
-                                        </IonButton>
+                                        <div className={"GameList__C"}>
+                                            <div className={"GameList__C-item active"}>
+                                                <div>START<br/>Session</div>
+                                            </div>
+                                            <div className={"GameList__C-item not_active"} onClick={callFunctionToCreateNewSession}>
+                                                <div className={"bet_pre_txt_1"}>
+                                                    Click here
+                                                </div>
+                                                <div className={"bet_pre_txt_2"}>
+                                                    <IonIcon icon={arrowForwardOutline}/>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ) : (
-                                        <IonButton expand="block" color="warning" className="activate-btn" disabled>
-                                            WAIT...
-                                        </IonButton>
+                                        <div className="Betting__C-mark">
+                                            <div>W</div>
+                                            <div>A</div>
+                                            <div>I</div>
+                                            <div>T</div>
+                                        </div>
                                     )}
                                 </IonRow>
 
@@ -182,8 +196,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                     </div>
                                 </div>
                                 <div className="">
-                                    <IonGrid
-                                             className="grid_for_dashboard_data_grid">
+                                    <IonGrid className="grid_for_dashboard_data_grid">
                                         <IonRow className="grid_for_dashboard_data_row">
                                             {/* First Column */}
                                             <IonCol className="grid_for_dashboard_data_col" onClick={()=>goToPage('/game-result-history')}>
@@ -311,9 +324,9 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                 {/*</div>*/}
                             </div>
                         </div>
-                        : ''
+                        :
+                        <GetBetGameSessionListPage gameType={gameType}/>
                     }
-                    {/*<GetBetGameSessionListPage gameType={gameType}/>*/}
                 </IonContent>
             </IonPage>
             <IonLoading isOpen={userEnterLoading} message={"Please wait..."}/>

@@ -373,8 +373,7 @@ export default function WinAndGoBettingMainPage() {
                                                         </div>
                                                         <div className={"GameList__C-item not_active"}>
                                                             <div className={"bet_pre_txt_1"}>{prediction?.option_name}</div>
-                                                            <div
-                                                                className={"bet_pre_txt_2"}>₹{prediction?.amount ?? '0.00'}</div>
+                                                            <div className={"bet_pre_txt_2"}>₹{prediction?.amount ?? '0.00'}</div>
                                                         </div>
                                                     </div>
                                                     :

@@ -380,9 +380,20 @@ export const actionToCreateNewSession = (payload, callFunctionToEnterInGame) => 
 }
 
 export const actionToGetNearestGameSessionBasedOnGameType = (gameType) => async(dispatch) =>{
-    dispatch({type: LATEST_GAME_SESSION_RECORD_REQUEST})
+    dispatch({type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST})
     try{
         api.post(`actionToGetNearestGameSessionBasedOnGameTypeApiCall`, {game_type:gameType}).then(responseData => {
+            dispatch({ type: NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS, payload: {...responseData.data}});
+        })
+    }catch (e) {
+        console.log(e)
+    }
+}
+
+export const actionToGetLastGameSessionBasedOnGameType = (gameType) => async(dispatch) =>{
+    dispatch({type: LATEST_GAME_SESSION_RECORD_REQUEST})
+    try{
+        api.post(`actionToGetLastGameSessionBasedOnGameTypeApiCall`, {game_type:gameType}).then(responseData => {
             dispatch({ type: LATEST_GAME_SESSION_RECORD_SUCCESS, payload: {...responseData.data}});
         })
     }catch (e) {

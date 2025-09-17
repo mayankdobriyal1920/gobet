@@ -61,7 +61,7 @@ import {
     actionToInsertGameSessionDataApiCall,
     actionToGetGamePredictionHistoryDataApiCall,
     actionToGetAllUserListDataApiCall,
-    actionToGetOrderStatusListDataApiCall
+    actionToGetOrderStatusListDataApiCall, actionToGetLastGameSessionBasedOnGameTypeApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -162,6 +162,18 @@ commonRouter.post(
     '/actionToGetNearestGameSessionBasedOnGameTypeApiCall',
     expressAsyncHandler(async(req, res)=>{
         actionToGetNearestGameSessionBasedOnGameTypeApiCall(req.body)
+            .then((data)=>{
+                res.status(200).send(data);
+            }).catch(error => {
+            res.status(500).send(error)
+        })
+    })
+)
+
+commonRouter.post(
+    '/actionToGetLastGameSessionBasedOnGameTypeApiCall',
+    expressAsyncHandler(async(req, res)=>{
+        actionToGetLastGameSessionBasedOnGameTypeApiCall(req.body)
             .then((data)=>{
                 res.status(200).send(data);
             }).catch(error => {
