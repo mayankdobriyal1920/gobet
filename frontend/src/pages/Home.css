@@ -158,3 +158,114 @@
     margin-top: 6px;
     --padding-start: 8px; /* ionic-specific padding variable */
 }
+
+.prediction-history {
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+}
+
+/* DATE orange badge */
+.prediction-history .date-badge {
+    background: #a0522d;
+    color: #fff;
+    display: block;
+    font-weight: bold;
+    padding: 9px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin: 0 auto 1rem;
+    text-align: center;
+    width:60%;
+}
+
+/* Info cards */
+.prediction-history .info-card {
+    border: 1px solid #a0522d;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 0.5rem auto;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #3c3c3c;
+    background: #fff;
+    width: 90%;
+}
+
+/* Parent card container */
+.dashboard_prediction_card {
+    text-align: center;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Label (Small/Big text) */
+.dashboard_prediction_card .bet-label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+/* Common box style */
+.dashboard_prediction_card .bet-box {
+    font-size: 26px;
+    font-weight: bold;
+    color: #fff;
+    padding: 12px 0;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;   /* fixed height */
+    margin: 0 auto; /* center inside card */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Small = Green */
+.dashboard_prediction_card .small-box {
+    background-color: #2ca100;
+}
+
+/* Big = Red */
+.dashboard_prediction_card .big-box {
+    background-color: #d9534f;
+}
+
+/* Align columns */
+.dashboard_big_small_prediction {
+    justify-content: center;
+    gap: 20px;
+}
+
+.prediction-small-big-count-box{
+    text-align: center;
+    padding: 16px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+}
+.prediction-small-big-count-box .exit-from-game-button{
+    font-size: 26px;
+    color: #fff;
+    border-radius: 8px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px; /* center + spacing */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.exit-from-game-button.small {
+    background-color: #2ca100;
+}
+.exit-from-game-button.big {
+    background-color: #d9534f;
+}
+.prediction-small-big-count-box .title_for_das_text_link{
+    color: var(--ion-color-primary);
+}
+

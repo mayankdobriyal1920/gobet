@@ -57,7 +57,7 @@ export default function GamePredictionHistoryPredictionResult() {
 
 
     return (
-        <IonPage  className={"home_welcome_page_container"}>
+        <IonPage  className={"home_welcome_page_container prediction-history-page"}>
             <IonHeader>
                 <div className={"content-getbet content"}>
                     <div className="navbar">
@@ -76,42 +76,81 @@ export default function GamePredictionHistoryPredictionResult() {
                     </div>
                 </div>
             </IonHeader>
-            <div className={"bet-container-sticky"}>
-                <div className={"van-sticky"}>
-                    <div className="foot_insub">
-                        <div className="progress">
-                            <div className="step">Date: {predictionResultData ? moment(predictionResultData?.session_date).format('DD-MM-YYYY') : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">PERIOD NUMBER. {predictionResultData ? predictionResultData.period_number : " - "}</div>
-                        </div>
-                        <div className="progress">
-                            <div className="step">TOTAL VOLUME - {predictionResultData ? (Number(totalBetDistribution.totalBigAmount ?? 0) + Number(totalBetDistribution.totalSmallAmount ?? 0)) : " - "}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <IonContent className={"content-theme-off-white-bg-color"}>
+            {/*<div className={"bet-container-sticky"}>*/}
+            {/*    <div className={"van-sticky"}>*/}
+            {/*        <div className="foot_insub">*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">Date: {predictionResultData ? moment(predictionResultData?.session_date).format('DD-MM-YYYY') : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">PERIOD NUMBER. {predictionResultData ? predictionResultData.period_number : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*            <div className="progress">*/}
+            {/*                <div className="step">TOTAL VOLUME - {predictionResultData ? (Number(totalBetDistribution.totalBigAmount ?? 0) + Number(totalBetDistribution.totalSmallAmount ?? 0)) : " - "}</div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+            <IonContent className={"content-theme-off-white-bg-color prediction-history"}>
                 <div className={"bet-content__box"}>
+                    {/* DATE */}
+                    <div className="info-card">
+                        <strong>DATE:</strong> {predictionResultData ? moment(predictionResultData?.session_date).format('DD-MM-YYYY') : " - "}
+                    </div>
+                    <div className="info-card"><strong>PERIOD NUMBER:</strong> {predictionResultData ? predictionResultData.period_number : " - "}</div>
+                    <div className="info-card"><strong>TOTAL VOLUME:</strong> {predictionResultData ? (Number(totalBetDistribution.totalBigAmount ?? 0) + Number(totalBetDistribution.totalSmallAmount ?? 0)) : " - "}</div>
                     <div className={"infiniteScroll"}>
                         <div className={"infiniteScroll__loading"}>
                             {(predictionResultData && totalBetDistribution.allData?.length) ?
                                 <div className={"sysMessage__container"}>
-                                    <div className="add_money_game_wallet_heading">
-                                        <h1>PREDICTION</h1>
-                                    </div>
-                                    <div className={"list_status_type"}>
-                                        <div className={"update_user_game_prev_result_button"}>
-                                            <div > SMALL</div>
-                                            <div > BIG</div>
+                                    {/*<div className="add_money_game_wallet_heading">*/}
+                                    {/*    <h1>PREDICTION</h1>*/}
+                                    {/*</div>*/}
+                                    {/*<div className={"list_status_type"}>*/}
+                                    {/*    <div className={"update_user_game_prev_result_button"}>*/}
+                                    {/*        <div > SMALL</div>*/}
+                                    {/*        <div > BIG</div>*/}
+                                    {/*    </div>*/}
+                                    {/*    <div className={"update_user_game_prev_result_button"}>*/}
+                                    {/*        <div className={"order-bet-game-button"}>*/}
+                                    {/*            {totalBetDistribution.totalSmallAmount ?? 0}*/}
+                                    {/*        </div>*/}
+                                    {/*        <div className={"exit-from-game-button big"}>*/}
+                                    {/*            {totalBetDistribution.totalBigAmount ?? 0}*/}
+                                    {/*        </div>*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
+                                    <div className={"list_status_type"} style={{paddingTop: '2rem'}}>
+                                        <div className="getbet-title getbet-line" >
+                                            <div className="getbet-title-left">
+                                                <span>PREDICTION</span>
+                                            </div>
                                         </div>
-                                        <div className={"update_user_game_prev_result_button"}>
-                                            <div className={"order-bet-game-button"}>
-                                                {totalBetDistribution.totalSmallAmount}
-                                            </div>
-                                            <div className={"exit-from-game-button big"}>
-                                                {totalBetDistribution.totalBigAmount}
-                                            </div>
+                                        <div className="">
+                                            <IonGrid
+                                                className="grid_for_dashboard_data_grid ">
+                                                <IonRow className="grid_for_dashboard_data_row dashboard_big_small_prediction">
+                                                    {/* First Column */}
+                                                    <IonCol className="grid_for_dashboard_data_col">
+                                                        <IonCard className="dashboard-card dashboard_prediction_card">
+                                                            <div className={"bet-label"}> SMALL</div>
+                                                            <div className={"order-bet-game-button bet-box small-box"}>
+                                                                {totalBetDistribution.totalSmallAmount ?? 0}
+                                                            </div>
+                                                        </IonCard>
+                                                    </IonCol>
+
+                                                    {/* Second Column */}
+                                                    <IonCol className="grid_for_dashboard_data_col">
+                                                        <IonCard className="dashboard-card dashboard_prediction_card">
+                                                            <div className={"bet-label"}> BIG</div>
+                                                            <div className={"exit-from-game-button big bet-box big-box"}>
+                                                                {totalBetDistribution.totalBigAmount ?? 0}
+                                                            </div>
+                                                        </IonCard>
+                                                    </IonCol>
+                                                </IonRow>
+                                            </IonGrid>
                                         </div>
                                     </div>
                                     <div className={"list_status_type"} style={{paddingTop: '2rem'}}>
@@ -123,12 +162,12 @@ export default function GamePredictionHistoryPredictionResult() {
                                         <div className="">
                                             <IonGrid
                                                 className="grid_for_dashboard_data_grid">
-                                                <IonRow className="grid_for_dashboard_data_row">
+                                                <IonRow className="grid_for_dashboard_data_row dashboard_big_small_prediction">
                                                     {/* First Column */}
                                                     <IonCol className="grid_for_dashboard_data_col" onClick={()=>goToPage('/prediction-history-user-list', totalBetDistribution.small, 'SMALL')}>
-                                                        <IonCard className="dashboard-card">
-                                                            <div className={"order-bet-game-button"}>
-                                                                {totalBetDistribution.small?.length}
+                                                        <IonCard className="dashboard-card prediction-small-big-count-box">
+                                                            <div className={"exit-from-game-button small"}>
+                                                                {totalBetDistribution.small?.length ?? 0}
                                                             </div>
                                                             <div className="title_for_das_text_link">
                                                                 Click to open
@@ -140,7 +179,7 @@ export default function GamePredictionHistoryPredictionResult() {
                                                     {/* Second Column */}
                                                     <IonCol onClick={() => goToPage('/prediction-history-user-list', totalBetDistribution.big, "BIG")}
                                                             className="grid_for_dashboard_data_col">
-                                                        <IonCard className="dashboard-card">
+                                                        <IonCard className="dashboard-card prediction-small-big-count-box">
                                                             <div className={"exit-from-game-button big"}>
                                                                 {totalBetDistribution.big?.length ?? 0}
                                                             </div>
@@ -169,6 +208,8 @@ export default function GamePredictionHistoryPredictionResult() {
                     </div>
                 </div>
             </IonContent>
+
+
         </IonPage>
     )
 }
