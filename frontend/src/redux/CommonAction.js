@@ -1,83 +1,81 @@
 import Axios from 'axios';
 import {
-    USER_GET_OTP_REQUEST_SUCCESS,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
+    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS,
+    ADMIN_GAME_RESULT_LIST_REQUEST,
+    ADMIN_GAME_RESULT_LIST_SUCCESS,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
+    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS,
+    ALL_USER_LIST_OBJECT,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
+    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
+    ALL_USERS_SUBSCRIPTION_DATA_REQUEST,
+    ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
+    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
+    APP_SUBSCRIPTION_PLAN_REQUEST,
+    APP_SUBSCRIPTION_PLAN_SUCCESS,
+    BET_ACTIVE_USER_REQUEST,
+    BET_ACTIVE_USER_SUCCESS,
+    BET_GAME_SESSION_REQUEST,
+    BET_GAME_SESSION_SUCCESS,
+    CHANGE_USER_AVATAR_MODAL,
+    GAME_PREDICTION_HISTORY_DATA_REQUEST,
+    GAME_PREDICTION_HISTORY_DATA_SUCCESS,
+    GAME_SESSION_AND_ALL_SESSION_REQUEST,
+    GAME_SESSION_AND_ALL_SESSION_SUCCESS,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
+    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
+    GET_ALL_GAME_PLATFORMS_REQUEST,
+    GET_ALL_GAME_PLATFORMS_SUCCESS,
+    GET_GAME_LAST_RESULT_REQUEST,
+    GET_GAME_LAST_RESULT_SUCCESS,
+    LATEST_GAME_SESSION_RECORD_REQUEST,
+    LATEST_GAME_SESSION_RECORD_SUCCESS,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
+    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST,
+    LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
+    LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST,
+    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
+    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
+    PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
+    PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
+    PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
+    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
+    USER_BET_PREDICTION_HISTORY_REQUEST,
+    USER_BET_PREDICTION_HISTORY_SUCCESS,
+    USER_BET_PREDICTION_STATUS,
+    USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
+    USER_BET_PREDICTION_STATUS_TIMER,
+    USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
+    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS,
+    USER_GAME_HISTORY_REQUEST,
+    USER_GAME_HISTORY_SUCCESS,
+    USER_GET_OTP_REQUEST,
     USER_GET_OTP_REQUEST_FAIL,
+    USER_GET_OTP_REQUEST_SUCCESS,
+    USER_MONEY_TRANSACTIONS_REQUEST,
+    USER_MONEY_TRANSACTIONS_SUCCESS,
     USER_SESSION_REQUEST,
     USER_SESSION_SUCCESS,
     USER_SIGNIN_FAIL,
     USER_SIGNIN_REQUEST,
     USER_SIGNIN_SUCCESS,
     USER_SIGNUP_SIGNIN_ERROR,
-    CHANGE_USER_AVATAR_MODAL,
-    USER_WALLET_AND_GAME_BALANCE_SUCCESS,
-    USER_BET_PREDICTION_STATUS,
-    USER_BET_PREDICTION_STATUS_WAITING,
-    USER_BET_PREDICTION_STATUS_TIMER,
-    USER_BET_PREDICTION_HISTORY_REQUEST,
-    USER_BET_PREDICTION_HISTORY_SUCCESS,
-    USER_BET_PREDICTION_STATUS_LOADING_REQUEST,
-    USER_BET_PREDICTION_STATUS_EXPIRED,
-    USER_BET_PREDICTION_STATUS_READY,
-    USER_BET_PREDICTION_STATUS_READY_TIMER,
-    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
-    USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
-    USER_DEPOSIT_AMOUNT_HISTORY_REQUEST,
-    USER_DEPOSIT_AMOUNT_HISTORY_SUCCESS,
-    ADMIN_GAME_RESULT_LIST_REQUEST,
-    ADMIN_GAME_RESULT_LIST_SUCCESS,
-    PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
-    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
-    ALL_USERS_UNDER_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_UNDER_SUB_ADMIN_LIST_SUCCESS,
-    USER_GAME_HISTORY_REQUEST,
-    USER_GAME_HISTORY_SUCCESS,
-    PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
-    PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_REQUEST,
-    GENERATED_PASSCODE_LIST_BY_ADMIN_SUCCESS,
-    USER_GET_OTP_REQUEST,
-    PASSCODE_REQUEST_BY_SUB_ADMIN_REQUEST,
-    PASSCODE_REQUEST_BY_SUB_ADMIN_SUCCESS,
-    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_REQUEST,
-    ALL_USERS_NORMAL_AND_SUB_ADMIN_LIST_SUCCESS,
-    USER_MONEY_TRANSACTIONS_REQUEST,
-    USER_MONEY_TRANSACTIONS_SUCCESS,
-    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_REQUEST,
-    NEAREST_GAME_SESSION_AND_ACTIVE_SESSION_SUCCESS,
-    BET_ACTIVE_USER_REQUEST,
-    BET_ACTIVE_USER_SUCCESS,
-    BET_GAME_SESSION_REQUEST,
-    BET_GAME_SESSION_SUCCESS,
-    GET_GAME_LAST_RESULT_REQUEST,
-    GET_GAME_LAST_RESULT_SUCCESS,
     USER_SUBSCRIPTION_DATA_REQUEST,
     USER_SUBSCRIPTION_DATA_SUCCESS,
-    APP_SUBSCRIPTION_PLAN_REQUEST,
-    APP_SUBSCRIPTION_PLAN_SUCCESS,
-    GAME_SESSION_AND_ALL_SESSION_REQUEST,
-    GAME_SESSION_AND_ALL_SESSION_SUCCESS,
-    GET_ALL_GAME_PLATFORMS_REQUEST,
-    GET_ALL_GAME_PLATFORMS_SUCCESS,
-    ADMIN_DASHBOARD_ALL_COUNT_DATA_REQUEST,
-    ADMIN_DASHBOARD_ALL_COUNT_DATA_SUCCESS,
-    ALL_USERS_SUBSCRIPTION_DATA_REQUEST,
-    ALL_USERS_SUBSCRIPTION_DATA_SUCCESS,
-    ADMIN_ORDER_AND_VALUE_COUNT_DATA_REQUEST,
-    ADMIN_ORDER_AND_VALUE_COUNT_DATA_SUCCESS,
-    LATEST_GAME_SESSION_RECORD_REQUEST,
-    LATEST_GAME_SESSION_RECORD_SUCCESS,
-    GAME_PREDICTION_HISTORY_DATA_REQUEST,
-    GAME_PREDICTION_HISTORY_DATA_SUCCESS,
-    LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
-    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
-    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_RESULT,
-    LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST,
-    ALL_USER_LIST_OBJECT,
-    USERS_ORDER_STATUS_DATA_SUCCESS,
-    USERS_ORDER_STATUS_DATA_REQUEST, LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL
+    USER_WALLET_AND_GAME_BALANCE_SUCCESS,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_REQUEST,
+    USER_WITHDRAWAL_AMOUNT_HISTORY_SUCCESS,
+    USERS_ORDER_STATUS_DATA_REQUEST,
+    USERS_ORDER_STATUS_DATA_SUCCESS
 } from "./CommonConstants";
 import createSocketConnection from "../socket/socket";
 import moment from "moment-timezone";
+
 const api = Axios.create({
     baseURL: 'https://unikpayindia.com/api-get-bet/common/',
     withCredentials:true
@@ -750,12 +748,83 @@ export const actionToCallFunctionToUpdateGameResult = (id,result,callFunctionToR
     try {
         api.post(`actionToCallFunctionToUpdateGameResultApiCall`, {id,result}).then(responseData => {
             if(callFunctionToReloadGameResultLis)
-               callFunctionToReloadGameResultLis();
+               callFunctionToReloadGameResultLis(result);
         })
     } catch (error) {
         console.log(error);
     }
 }
+
+export const actionToUpdateResultHistoryData = (data, result) => (dispatch, getState) => {
+    const { gamePredictionHistoryList } = getState().gamePredictionHistoryListData;
+
+    let updatedSession = null;
+    let updatedGameResult = null;
+
+    const updatedHistoryList = gamePredictionHistoryList.map((history) => {
+        // Normalize to YYYY-MM-DD string for safe comparison
+        const historyDate = moment(history.session_date).format("YYYY-MM-DD");
+        const targetDate = moment(data.date).format("YYYY-MM-DD");
+
+        if (historyDate === targetDate) {
+
+            const newHistory = {
+                ...history,
+                sessions: history.sessions?.map((session) => {
+                    // Force both to string for strict comparison
+                    if (String(session.session_number) === String(data.sessionNumber)) {
+                        const newGameResults = session.game_results?.map((gameResult) => {
+                            if (String(gameResult.game_result_id) === String(data.game_result_id)) {
+                                // updatedGameResult = newGameResult;
+                                return {...gameResult, result};
+                            }
+                            return gameResult;
+                        });
+
+                        // Step 2: check if all game_result have non-null result
+                        const allResultsFilled =
+                            newGameResults?.length > 0 &&
+                            newGameResults.every((gr) => gr.result !== null && gr.result !== "");
+
+
+
+                        const newSession = { ...session,
+                            game_results: newGameResults,
+                            session_date:history.session_date,
+                            sessionStatus:allResultsFilled ? "Verified" : "Pending",};
+                        updatedGameResult = newSession;
+                        return newSession;
+                    }
+                    return session;
+                }),
+            };
+            updatedSession = newHistory
+            return newHistory
+        }
+        return history;
+    });
+
+    // ✅ Dispatch updates only if found
+    if (updatedGameResult) {
+        dispatch({
+            type: LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_DATA,
+            payload: updatedGameResult,
+        });
+    }
+
+    if (updatedSession) {
+        dispatch({
+            type: LOCALLY_STORE_PREDICTION_HISTORY_SESSION_DATA,
+            payload: updatedSession,
+        });
+    }
+
+    dispatch({
+        type: GAME_PREDICTION_HISTORY_DATA_SUCCESS,
+        payload: updatedHistoryList,
+    });
+};
+
 
 export const actionToCompleteStatusOfWithdrawalRequest = (id,callFunctionToReloadList) => async () => {
     try {

@@ -1,9 +1,10 @@
-import React from "react";
-import {IonContent,IonHeader, IonIcon, IonPage} from "@ionic/react";
-import {arrowBack, arrowForwardOutline} from "ionicons/icons";
+import React, {useState} from "react";
+import {IonButton, IonContent, IonHeader, IonIcon, IonLoading, IonModal, IonPage} from "@ionic/react";
+import {arrowBack} from "ionicons/icons";
 import {useHistory} from "react-router";
 import {
-    actionToGetPredictionHistoryData
+    actionToCallFunctionToUpdateGameResult,
+    actionToUpdateResultHistoryData
 } from "../../../redux/CommonAction";
 import {useDispatch, useSelector} from "react-redux";
 import {Virtuoso} from "react-virtuoso";
@@ -13,14 +14,33 @@ export default function GameResultHistoryPeriodListStatusComponent() {
     const dispatch = useDispatch();
     const history = useHistory();
     const {predictionListData} = useSelector((state) => state.locallyStorePredictionHistoryData);
+    const [updateGameResult,setUpdateGameResult] = useState(null);
+    const [updateLoading,setUpdateLoading] = useState(false);
 
     const goBack = ()=>{
         history.goBack();
         window.history.back();
     }
 
-    const callFunctionToUpdatePeriodResult = (data) => {
-        console.log("Data",data)
+
+    const callFunctionToReloadGameResultList = (result) => {
+        dispatch(actionToUpdateResultHistoryData(updateGameResult, result))
+        setTimeout(()=>{
+            setUpdateGameResult(null);
+            setUpdateLoading(false)
+        })
+    }
+
+    const callFunctionToUpdateGameResult = (result)=>{
+        setUpdateLoading(true);
+        callFunctionToReloadGameResultList(result)
+        dispatch(actionToCallFunctionToUpdateGameResult(updateGameResult?.game_result_id,result,callFunctionToReloadGameResultList));
+    }
+
+    const callFunctionToUpdateGameResultPopup = (gameResult)=>{
+        gameResult.date = predictionListData?.session_date;
+        gameResult.sessionNumber = predictionListData.session_number
+        setUpdateGameResult(gameResult);
     }
 
     const renderVirtualElement = (dataItems, index)=>{
@@ -37,15 +57,18 @@ export default function GameResultHistoryPeriodListStatusComponent() {
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>RESULT:</strong> {dataItems.result === "BIG" ? 'Big' : dataItems.result === "SMALL"? "Small" : "Pending"}
                 </div>
+
                 <div className="sysMessage__container-msgWrapper__item-content">
                     <strong>STATUS:</strong> {predictionListData.sessionStatus === "Verified" ? "Verified" :
 
                     !dataItems.result ?
-                        <span onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
-                              className={`action_button delete`}>Update </span> :
-                        <span
-                            onClick={() => callFunctionToUpdatePeriodResult(dataItems)}
-                            className={`action_button update`}>EDIT</span> }
+                        <IonButton size="small" color="success" className="edit-btn" onClick={() => callFunctionToUpdateGameResultPopup(dataItems, 'update')}>
+                            UPDATE
+                        </IonButton>
+                        :
+                        <IonButton size="small" color="danger" className="edit-btn" onClick={() => callFunctionToUpdateGameResultPopup(dataItems, 'edit')}>
+                            EDIT
+                        </IonButton>}
                 </div>
                 <div className="sysMessage__container-msgWrapper__item-time">
                     <strong>SESSION NO:</strong> {predictionListData ? predictionListData.session_number : " - "}
@@ -120,6 +143,34 @@ export default function GameResultHistoryPeriodListStatusComponent() {
                     </div>
                 </div>
             </IonContent>
+
+            <IonModal
+                className="add-money-to-game-wallet-modal"
+                isOpen={!!updateGameResult?.game_result_id}
+                onDidDismiss={() => setUpdateGameResult(null)}
+                initialBreakpoint={0.5} breakpoints={[0.5]}>
+                <IonContent className="ion-padding">
+                    <div className="add_money_game_wallet_heading">
+                        <h2>Game Result</h2>
+                    </div>
+                    <div className={"list_status_type"}>
+                        <div className={"update_user_game_prev_result_button"}>
+                            <button
+                                onClick={() => callFunctionToUpdateGameResult('SMALL')}
+                                type={"button"} className={"order-bet-game-button"} disabled={updateGameResult?.result === "SMALL"}>
+                                SMALL
+                            </button>
+                            <button
+                                onClick={() => callFunctionToUpdateGameResult('BIG')}
+                                type={"button"}
+                                className={"exit-from-game-button big"} disabled={updateGameResult?.result === "BIG"}>
+                                BIG
+                            </button>
+                        </div>
+                    </div>
+                </IonContent>
+            </IonModal>
+            <IonLoading isOpen={updateLoading} message={"Updating..."}/>
         </IonPage>
     )
 }
