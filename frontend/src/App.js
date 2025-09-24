@@ -116,7 +116,7 @@ const AppEnterMainPage = () => {
                 <Route exact={true} path="/admin-sub-admin-users-list" component={AllUsersUnderSubAdminPage}/>
                 <Route exact={true} path="/admin-admin-users-list" component={AllUserListNormalAndSubAdminPage}/>
                 <Route exact={true} path="/admin-game-session-list" component={GetBetGameSessionListPage}/>
-                <Route exact={true} path="/betting-app-with-platform-data/:gameType" component={BettingGameEntryGamePlatformListComponent}/>
+                <Route exact={true} path="/betting-app-with-platform-data/:game_type" component={BettingGameEntryGamePlatformListComponent}/>
                 {/*/// PREDICTION HISTORY PAGE ///*/}
                 <Route exact={true} path="/admin-game-prediction-history-list" component={GamePredictionHistoryDetailPage}/>
                 <Route exact={true} path="/prediction-session-list" component={GamePredictionHistorySessionList}/>

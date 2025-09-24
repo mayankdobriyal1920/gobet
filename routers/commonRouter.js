@@ -61,7 +61,9 @@ import {
     actionToInsertGameSessionDataApiCall,
     actionToGetGamePredictionHistoryDataApiCall,
     actionToGetAllUserListDataApiCall,
-    actionToGetOrderStatusListDataApiCall, actionToGetLastGameSessionBasedOnGameTypeApiCall
+    actionToGetOrderStatusListDataApiCall,
+    actionToGetLastGameSessionBasedOnGameTypeApiCall,
+    actionToGetCurrentOrderUserDataApiCall
 } from "../models/commonModel.js";
 import {
     callFunctionToSendOtp,
@@ -1034,6 +1036,22 @@ commonRouter.post(
     expressAsyncHandler(async (req, res) => {
         if (req?.session?.userSessionData?.id) {
             actionToOrderNextBetActivateUserApiCall(req.body.bet_id,req?.session?.userSessionData?.id).then(responseData => {
+                res.status(200).send(responseData);
+            })
+        }else{
+            res.status(200).send({
+                success: false,
+                message: 'No active session found. User is not logged in.',
+            });
+        }
+    })
+);
+
+commonRouter.post(
+    '/actionToGetCurrentOrderUserDataApiCall',
+    expressAsyncHandler(async (req, res) => {
+        if (req?.session?.userSessionData?.id) {
+            actionToGetCurrentOrderUserDataApiCall().then(responseData => {
                 res.status(200).send(responseData);
             })
         }else{

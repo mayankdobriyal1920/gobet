@@ -1950,6 +1950,31 @@ overflow: hidden;
 .sysMessage__container-msgWrapper__item-title .WIN {
     color: green;
 }
+.TimeLeft__C-id.TimeLeft__C-id.main_heading_in_t {
+    font-size: 1.1rem;
+    text-align: center;
+}
+.TimeLeft__C-time-in-msain-c {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+}
+
+.count_down_in_time {
+    text-align: center;
+}
+
+.count_down_in_time .TimeLeft__C-time {
+    display: flex;
+}
+
+.total_orders_in_time {
+    text-align: center;
+}
+
+.heading_in_time_left {margin-bottom: 9px;font-weight: 600;font-size: 0.9rem;}
+
 .sysMessage__container-msgWrapper__item {
     padding: .4rem;
     border-radius: .2rem;

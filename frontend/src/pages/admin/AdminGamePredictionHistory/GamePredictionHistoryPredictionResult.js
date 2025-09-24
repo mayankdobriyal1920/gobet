@@ -35,7 +35,6 @@ export default function GamePredictionHistoryPredictionResult() {
                 const smallGroup = betDistribution.filter(item => item.option_name.toUpperCase() === "SMALL");
                 const bigGroup = betDistribution.filter(item => item.option_name.toUpperCase() === "BIG");
 
-                console.log({smallGroup, bigGroup})
                 setTotalBetDistribution({allData:betDistribution,big:bigGroup, small:smallGroup,
                     totalBigAmount: bigGroup[0]?.total_big_amount, totalSmallAmount: smallGroup[0]?.total_small_amount})
             }

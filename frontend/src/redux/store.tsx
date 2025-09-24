@@ -21,7 +21,7 @@ import {
     passcodeRequestBySubAdminReducer,
     pendingDepositRequestListReducer,
     pendingWithdrawalRequestListReducer,
-    signupSigninFormError,
+    signupSigninFormError, totalUsersOrderCurrentBetCountReducer,
     userAuthDetailReducer,
     userBetPredictionHistoryReducer,
     userBetPredictionStatusReducer,
@@ -97,7 +97,8 @@ const initialState = {
     gamePredictionHistoryListData: {loading:true, gamePredictionHistoryList:[]},
     locallyStorePredictionHistoryData:{sessionData:null, predictionListData:null, predictionResultData:null, predictionHistoryUserList:null, usersOrderStatusDetail:null},
     allUserListObject:{},
-    usersOrderAndStatusDataList:{loading:true, usersOrderAndStatusList:[]}
+    usersOrderAndStatusDataList:{loading:true, usersOrderAndStatusList:[]},
+    totalUsersOrderCurrentBetCount:0,
 }
 export const rootReducer = combineReducers({
     userSession: userSessionReducer,
@@ -117,6 +118,7 @@ export const rootReducer = combineReducers({
     pendingDepositRequestList: pendingDepositRequestListReducer,
     generatedPasscodeListByAdmin: generatedPasscodeListByAdminReducer,
     pendingWithdrawalRequestList: pendingWithdrawalRequestListReducer,
+    totalUsersOrderCurrentBetCount: totalUsersOrderCurrentBetCountReducer,
     userAuthDetail: userAuthDetailReducer,
     userOtpDetails: userOtpReducer,
     signupSigninFormError: signupSigninFormError,

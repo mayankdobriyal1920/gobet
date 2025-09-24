@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {useParams,useHistory} from "react-router";
+import {useParams,useHistory} from "react-router-dom";
 import {
-    IonButton,
     IonCard,
     IonCardContent,
     IonCol,
@@ -16,7 +15,6 @@ import {
 import {arrowBack, arrowForwardOutline, beakerSharp, todaySharp} from "ionicons/icons";
 import {useDispatch, useSelector} from "react-redux";
 import GetBetGameSessionListPage from "../../pages/admin/GetBetGameSessionListPage";
-// import RunningTimerComponent from "../RunningTimerComponent";
 import {
     actionToCreateNewSession,
     actionToGetAdminAllDashboardCountData,
@@ -27,7 +25,7 @@ import {
 import moment from "moment-timezone";
 
 const BettingGameEntryGamePlatformListComponent = () => {
-    const {gameType} = useParams();
+    const {game_type} = useParams();
     const history = useHistory();
     const {userInfo} = useSelector((state) => state.userAuthDetail);
     const {gameSessionData} = useSelector(state => state.latestGameSessionData);
@@ -35,9 +33,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
 
     const [time, setTime] = useState(new Date());
     const [isActivatable, setIsActivatable] = useState(false);
-    const [serialNumber, setSerialNumber] = useState(
-        gameSessionData?.serial_number?.toString() || ""
-    );
+    const [serialNumber, setSerialNumber] = useState(Number(gameSessionData?.serial_number) + 1);
     const [userEnterLoading,setUserEnterLoading] = useState(false);
 
 
@@ -52,10 +48,14 @@ const BettingGameEntryGamePlatformListComponent = () => {
             } else {
                 setIsActivatable(false);
             }
+            if(seconds >= 59){
+                setTimeout(()=>{
+                    dispatch(actionToGetLastGameSessionBasedOnGameType(game_type));
+                })
+            }
         }, 1000);
-
         return () => clearInterval(interval);
-    }, []);
+    }, [game_type]);
 
     const formatTime = (date) => {
         return date.toLocaleTimeString("en-US", { hour12: false });
@@ -68,9 +68,9 @@ const BettingGameEntryGamePlatformListComponent = () => {
     }, [gameSessionData])
 
     useEffect(()=>{
-        dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType));
-        dispatch(actionToGetLastGameSessionBasedOnGameType(gameType));
-    },[gameType])
+        dispatch(actionToGetNearestGameSessionBasedOnGameType(game_type));
+        dispatch(actionToGetLastGameSessionBasedOnGameType(game_type));
+    },[game_type])
 
     const goBack = ()=>{
         history.goBack();
@@ -80,11 +80,11 @@ const BettingGameEntryGamePlatformListComponent = () => {
         history.push(page);
     }
     function handleRefresh(event) {
-        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform(gameType))
-        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform(gameType))
+        dispatch(actionToGetNearestGameSessionOrActiveSessionAndGamePlatform(game_type))
+        dispatch(actionToGetGameSessionOrAllSessionAndGamePlatform(game_type))
         dispatch(actionToGetAdminAllDashboardCountData(event))
-        dispatch(actionToGetNearestGameSessionBasedOnGameType(gameType))
-        dispatch(actionToGetLastGameSessionBasedOnGameType(gameType))
+        dispatch(actionToGetNearestGameSessionBasedOnGameType(game_type))
+        dispatch(actionToGetLastGameSessionBasedOnGameType(game_type))
     }
 
     const callFunctionToEnterInGame = ()=>{
@@ -100,7 +100,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
             sessionNumber: gameSessionData.session_number + 1,
             start_time: moment(new Date()).format("HH:mm:ss"),
             is_active: 1,
-            game_type:gameType,
+            game_type:game_type,
             betting_platform_id:gameSessionData.betting_platform_id
         }
         dispatch(actionToCreateNewSession(payload,callFunctionToEnterInGame))
@@ -121,7 +121,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                                     </div>
                                     <div className="navbar__content-center">
                                         <div className="navbar__content-title">
-                                            <span>{gameType?.toUpperCase()}</span>
+                                            <span>{game_type?.toUpperCase()}</span>
                                         </div>
                                     </div>
                                     <div className="navbar__content-right">
@@ -325,7 +325,7 @@ const BettingGameEntryGamePlatformListComponent = () => {
                             </div>
                         </div>
                         :
-                        <GetBetGameSessionListPage gameType={gameType}/>
+                        <GetBetGameSessionListPage gameType={game_type}/>
                     }
                 </IonContent>
             </IonPage>

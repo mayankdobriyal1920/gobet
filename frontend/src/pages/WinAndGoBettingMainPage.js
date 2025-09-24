@@ -17,7 +17,7 @@ import {
     actionToCancelNextBetOrderActivateUser,
     actionToGetAdminGameResultListData,
     actionToGetBetActiveUserData,
-    actionToGetBetGameSessionData,
+    actionToGetBetGameSessionData, actionToGetCurrentOrderUserData,
     actionToGetGameLastResultData,
     actionToGetUserActiveSubscriptionData,
     actionToGetUserBetPredictionData,
@@ -41,6 +41,7 @@ export default function WinAndGoBettingMainPage() {
     const history = useHistory();
     const {subscriptionData} = useSelector((state) => state.userSubscriptionData);
     const {bettingBalance} = useSelector((state) => state.userWalletAndGameBalance);
+    const totalUsersOrderCurrentBetCount = useSelector((state) => state.totalUsersOrderCurrentBetCount);
     const {status,prediction,timer} = useSelector((state) => state.userBetPredictionStatus);
     const userBetPredictionHistory = useSelector((state) => state.userBetPredictionHistory);
     const {userInfo} = useSelector((state) => state.userAuthDetail);
@@ -54,6 +55,7 @@ export default function WinAndGoBettingMainPage() {
     const [presentAlert] = useIonAlert();
     const [present] = useIonToast();
     const [updateGameResult,setUpdateGameResult] = useState(null);
+    const [upcomingBettingId,setUpcomingBettingId] = useState(null);
     const [updateLoading,setUpdateLoading] = useState(false);
 
     useKeepAwake();
@@ -94,15 +96,7 @@ export default function WinAndGoBettingMainPage() {
     }
 
     const orderNextBetActivateUser = (betId)=>{
-        if(sessionData?.id && sessionData?.is_active
-        //     && moment().isBetween(
-        //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
-        //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
-        //     null,
-        //     '[]' // Inclusive of both start and end times
-        // )
-        ) {
-
+        if(sessionData?.id && sessionData?.is_active) {
             if (subscriptionData?.id && subscriptionData?.balance >= 10 && bettingBalance >= 10 && moment(subscriptionData?.expiry_date) >= moment()) {
                 if(!loadingStatus) {
                     setLoadingStatus(true);
@@ -183,6 +177,7 @@ export default function WinAndGoBettingMainPage() {
         if(timer === 60){
             if(userInfo?.role === 1) {
                 dispatch(actionToGetGameLastResultData(sessionData?.id,false));
+                dispatch(actionToGetCurrentOrderUserData());
                 dispatch(actionToGetAdminGameResultListData(false,{session_id:sessionData?.id,created_at:moment().format('YYYY-MM-DD')}))
             }else{
                 dispatch(actionToGetUserBetPredictionHistory(false,sessionData?.id));
@@ -231,6 +226,12 @@ export default function WinAndGoBettingMainPage() {
         }
     }, []);
 
+    useEffect(() => {
+        if(gameLastResult?.gameResult?.game_id){
+            setUpcomingBettingId(Number(gameLastResult?.gameResult?.game_id) + 1);
+        }
+    }, [gameLastResult?.gameResult]);
+
 
     return (
         <IonPage className={"home_welcome_page_container"}>
@@ -264,14 +265,7 @@ export default function WinAndGoBettingMainPage() {
                         <LineLoaderComponent/>
                         <LineLoaderComponent/>
                     </React.Fragment>
-                    : (sessionData?.id && sessionData?.is_active
-                    //     && moment().isBetween(
-                    //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.start_time}`),
-                    //     moment(`${moment().format('YYYY-MM-DD')} ${sessionData?.end_time}`),
-                    //     null,
-                    //     '[]' // Inclusive of both start and end times
-                    // )
-                    ) ?
+                    : (sessionData?.id && sessionData?.is_active) ?
                         <React.Fragment>
                             {(userInfo?.role !== 1) ?
                                 <div className="Wallet__C inner_page">
@@ -335,11 +329,10 @@ export default function WinAndGoBettingMainPage() {
                                         </div>
                                         {(userInfo?.role === 1) ?
                                             <React.Fragment>
-                                                {(gameLastResult?.gameResult?.id) ?
+                                                {(gameLastResult?.gameResult?.id && !gameLastResult?.gameResult?.result) ?
                                                     <div className={"update_user_game_prev_result"}>
                                                         <div className={"text_up"}>
-                                                            UPDATE PREVIOUS GAME
-                                                            RESULT <br/> {gameLastResult?.gameResult?.game_id}
+                                                            CURRENT {gameLastResult?.gameResult?.game_id}
                                                         </div>
                                                         <div className={"update_user_game_prev_result_button"}>
                                                             <button
@@ -386,28 +379,76 @@ export default function WinAndGoBettingMainPage() {
                                                 }
                                             </React.Fragment>
                                         }
-                                        <div className={"TimeLeft__C TimeLeft__C-up"}>
-                                            {(prediction?.bet_id) &&
-                                                <div className="TimeLeft__C-id">ID - {prediction?.bet_id}</div>
-                                            }
-                                            {(timer) ?
-                                                <div className="TimeLeft__C-time">
-                                                    <div>{_formatTimeMMSS(timer)[0]}</div>
-                                                    <div>{_formatTimeMMSS(timer)[1]}</div>
-                                                    <div>{_formatTimeMMSS(timer)[2]}</div>
-                                                    <div>{_formatTimeMMSS(timer)[3]}</div>
-                                                    <div>{_formatTimeMMSS(timer)[4]}</div>
-                                                </div>
-                                                :
-                                                <div className="TimeLeft__C-time">
-                                                    <div>0</div>
-                                                    <div>0</div>
-                                                    <div>:</div>
-                                                    <div>0</div>
-                                                    <div>0</div>
-                                                </div>
-                                            }
-                                        </div>
+
+                                        {(userInfo?.role === 1) ?
+                                            <div className={"TimeLeft__C TimeLeft__C-up"}>
+                                                <div className="TimeLeft__C-id TimeLeft__C-id main_heading_in_t">UPCOMING - {upcomingBettingId}</div>
+                                                {(timer) ?
+                                                    <div className="TimeLeft__C-time-in-msain-c">
+                                                        <div className={"count_down_in_time"}>
+                                                            <div className={"heading_in_time_left"}>
+                                                                Countdown
+                                                            </div>
+                                                            <div className="TimeLeft__C-time">
+                                                                <div>{_formatTimeMMSS(timer)[3]}</div>
+                                                                <div>{_formatTimeMMSS(timer)[4]}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className={"total_orders_in_time"}>
+                                                            <div className={"heading_in_time_left"}>
+                                                                Order(s)
+                                                            </div>
+                                                            <div className="TimeLeft__C-time">
+                                                                <div>{totalUsersOrderCurrentBetCount}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    :
+                                                    <div className="TimeLeft__C-time">
+                                                        <div className={"count_down_in_time"}>
+                                                            <div className={"heading_in_time_left"}>
+                                                                Countdown
+                                                            </div>
+                                                            <div className={"heading_in_time_mIN"}>
+                                                                <div>0</div>
+                                                                <div>0</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className={"total_orders_in_time"}>
+                                                            <div className={"heading_in_time_left"}>
+                                                                Order(s)
+                                                            </div>
+                                                            <div className={"heading_in_time_mIN"}>
+                                                                0
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            :
+                                            <div className={"TimeLeft__C TimeLeft__C-up"}>
+                                                {(prediction?.bet_id) &&
+                                                    <div className="TimeLeft__C-id">ID - {prediction?.bet_id}</div>
+                                                }
+                                                {(timer) ?
+                                                    <div className="TimeLeft__C-time">
+                                                        <div>{_formatTimeMMSS(timer)[0]}</div>
+                                                        <div>{_formatTimeMMSS(timer)[1]}</div>
+                                                        <div>{_formatTimeMMSS(timer)[2]}</div>
+                                                        <div>{_formatTimeMMSS(timer)[3]}</div>
+                                                        <div>{_formatTimeMMSS(timer)[4]}</div>
+                                                    </div>
+                                                    :
+                                                    <div className="TimeLeft__C-time">
+                                                        <div>0</div>
+                                                        <div>0</div>
+                                                        <div>:</div>
+                                                        <div>0</div>
+                                                        <div>0</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
                                     </div>
                                     :
                                     <div className={"Betting__C-numC"}>

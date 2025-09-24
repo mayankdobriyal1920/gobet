@@ -75,7 +75,7 @@ import {
     LOCALLY_STORE_PREDICTION_HISTORY_PREDICTION_USER_LIST,
     ALL_USER_LIST_OBJECT,
     USERS_ORDER_STATUS_DATA_SUCCESS,
-    USERS_ORDER_STATUS_DATA_REQUEST, LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL
+    USERS_ORDER_STATUS_DATA_REQUEST, LOCALLY_STORE_USERS_ORDER_STATUS_DETAIL, TOTAL_USER_ORDER_BET_COUNT
 } from "./CommonConstants";
 
 export const userAuthDetailReducer = (state = {}, action) => {
@@ -422,6 +422,15 @@ export const pendingWithdrawalRequestListReducer = (state = {}, action) => {
             return { loading: true};
         case PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS:
             return { loading: false, withdrawalRequest: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const totalUsersOrderCurrentBetCountReducer = (state = {}, action) => {
+    switch (action.type) {
+        case TOTAL_USER_ORDER_BET_COUNT:
+            return action.payload;
         default:
             return state;
     }

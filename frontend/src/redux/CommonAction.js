@@ -44,7 +44,7 @@ import {
     PENDING_DEPOSIT_REQUEST_LIST_REQUEST,
     PENDING_DEPOSIT_REQUEST_LIST_SUCCESS,
     PENDING_WITHDRAWAL_REQUEST_LIST_REQUEST,
-    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS,
+    PENDING_WITHDRAWAL_REQUEST_LIST_SUCCESS, TOTAL_USER_ORDER_BET_COUNT,
     USER_BET_PREDICTION_HISTORY_REQUEST,
     USER_BET_PREDICTION_HISTORY_SUCCESS,
     USER_BET_PREDICTION_STATUS,
@@ -914,6 +914,10 @@ export const actionToConnectSocketServer = () => async (dispatch,getState) => {
                 // }
                 break;
             }
+            case 'NEW_USER_ORDER_THE_BET':{
+                dispatch(actionToGetCurrentOrderUserData());
+                break;
+            }
         }
     });
 
@@ -952,6 +956,11 @@ export const actionToCallFunctionToActiveSectionAndStartGame = (sessionId,custom
     }
 }
 
+export const actionToGetCurrentOrderUserData = () => async (dispatch) => {
+    api.post(`actionToGetCurrentOrderUserDataApiCall`, {}).then((responseData) => {
+        dispatch({type: TOTAL_USER_ORDER_BET_COUNT, payload: responseData?.data.total_count});
+    })
+}
 export const actionToOrderNextBetActivateUser = (betId,setLoadingStatus,callFunctionToHandleStatus) => async (dispatch) => {
     try {
         api.post(`actionToOrderNextBetActivateUserApiCall`, {bet_id:betId}).then(({data}) => {

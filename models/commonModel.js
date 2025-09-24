@@ -36,6 +36,7 @@ import {
     updateCommonApiCall
 } from "./helpers/commonModelHelper.js";
 import moment from "moment-timezone";
+import {userSocketIdsObject} from "../server.js";
 
 export const actionToLoginUserAndSendOtpApiCall = (body) => {
     const {phone} = body;
@@ -481,7 +482,6 @@ export const actionToGetGameLastResultDataApiCall = (sessionId) => {
             FROM game_result 
             WHERE betting_game_session_id = ? 
               AND created_at BETWEEN ? AND ?
-              AND result IS NULL
         `;
 
         let userData = {};
@@ -1496,6 +1496,16 @@ export const actionToCallFunctionToUpdateGameResultApiCall = (userId, body) => {
     });
 };
 
+export const actionToGetCurrentOrderUserDataApiCall = () => {
+    return new Promise(function (resolve) {
+        const query = 'SELECT count(id) as total_count from betting_active_users WHERE status = ?';
+        pool.query(query,[1], (error, results) => {
+            if(results?.length){
+                resolve({success:1,total_count:results[0]?.total_count});
+            }
+        })
+    })
+}
 export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
     return new Promise(function (resolve) {
         const queryUserBalance = `SELECT betting_balance FROM app_user WHERE id = ?`;
@@ -1544,6 +1554,13 @@ export const actionToOrderNextBetActivateUserApiCall = (betId, userId) => {
 
                         updateCommonApiCall(dataToSend)
                             .then(() => {
+                                Object.keys(userSocketIdsObject).forEach((key) => {
+                                    if (userSocketIdsObject[key]) {
+                                        userSocketIdsObject[key].emit('message', JSON.stringify({
+                                            type: "NEW_USER_ORDER_THE_BET",
+                                        }));
+                                    }
+                                });
                                 resolve({ success: 1 });
                             })
                             .catch((err) => resolve(err));
@@ -1565,6 +1582,13 @@ export const actionToCancelNextBetOrderActivateUserApiCall = (betId) => {
         const whereCondition = `id = ?`;
         let dataToSend = {column: setData, value: [3,betId], whereCondition: whereCondition, returnColumnName:'id',tableName: 'betting_active_users'};
         updateCommonApiCall(dataToSend).then(()=>{
+            Object.keys(userSocketIdsObject).forEach((key) => {
+                if (userSocketIdsObject[key]) {
+                    userSocketIdsObject[key].emit('message', JSON.stringify({
+                        type: "NEW_USER_ORDER_THE_BET",
+                    }));
+                }
+            });
             resolve({success:1});
         })
     })
